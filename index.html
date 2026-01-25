@@ -1,0 +1,2381 @@
+<!DOCTYPE html>
+<html lang="zh-MY">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新廊华小校园环保回收计划 | Projek Kitar Semula SJKC Ladang Grisek</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/188/188333.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"SJKC Ladang Grisek Recycling","short_name":"SJKC Recycling","start_url":".","display":"standalone","background_color":"#f0fdf4","theme_color":"#059669","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/188/188333.png","sizes":"192x192","type":"image/png"}]}'>
+    <meta name="theme-color" content="#059669">
+    
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas for Screenshot -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Marked for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans SC', sans-serif; background-color: #f0fdf4; }
+        .dual-lang span { display: block; font-size: 0.8em; opacity: 0.7; font-weight: normal; margin-top: 2px; }
+        .progress-bar { transition: width 1s ease-in-out; }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: popIn 0.3s ease-out; }
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #10b981; }
+        
+        /* Rank Glow */
+        .rank-1-glow {
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
+            border-color: #facc15;
+            background: linear-gradient(to right, #fffbeb, #ffffff);
+        }
+        
+        /* Markdown Styles */
+        .prose p { margin-bottom: 0.5em; }
+        .prose strong { color: #059669; }
+        .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 0.5em; }
+
+        /* Print Optimization */
+        @media print {
+            body { background-color: white; }
+            header, footer, button, .no-print, .admin-panel-controls { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+            .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none !important; border: 1px solid #ccc !important; }
+            .bg-gradient-to-br { background: none !important; color: black !important; border: 1px solid #000; }
+            .text-white { color: black !important; }
+            #dashboard-view { display: block !important; }
+            #admin-view { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<!-- Service Worker Registration for PWA -->
+<script>
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('install', (e) => {
+                e.waitUntil(
+                    caches.open('sjkc-recycling-v1').then((cache) => {
+                        return cache.addAll(['./', 'https://cdn.tailwindcss.com', 'https://unpkg.com/react@18/umd/react.development.js', 'https://unpkg.com/react-dom@18/umd/react-dom.development.js']);
+                    })
+                );
+            });
+            self.addEventListener('fetch', (e) => {
+                e.respondWith(
+                    caches.match(e.request).then((response) => response || fetch(e.request))
+                );
+            });
+        `;
+        const blob = new Blob([swCode], {type: 'application/javascript'});
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl)
+            .then(() => console.log('Service Worker Registered'))
+            .catch(err => console.warn('Service Worker registration skipped: Environment does not support blob: scripts.', err));
+    }
+</script>
+
+<script type="text/babel">
+    // --- 🟢 Configuration ---
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrVGnNy7-tq_JEt-Se5CbS9H1RNYi7ENtpEfi_seOoperA2Dz9fO4jkxuGax820P8D/exec"; 
+    
+    // --- Gemini API Key ---
+    // Note: In a production environment, this should not be exposed.
+    // For this standalone file to work with AI features, insert your key below.
+    const apiKey = ""; 
+
+    const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
+
+    // --- Error Boundary ---
+    class ErrorBoundary extends Component {
+        constructor(props) {
+            super(props);
+            this.state = { hasError: false, error: null };
+        }
+        static getDerivedStateFromError(error) { return { hasError: true, error }; }
+        componentDidCatch(error, errorInfo) { console.error("Uncaught error:", error, errorInfo); }
+        
+        handleReset = () => {
+            if(confirm("确定要重置所有本地数据吗？这可以解决白屏问题，但未上传的数据会丢失。")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        }
+
+        render() {
+            if (this.state.hasError) {
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-red-50 p-6 text-center">
+                        <h1 className="text-2xl font-bold text-red-600 mb-2">系统发生错误 (Ralat Sistem)</h1>
+                        <p className="text-slate-600 mb-6 max-w-md">可能是数据冲突或网络问题导致的。请尝试刷新页面，或重置数据。</p>
+                        <div className="flex gap-4">
+                            <button onClick={() => window.location.reload()} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">刷新页面</button>
+                            <button onClick={this.handleReset} className="bg-red-600 text-white px-6 py-2 rounded-lg font-bold">重置本地数据</button>
+                        </div>
+                        <pre className="mt-8 text-xs text-left bg-gray-100 p-4 rounded overflow-auto max-w-full">
+                            {this.state.error && this.state.error.toString()}
+                        </pre>
+                    </div>
+                );
+            }
+            return this.props.children;
+        }
+    }
+
+    // --- Constants ---
+    const ADMIN_PASSWORD = "1049"; 
+    const SECURITY_PASSWORD = "88888888"; 
+
+    // --- Audio Engine ---
+    const playSound = (type) => {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (type === 'success') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            }
+        } catch (e) { }
+    };
+
+    // --- Effects ---
+    const fireConfetti = () => {
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#34d399', '#facc15', '#fbbf24'] 
+            });
+        }
+    };
+
+    // --- Icons ---
+    const IconLeaf = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 1.45 10a7.3 7.3 0 0 1-5.3 5.3c-2.88 1.46-5.85 2.12-5.15 2.7ZM2 22C1.75 19 3 16.5 6 16c2 2 3 4 3 6 0 0-4.375.375-7 0Z"/></svg>;
+    const IconRecycle = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 7.196 9.5 3.1 10.598"/><path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/><path d="m13.378 9.633 4.096 1.098 1.097-4.096"/></svg>;
+    const IconTrophy = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
+    const IconInbox = ({ size = 24 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>;
+    const IconFootprints = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 11 3.8 11 8c0 1.25-.76 2.08-1.88 2.48l-.48.17c-1.12.39-1.88 1.23-1.88 2.48v2.87"/><path d="M14 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C8.63 6 7 7.8 7 12c0 1.25.76 2.08 1.88 2.48l.48.17c1.12.39 1.88 1.23 1.88 2.48v2.87"/><path d="M7 22h6"/><path d="M13 22v-4"/><path d="M7 22v-4"/></svg>;
+    const IconTrash = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>;
+    const IconFilter = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
+    const IconLock = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+    const IconUnlock = () => <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
+    const IconArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+    const IconUser = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+    const IconAlertTriangle = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>;
+    const IconCamera = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
+    const IconCheck = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+    const IconCrown = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className || "text-yellow-500 fill-yellow-500"}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>;
+    const IconSparkles = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className || "text-purple-500"}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 5h4"/><path d="M3 9h4"/></svg>;
+    const IconSearch = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
+    const IconEdit = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
+    const IconX = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 18 12"/></svg>;
+    const IconSave = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>;
+    const IconUpload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
+    const IconDownload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
+    const IconRefresh = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
+    const IconSettings = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+    const IconFileUp = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>;
+    const IconTicket = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>;
+    const IconCalendar = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>;
+    const IconClipboardList = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>;
+    const IconImage = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
+    const IconSword = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>;
+
+    const IconCloud = ({ connected }) => (
+        <div className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${connected ? 'bg-emerald-800 text-emerald-200' : 'bg-red-800 text-red-200'}`}>
+            <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></div>
+            {connected ? 'Sheets On' : 'Offline Mode'}
+        </div>
+    );
+
+    // --- Helpers ---
+    const generateClassOptions = () => {
+        const rules = [
+            { year: 1, max: 'E' }, { year: 2, max: 'E' }, { year: 3, max: 'E' },
+            { year: 4, max: 'D' }, { year: 5, max: 'E' }, { year: 6, max: 'C' },
+        ];
+        let options = [];
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+        rules.forEach(rule => {
+            const maxIndex = letters.indexOf(rule.max);
+            for (let i = 0; i <= maxIndex; i++) options.push(`${rule.year}${letters[i]}`);
+        });
+        return options;
+    };
+    const CLASS_OPTIONS = generateClassOptions();
+    
+    const MONTH_OPTIONS = [
+        "一月 / Jan", "二月 / Feb", "三月 / Mar", "四月 / Apr", "五月 / May", "六月 / Jun",
+        "七月 / Jul", "八月 / Aug", "九月 / Sep", "十月 / Oct", "十一月 / Nov", "十二月 / Dec"
+    ];
+    
+    const generateYearOptions = () => {
+        const currentYear = new Date().getFullYear();
+        const years = [];
+        for (let i = currentYear - 1; i <= currentYear + 1; i++) years.push(i);
+        return years;
+    };
+    const YEAR_OPTIONS = generateYearOptions();
+
+    const Medal = ({ rank }) => {
+        if (rank === 1) return <span className="text-2xl drop-shadow-md">🥇</span>;
+        if (rank === 2) return <span className="text-2xl drop-shadow-md">🥈</span>;
+        if (rank === 3) return <span className="text-2xl drop-shadow-md">🥉</span>;
+        return <span className="w-6 h-6 flex items-center justify-center bg-slate-100 text-slate-500 rounded-full text-xs font-bold">{rank}</span>;
+    };
+
+    // --- Main App Component ---
+    const App = () => {
+        const [entries, setEntries] = useState(() => {
+            try {
+                const saved = localStorage.getItem('sjkc_entries');
+                const parsed = saved ? JSON.parse(saved) : [];
+                if (!Array.isArray(parsed)) return [];
+                const cleaned = parsed.filter(e => e && typeof e === 'object' && e.id).map(e => ({...e, weight: Number(e.weight) || 0}));
+                return Array.from(new Map(cleaned.map(item => [item.id, item])).values());
+            } catch (e) { return []; }
+        });
+        const [students, setStudents] = useState(() => {
+            try {
+                const saved = localStorage.getItem('sjkc_students');
+                const parsed = saved ? JSON.parse(saved) : [];
+                if (!Array.isArray(parsed)) return [];
+                const cleaned = parsed.filter(s => s && typeof s === 'object' && s.id);
+                return Array.from(new Map(cleaned.map(item => [item.id, item])).values());
+            } catch (e) { return []; }
+        });
+        const [auditLogs, setAuditLogs] = useState(() => {
+             try {
+                const saved = localStorage.getItem('sjkc_audit_logs');
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) { return []; }
+        });
+
+        const [loading, setLoading] = useState(true);
+        const [isCloudEnabled, setIsCloudEnabled] = useState(!!GOOGLE_SCRIPT_URL);
+        const [cloudError, setCloudError] = useState(false);
+        const dashboardRef = useRef(null); 
+        const fileInputRef = useRef(null);
+        const smartImportRef = useRef(null);
+        const posterRef = useRef(null);
+        
+        // App State
+        const [viewMode, setViewMode] = useState('dashboard'); 
+        const [entryTab, setEntryTab] = useState('recycle'); 
+        const [manageTab, setManageTab] = useState('students'); 
+        const [isAdmin, setIsAdmin] = useState(false);
+        const [passwordInput, setPasswordInput] = useState('');
+        
+        // Entry Mode
+        const [entryMode, setEntryMode] = useState('single'); 
+        const [batchClass, setBatchClass] = useState('');
+        const [batchInputs, setBatchInputs] = useState({});
+
+        // System Management Lock State
+        const [isSystemUnlocked, setIsSystemUnlocked] = useState(false);
+        const [systemPasswordInput, setSystemPasswordInput] = useState('');
+        
+        // Selection State
+        const [selectedStudentIds, setSelectedStudentIds] = useState(new Set());
+
+        // Poster Generator State
+        const [showPosterModal, setShowPosterModal] = useState(false);
+        const [posterType, setPosterType] = useState('class'); 
+        const [posterData, setPosterData] = useState(null);
+
+        // Filter State
+        const currentYear = new Date().getFullYear();
+        const [filterYear, setFilterYear] = useState(currentYear);
+        const [filterMonthStart, setFilterMonthStart] = useState(0); 
+        const [filterMonthEnd, setFilterMonthEnd] = useState(11); 
+
+        // Input Form State
+        const todayStr = new Date().toISOString().split('T')[0];
+        const [formData, setFormData] = useState({ 
+            teacherName: '', 
+            studentName: '', 
+            studentID: '', 
+            selectedClass: '', 
+            weight: '',
+            entryDate: todayStr
+        });
+        const [studentFound, setStudentFound] = useState(false); 
+
+        // Penalty Form State
+        const [penaltyData, setPenaltyData] = useState({
+            teacherName: '',
+            selectedClass: '',
+            reason: 'Food Waste',
+            penaltyValue: '', 
+            month: MONTH_OPTIONS[new Date().getMonth()],
+            calendarYear: currentYear,
+            entryDate: todayStr
+        });
+
+        // Student List Management State
+        const [importText, setImportText] = useState('');
+        const [importClass, setImportClass] = useState('');
+        const [searchTerm, setSearchTerm] = useState('');
+        const [editingStudent, setEditingStudent] = useState(null);
+
+        const [notification, setNotification] = useState(null);
+        const [confirmModal, setConfirmModal] = useState({ show: false, title: '', msg: '', onConfirm: null, isDestructive: false });
+        const [securityCheck, setSecurityCheck] = useState({ show: false, callback: null, error: '' });
+        const [securityInput, setSecurityInput] = useState('');
+        
+        // AI Report State
+        const [aiReport, setAiReport] = useState({ show: false, content: '', loading: false });
+
+        const studentIdRef = useRef(null);
+
+        // --- Logger ---
+        const addLog = useCallback((action, details) => {
+            const newLog = {
+                id: Date.now() + Math.random(),
+                timestamp: new Date().toLocaleString(),
+                action,
+                details
+            };
+            setAuditLogs(prev => [newLog, ...prev].slice(0, 50));
+        }, []);
+
+        // --- Persistence for Offline Mode ---
+        useEffect(() => { localStorage.setItem('sjkc_entries', JSON.stringify(entries)); }, [entries]);
+        useEffect(() => { localStorage.setItem('sjkc_students', JSON.stringify(students)); }, [students]);
+        useEffect(() => { localStorage.setItem('sjkc_audit_logs', JSON.stringify(auditLogs)); }, [auditLogs]);
+
+        // --- Data Fetching ---
+        const handleCloudError = useCallback(() => {
+            setCloudError(true);
+            setLoading(false);
+            showNotification("连接云端失败，已切换至离线模式", "error");
+        }, []);
+
+        const fetchEntries = useCallback(async () => {
+            if (!isCloudEnabled) return;
+            try {
+                setLoading(true);
+                const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getEntries');
+                if (!res.ok) throw new Error("Network response was not ok");
+                const data = await res.json();
+                if (!Array.isArray(data)) { setLoading(false); return; }
+                const uniqueEntries = Array.from(new Map(data.map(item => [item.id, item])).values());
+                uniqueEntries.sort((a, b) => b.createdAt - a.createdAt);
+                const cleaned = uniqueEntries.map(e => ({...e, weight: Number(e.weight) || 0}));
+                setEntries(cleaned);
+                setCloudError(false);
+            } catch (err) {
+                console.warn("Fetch Entries Warning:", err);
+                handleCloudError();
+            } finally {
+                setLoading(false);
+            }
+        }, [isCloudEnabled, handleCloudError]);
+
+        const fetchStudents = useCallback(async () => {
+            if (!isCloudEnabled) return;
+            try {
+                const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getStudents');
+                if (!res.ok) throw new Error("Network response was not ok");
+                const data = await res.json();
+                if (!Array.isArray(data)) return;
+                const uniqueStudents = Array.from(new Map(data.map(item => [item.id, item])).values());
+                setStudents(uniqueStudents);
+                setCloudError(false);
+            } catch (err) {
+                if (entries.length === 0) handleCloudError(); 
+            }
+        }, [isCloudEnabled, entries.length, handleCloudError]);
+
+        useEffect(() => {
+            if (isCloudEnabled && !cloudError) {
+                fetchEntries();
+                fetchStudents();
+            } else {
+                setLoading(false);
+            }
+        }, []);
+
+        // --- Logic: Filtering & Stats ---
+        const filteredEntries = useMemo(() => {
+            if (!entries || !Array.isArray(entries)) return [];
+            return entries.filter(entry => {
+                const entryYear = entry.calendarYear || new Date(entry.createdAt).getFullYear();
+                if (entryYear !== parseInt(filterYear)) return false;
+                let entryMonthIndex = entry.month ? MONTH_OPTIONS.indexOf(entry.month) : new Date(entry.createdAt).getMonth();
+                if (entryMonthIndex < parseInt(filterMonthStart)) return false;
+                if (entryMonthIndex > parseInt(filterMonthEnd)) return false;
+                return true;
+            });
+        }, [entries, filterYear, filterMonthStart, filterMonthEnd]);
+
+        const filteredStudents = useMemo(() => {
+            if (!students || !Array.isArray(students)) return [];
+            if (!searchTerm) return students;
+            const lowerTerm = searchTerm.toLowerCase();
+            return students.filter(s => 
+                s.name.toLowerCase().includes(lowerTerm) || 
+                s.id.toLowerCase().includes(lowerTerm) ||
+                s.className.toLowerCase().includes(lowerTerm)
+            );
+        }, [students, searchTerm]);
+
+        const stats = useMemo(() => {
+            const classTotals = {};
+            const individualTotals = {};
+            let grandTotal = 0;
+
+            filteredEntries.forEach(entry => {
+                const w = Number(entry.weight) || 0;
+                grandTotal += w;
+                if (!classTotals[entry.className]) {
+                    classTotals[entry.className] = { className: entry.className, totalWeight: 0, grade: entry.year };
+                }
+                classTotals[entry.className].totalWeight += w;
+                
+                if (entry.type === 'recycle' && (entry.name || entry.studentID)) {
+                    let uniqueKey = entry.studentID ? `ID-${entry.studentID}` : `NAME-${entry.className}-${entry.name}`;
+                    let displayName = entry.name || (entry.studentID ? `ID: ${entry.studentID}` : 'Unknown');
+                    if (!individualTotals[uniqueKey]) {
+                        individualTotals[uniqueKey] = { name: displayName, studentID: entry.studentID, className: entry.className, totalWeight: 0, grade: entry.year };
+                    } else if (entry.name && individualTotals[uniqueKey].name.startsWith('ID:')) {
+                        individualTotals[uniqueKey].name = entry.name;
+                    }
+                    individualTotals[uniqueKey].totalWeight += w;
+                }
+            });
+
+            const sortedClasses = Object.values(classTotals).sort((a, b) => b.totalWeight - a.totalWeight);
+            const sortedIndividuals = Object.values(individualTotals).sort((a, b) => b.totalWeight - a.totalWeight);
+
+            return {
+                grandTotal,
+                classLower: sortedClasses.filter(c => c.grade <= 3),
+                classUpper: sortedClasses.filter(c => c.grade >= 4),
+                indivLower: sortedIndividuals.filter(i => i.grade <= 3),
+                indivUpper: sortedIndividuals.filter(i => i.grade >= 4)
+            };
+        }, [filteredEntries]);
+
+        // --- Handlers ---
+        const handleLogin = async (e) => {
+            e.preventDefault();
+            if (passwordInput === ADMIN_PASSWORD) {
+                setIsAdmin(true);
+                setViewMode('admin');
+                setPasswordInput('');
+                playSound('success'); 
+                showNotification("登录成功 / Berjaya Log Masuk", "success");
+            } else {
+                playSound('error'); 
+                showNotification("密码错误 / Kata laluan salah", "error");
+            }
+        };
+        
+        const handleSystemUnlock = (e) => {
+            e.preventDefault();
+            if (systemPasswordInput === SECURITY_PASSWORD) {
+                setIsSystemUnlocked(true);
+                setSystemPasswordInput('');
+                playSound('success');
+                showNotification("系统管理已解锁", "success");
+            } else {
+                playSound('error');
+                showNotification("密码错误 / Salah", "error");
+            }
+        };
+
+        const handleLogout = () => {
+            setIsAdmin(false);
+            setIsSystemUnlocked(false); 
+            setViewMode('dashboard');
+            showNotification("已退出后台", "success");
+        };
+
+        const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            if (name === 'studentID') {
+                const trimmedId = value.trim();
+                const match = students.find(s => s.id === trimmedId);
+                if (match) {
+                    setFormData(prev => ({...prev, [name]: value, studentName: match.name, selectedClass: match.className || prev.selectedClass}));
+                    setStudentFound(true);
+                } else {
+                    setFormData(prev => ({ ...prev, [name]: value }));
+                    setStudentFound(false);
+                }
+            } else if (name === 'studentName') {
+                const match = students.find(s => s.name.toLowerCase() === value.toLowerCase().trim());
+                if(match) {
+                     setFormData(prev => ({...prev, [name]: value, studentID: match.id, selectedClass: match.className || prev.selectedClass}));
+                     setStudentFound(true);
+                } else {
+                     setFormData(prev => ({ ...prev, [name]: value }));
+                }
+            } else {
+                setFormData(prev => ({ ...prev, [name]: value }));
+            }
+        };
+
+        const handleResetID = () => {
+            setFormData(prev => ({ ...prev, studentID: '', studentName: '' }));
+            setStudentFound(false);
+            if(studentIdRef.current) studentIdRef.current.focus();
+        };
+
+        const handlePenaltyChange = (e) => {
+            const { name, value } = e.target;
+            setPenaltyData(prev => ({ ...prev, [name]: value }));
+        };
+
+        const toggleSelectAll = (e) => {
+            if (e.target.checked) {
+                const allIds = new Set(filteredStudents.map(s => s.id));
+                setSelectedStudentIds(allIds);
+            } else {
+                setSelectedStudentIds(new Set());
+            }
+        };
+
+        const toggleSelectOne = (id) => {
+            const newSet = new Set(selectedStudentIds);
+            if (newSet.has(id)) { newSet.delete(id); } else { newSet.add(id); }
+            setSelectedStudentIds(newSet);
+        };
+
+        // --- SUBMIT HANDLERS ---
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (!formData.selectedClass || !formData.weight || parseFloat(formData.weight) <= 0) {
+                playSound('error');
+                return showNotification("请填写完整信息 (班级 & 重量)", "error");
+            }
+
+            setLoading(true);
+            const entryDateObj = new Date(formData.entryDate);
+            const studentGrade = formData.selectedClass ? (parseInt(formData.selectedClass.charAt(0)) || 0) : 0;
+            const isManualDate = formData.entryDate !== new Date().toISOString().split('T')[0];
+
+            const newEntry = {
+                id: (Date.now()).toString(),
+                type: 'recycle',
+                teacherName: formData.teacherName.trim(),
+                name: formData.studentName.trim(),
+                studentID: formData.studentID.trim(),
+                className: formData.selectedClass,
+                weight: parseFloat(formData.weight),
+                month: MONTH_OPTIONS[entryDateObj.getMonth()],
+                calendarYear: entryDateObj.getFullYear(),
+                year: studentGrade,
+                createdAt: entryDateObj.getTime(),
+                displayTime: isManualDate ? "Manual Entry" : new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'})
+            };
+
+            setEntries(prev => [newEntry, ...prev]);
+            addLog('Add Entry', `${newEntry.className}: ${newEntry.weight}kg`);
+            
+            if (isCloudEnabled && !cloudError) {
+                await sendToSheet('addEntry', { data: newEntry });
+            }
+
+            setLoading(false);
+            // Modified: Only clear weight, keep student details for continuous entry
+            setFormData(prev => ({ ...prev, weight: '' }));
+            // Focus back on studentID if they want to change student, or weight if same student?
+            // User requested "convenient to continue input", usually modifying ID (last digit) is common.
+            if(studentIdRef.current) studentIdRef.current.focus();
+            
+            playSound('success');
+            fireConfetti();
+            showNotification("记录添加成功", "success");
+        };
+
+        const handlePenaltySubmit = async (e) => {
+            e.preventDefault();
+            if (!penaltyData.selectedClass || !penaltyData.penaltyValue || parseFloat(penaltyData.penaltyValue) <= 0) {
+                return showNotification("请填写完整扣分信息", "error");
+            }
+
+            setLoading(true);
+            const entryDateObj = new Date(penaltyData.entryDate);
+            const studentGrade = penaltyData.selectedClass ? (parseInt(penaltyData.selectedClass.charAt(0)) || 0) : 0;
+            // Penalty weight is stored as NEGATIVE
+            const weightVal = -Math.abs(parseFloat(penaltyData.penaltyValue));
+
+            const newEntry = {
+                id: (Date.now()).toString(),
+                type: 'deduction',
+                teacherName: penaltyData.teacherName || 'Admin',
+                name: '', 
+                studentID: '',
+                className: penaltyData.selectedClass,
+                reason: penaltyData.reason,
+                weight: weightVal,
+                month: MONTH_OPTIONS[entryDateObj.getMonth()],
+                calendarYear: entryDateObj.getFullYear(),
+                year: studentGrade,
+                createdAt: entryDateObj.getTime(),
+                displayTime: "PENALTY"
+            };
+
+            setEntries(prev => [newEntry, ...prev]);
+            addLog('Add Penalty', `${newEntry.className}: ${newEntry.weight}kg (${newEntry.reason})`);
+
+            if (isCloudEnabled && !cloudError) {
+                await sendToSheet('addEntry', { data: newEntry });
+            }
+
+            setLoading(false);
+            setPenaltyData(prev => ({ ...prev, penaltyValue: '' }));
+            playSound('success');
+            showNotification("扣分记录已添加", "success");
+        };
+
+        const handleDelete = (id) => {
+            setConfirmModal({
+                show: true,
+                title: "删除确认 / Pengesahan",
+                msg: "确定要删除这条记录吗？此操作需要安全密码。",
+                isDestructive: true,
+                onConfirm: () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    // Require Security Password
+                    requestSecureAction(async () => {
+                        setEntries(prev => prev.filter(e => e.id !== id));
+                        addLog('Delete Entry', `Deleted Entry ID: ${id}`);
+                        
+                        if (isCloudEnabled && !cloudError) {
+                            await sendToSheet('deleteEntry', { id });
+                        }
+                        showNotification("记录已删除", "success");
+                    });
+                }
+            });
+        };
+
+        // 🟢 新增：强制需要密码的一键清空功能
+        const handleDeleteAllEntries = () => {
+            setConfirmModal({
+                show: true,
+                title: "⚠️ 危险操作：清空所有记录",
+                msg: "警告：这将永久删除所有回收和扣分数据！(学生名单保留)。\n确定要继续吗？",
+                isDestructive: true,
+                onConfirm: () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    
+                    // 强制弹出密码框，不检查 isSystemUnlocked 状态
+                    setSecurityCheck({ 
+                        show: true, 
+                        error: '',
+                        callback: async () => {
+                            setEntries([]);
+                            addLog('System Reset', 'Cleared ALL recycling data via Dashboard');
+                            showNotification("所有记录已清空 / Semua rekod dipadam", "success");
+                            
+                            if (isCloudEnabled && !cloudError) {
+                                setLoading(true);
+                                await sendToSheet('clearAllEntries');
+                                setLoading(false);
+                            } 
+                        }
+                    });
+                    setSecurityInput('');
+                }
+            });
+        };
+
+        const handleBatchDelete = () => {
+            if (selectedStudentIds.size === 0) return;
+            
+            setConfirmModal({
+                show: true, 
+                title: "批量删除确认", 
+                msg: `确定删除选中的 ${selectedStudentIds.size} 名学生吗？`, 
+                isDestructive: true,
+                onConfirm: () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    setStudents(prev => prev.filter(s => !selectedStudentIds.has(s.id)));
+                    addLog('Batch Delete Students', `Deleted ${selectedStudentIds.size} students`);
+                    setSelectedStudentIds(new Set());
+                    showNotification("已批量删除 (云端同步可能较慢)", "success");
+
+                    if (isCloudEnabled && !cloudError) {
+                        setLoading(true);
+                        const promises = Array.from(selectedStudentIds).map(id => 
+                            sendToSheet('deleteStudent', { id })
+                        );
+                        Promise.all(promises).then(() => setLoading(false));
+                    }
+                }
+            });
+        };
+
+        // --- Batch Entry Handlers ---
+        const handleBatchClassChange = (e) => {
+            const cls = e.target.value;
+            setBatchClass(cls);
+            setBatchInputs({}); 
+        };
+
+        const handleBatchInputChange = (studentId, weight) => {
+            setBatchInputs(prev => ({
+                ...prev,
+                [studentId]: weight
+            }));
+        };
+
+        const handleBatchSubmit = async () => {
+            const entriesToAdd = [];
+            const timestamp = Date.now();
+            const entryDateObj = new Date(formData.entryDate); // Use date from main form
+            const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
+            const currentYearInt = entryDateObj.getFullYear();
+            const displayTime = (formData.entryDate === new Date().toISOString().split('T')[0]) 
+                ? new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'})
+                : "Manual Entry";
+            const studentGrade = batchClass ? (parseInt(batchClass.charAt(0)) || 0) : 0;
+
+            Object.keys(batchInputs).forEach(studentId => {
+                const weightVal = parseFloat(batchInputs[studentId]);
+                if (weightVal > 0) {
+                    const student = students.find(s => s.id === studentId);
+                    entriesToAdd.push({
+                        id: (timestamp + Math.random()).toString(),
+                        type: 'recycle',
+                        teacherName: formData.teacherName.trim(), 
+                        name: student ? student.name : 'Unknown',
+                        studentID: studentId,
+                        className: batchClass,
+                        weight: weightVal,
+                        month: currentMonthStr, 
+                        calendarYear: currentYearInt,
+                        year: studentGrade,
+                        createdAt: entryDateObj.getTime(),
+                        displayTime: displayTime
+                    });
+                }
+            });
+
+            if (entriesToAdd.length === 0) return showNotification("请输入至少一个重量", "error");
+
+            setLoading(true);
+            setEntries(prev => [...entriesToAdd, ...prev]); 
+            addLog('Batch Add Entries', `Added ${entriesToAdd.length} entries for ${batchClass}`);
+            
+            if (isCloudEnabled && !cloudError) {
+                for (const entry of entriesToAdd) {
+                   await sendToSheet('addEntry', { data: entry });
+                }
+            }
+            
+            setBatchInputs({});
+            setLoading(false);
+            playSound('success');
+            fireConfetti();
+            showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
+        };
+
+        // --- Poster Generation ---
+        const handleGenerateClassPoster = () => {
+            setPosterType('class');
+            setPosterData({
+                total: stats.grandTotal.toFixed(2),
+                lower: stats.classLower.slice(0, 3), 
+                upper: stats.classUpper.slice(0, 3), 
+                date: new Date().toLocaleDateString('zh-MY', { year: 'numeric', month: 'long' })
+            });
+            setShowPosterModal(true);
+        };
+
+        const handleGenerateIndivPoster = (level) => {
+            setPosterType(level === 'lower' ? 'individual_lower' : 'individual_upper');
+            const topList = level === 'lower' ? stats.indivLower.slice(0, 20) : stats.indivUpper.slice(0, 20);
+            
+            setPosterData({
+                total: stats.grandTotal.toFixed(2),
+                topList: topList,
+                date: new Date().toLocaleDateString('zh-MY', { year: 'numeric', month: 'long' })
+            });
+            setShowPosterModal(true);
+        };
+
+        const downloadPoster = () => {
+            if (!posterRef.current) return;
+            html2canvas(posterRef.current, { scale: 2, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `SJKCLG_Recycling_${posterType}_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                setShowPosterModal(false);
+            });
+        };
+
+        // --- Security Functions ---
+        const requestSecureAction = (callback) => {
+            if (isSystemUnlocked) {
+                callback();
+            } else {
+                setSecurityCheck({ show: true, callback: callback, error: '' });
+                setSecurityInput('');
+            }
+        };
+
+        const handleSecurityVerify = (e) => {
+            e.preventDefault();
+            if (securityInput === SECURITY_PASSWORD) {
+                const cb = securityCheck.callback;
+                setSecurityCheck({ show: false, callback: null, error: '' });
+                if (cb) cb();
+            } else {
+                setSecurityCheck(prev => ({ ...prev, error: '密码错误' }));
+            }
+        };
+
+        // --- API Helper ---
+        const sendToSheet = async (action, data = null) => {
+            if (!isCloudEnabled || cloudError) return { status: 'offline' };
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action, ...data })
+                });
+                return { status: 'success' };
+            } catch (e) {
+                return { status: 'error' };
+            }
+        };
+
+        const showNotification = (msg, type) => {
+            setNotification({ msg, type });
+            setTimeout(() => setNotification(null), 2500);
+        };
+
+        // --- Student Management Functions ---
+        const handleSmartImport = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const text = event.target.result;
+                const lines = text.split(/\r?\n/);
+                let currentClass = '';
+                const newStudents = [];
+                
+                lines.forEach(line => {
+                    const classMatch = line.match(/(?:Kelas|班级)[：:]\s*(\d+[A-Z]+)/i);
+                    if (classMatch) {
+                        currentClass = classMatch[1];
+                        return;
+                    }
+                    if (!currentClass) return;
+                    
+                    const parts = line.split(',');
+                    if (parts.length >= 4) {
+                        const id = parts[1].trim();
+                        if (/^\d+$/.test(id)) {
+                            const nameEn = parts[2].trim();
+                            const nameCn = parts[3].trim();
+                            const cleanName = `${nameEn} ${nameCn}`.replace(/"/g, '').trim();
+                            
+                            if (id && cleanName) {
+                                newStudents.push({
+                                    id: id,
+                                    name: cleanName,
+                                    className: currentClass
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                if (newStudents.length > 0) {
+                    addLog('Smart Import', `Imported ${newStudents.length} students`);
+                     setStudents(prev => {
+                        const existingIds = new Set(prev.map(s => s.id));
+                        const uniqueNew = newStudents.filter(s => !existingIds.has(s.id));
+                        return [...prev, ...uniqueNew];
+                    });
+
+                    if (isCloudEnabled && !cloudError) {
+                        setLoading(true);
+                        await sendToSheet('importStudents', { data: newStudents });
+                        setLoading(false);
+                    }
+                    playSound('success');
+                    showNotification(`成功导入 ${newStudents.length} 名学生 (Smart Import)`, "success");
+                } else {
+                    showNotification("未能识别有效数据，请检查格式", "error");
+                }
+                
+                if (smartImportRef.current) smartImportRef.current.value = "";
+            };
+            reader.readAsText(file);
+        };
+
+        const handleImportStudents = async () => {
+            if (!importClass) return showNotification("请先选择班级 / Sila pilih kelas dahulu", "error");
+            if (!importText.trim()) return showNotification("请输入数据", "error");
+            
+            const lines = importText.split('\n');
+            const studentData = [];
+            
+            lines.forEach(line => {
+                const parts = line.split(/,|\t/).map(s => s.trim());
+                if (parts.length >= 2) {
+                    const id = parts[0];
+                    const name = parts[1];
+                    if (id && name) {
+                        studentData.push({ id, name, className: importClass });
+                    }
+                }
+            });
+
+            if (studentData.length === 0) return showNotification("数据格式错误", "error");
+
+            addLog('Import Students', `Imported ${studentData.length} to ${importClass}`);
+            
+            setStudents(prev => {
+                const existingIds = new Set(prev.map(s => s.id));
+                const newUnique = studentData.filter(s => !existingIds.has(s.id));
+                return [...prev, ...newUnique];
+            });
+
+            if (isCloudEnabled && !cloudError) {
+                setLoading(true);
+                await sendToSheet('importStudents', { data: studentData });
+                setLoading(false);
+            }
+            
+            playSound('success'); 
+            showNotification(`成功导入 ${studentData.length} 名学生`, "success");
+            setImportText('');
+        };
+
+        const handleUpdateStudent = async (e) => {
+            e.preventDefault();
+            if (!editingStudent || !editingStudent.name || !editingStudent.className) return;
+            
+            addLog('Update Student', `Updated ID: ${editingStudent.id}`);
+            
+            setStudents(prev => prev.map(s => s.id === editingStudent.id ? editingStudent : s));
+
+            if (isCloudEnabled && !cloudError) {
+                setLoading(true);
+                await sendToSheet('updateStudent', { data: editingStudent });
+                setLoading(false);
+            }
+            showNotification("学生资料已更新", "success");
+            setEditingStudent(null);
+        };
+
+        const handleDeleteSingleStudent = (id) => {
+            setConfirmModal({
+                show: true,
+                title: "删除学生 / Padam Murid",
+                msg: "确定要删除此学生吗？此操作将移除该学生的所有关联信息。",
+                isDestructive: true,
+                onConfirm: async () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    
+                    setStudents(prev => prev.filter(s => s.id !== id));
+                    addLog('Delete Student', `Deleted ID: ${id}`);
+
+                    if (isCloudEnabled && !cloudError) {
+                        setLoading(true);
+                        await sendToSheet('deleteStudent', { id });
+                        setLoading(false);
+                    }
+                    showNotification("学生已删除", "success");
+                }
+            });
+        };
+
+        // --- EXPORT FUNCTIONS ---
+        const exportCSV = () => {
+            if (entries.length === 0) {
+                showNotification("没有数据 / Tiada Data", "error");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Type,Reason,Year,Month,Time,Teacher,Class,StudentID,Name,Weight(kg)\n";
+            entries.forEach(e => {
+                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle';
+                const reason = e.type === 'deduction' ? e.reason : '-';
+                csvContent += `${e.id},${type},${reason},${e.calendarYear || ''},${e.month || ''},${e.displayTime},${e.teacherName || ''},${e.className},${e.studentID},${e.name},${e.weight}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // --- BACKUP & RESTORE ---
+        const handleBackupData = () => {
+            const backupData = {
+                timestamp: Date.now(),
+                date: new Date().toISOString(),
+                entries: entries,
+                students: students
+            };
+            
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showNotification("备份文件已下载", "success");
+        };
+
+        const handleRestoreData = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // This action is already protected by requestSecureAction in the JSX
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.entries || !data.students) throw new Error("Invalid Format");
+
+                    setLoading(true);
+                    setEntries(data.entries);
+                    setStudents(data.students);
+                    addLog('System Restore', 'Restored data from backup file');
+                    
+                    let msg = "数据已加载 (本地)";
+                    if (isCloudEnabled && !cloudError) {
+                        msg += " - 注意：刷新后将重新加载云端数据";
+                    } else {
+                        msg += " - 离线模式已保存";
+                    }
+
+                    showNotification(msg, "success");
+                    playSound('success');
+                } catch (err) {
+                    showNotification("恢复失败：文件格式错误", "error");
+                    playSound('error');
+                } finally {
+                    setLoading(false);
+                    if(fileInputRef.current) fileInputRef.current.value = "";
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        const handleClearAll = () => {
+            setConfirmModal({
+                show: true, title: "⚠️ 系统重置", msg: "确定要清空所有数据吗？此操作不可逆！", isDestructive: true,
+                onConfirm: () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    requestSecureAction(async () => {
+                        setEntries([]);
+                        addLog('System Reset', 'Cleared ALL recycling data');
+                        showNotification("系统已重置", "success");
+                        if (isCloudEnabled && !cloudError) {
+                            setLoading(true);
+                            await sendToSheet('clearAllEntries');
+                            setLoading(false);
+                        } 
+                    });
+                }
+            });
+        };
+
+        const handleExportImage = () => {
+            if (!dashboardRef.current) return;
+            const btn = document.getElementById('export-img-btn');
+            const aiBtn = document.getElementById('ai-report-btn');
+            const posterBtn = document.getElementById('poster-btn');
+            const posterIndivBtnLower = document.getElementById('poster-indiv-btn-lower');
+            const posterIndivBtnUpper = document.getElementById('poster-indiv-btn-upper');
+            
+            if(btn) btn.style.display = 'none'; 
+            if(aiBtn) aiBtn.style.display = 'none';
+            if(posterBtn) posterBtn.style.display = 'none';
+            if(posterIndivBtnLower) posterIndivBtnLower.style.display = 'none';
+            if(posterIndivBtnUpper) posterIndivBtnUpper.style.display = 'none';
+            
+            showNotification("正在生成图片...", "success");
+            html2canvas(dashboardRef.current, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `SJKCLG_Recycling_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                if(btn) btn.style.display = 'flex'; 
+                if(aiBtn) aiBtn.style.display = 'flex';
+                if(posterBtn) posterBtn.style.display = 'flex';
+                if(posterIndivBtnLower) posterIndivBtnLower.style.display = 'flex';
+                if(posterIndivBtnUpper) posterIndivBtnUpper.style.display = 'flex';
+            });
+        };
+
+        // --- Gemini AI Logic ---
+        const handleGenerateAIReport = async () => {
+            if (!apiKey) {
+                return showNotification("请先配置 API Key", "error");
+            }
+            setAiReport({ show: true, content: '', loading: true });
+            const prompt = `You are the eco-ambassador for SJKC Ladang Grisek (新廊华小). Write a motivating report (max 150 words) based on this data: Total Recycled: ${stats.grandTotal.toFixed(2)} KG. Top Classes: ${stats.classUpper.slice(0,2).map(c=>c.className).join(', ')}. Use emojis.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "AI Error";
+                setAiReport({ show: true, content: text, loading: false });
+                playSound('success');
+            } catch (error) {
+                setAiReport({ show: true, content: "AI 服务暂时不可用，请稍后再试。", loading: false });
+            }
+        };
+
+        // --- Components ---
+        const RankItem = ({ item, index, maxValue, type }) => {
+            const percentage = maxValue > 0 ? (item.totalWeight / maxValue) * 100 : 0;
+            const isChampion = index === 0;
+            const vouchers = type === 'class' ? Math.floor(item.totalWeight / 50) : 0;
+            const rewardValue = vouchers * 10;
+            const progress = ((item.totalWeight - (vouchers * 50)) / 50) * 100;
+            
+            return (
+                <li className="relative mb-3 group">
+                    <div 
+                        className={`absolute left-0 top-0 bottom-0 rounded-lg opacity-10 transition-all duration-1000 ease-out ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-slate-500' : index === 2 ? 'bg-orange-500' : 'bg-emerald-500'}`}
+                        style={{ width: `${percentage}%` }}
+                    ></div>
+                    
+                    <div className={`relative flex items-center justify-between p-3 rounded-lg border transition-all ${isChampion ? 'rank-1-glow border-yellow-200' : 'border-transparent hover:border-emerald-100 hover:bg-white/50'}`}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 flex justify-center relative">
+                                <Medal rank={index + 1} />
+                                {isChampion && <div className="absolute -top-3 -right-2 animate-bounce"><IconCrown size={14}/></div>}
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className={`font-bold text-lg leading-tight ${isChampion ? 'text-yellow-700' : 'text-slate-700'}`}>
+                                        {type === 'class' ? item.className : item.name}
+                                    </span>
+                                    {type === 'class' && vouchers > 0 && (
+                                         <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                             <IconTicket size={12} /> RM{rewardValue}
+                                         </div>
+                                    )}
+                                </div>
+                                {type === 'individual' && <div className="text-xs text-slate-500 font-medium">{item.className}</div>}
+                                
+                                {type === 'class' && (
+                                    <div className="mt-1 w-24 h-1 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-emerald-400" style={{ width: `${progress}%` }}></div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <span className={`font-black text-lg block ${isChampion ? 'text-yellow-600' : 'text-emerald-700'}`}>
+                                {(Number(item.totalWeight) || 0).toFixed(2)}
+                            </span>
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">kg</span>
+                        </div>
+                    </div>
+                </li>
+            );
+        };
+
+        const RankingCard = ({ title, subTitle, data, type }) => {
+            const maxValue = data.length > 0 ? (data[0].totalWeight || 1) : 1;
+            return (
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden flex flex-col h-full ring-1 ring-slate-900/5">
+                    <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                            <IconTrophy size={18} className="text-yellow-500" />
+                            {title}
+                        </h3>
+                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mt-1">{subTitle}</p>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                         {data.length === 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2">
+                                <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center">
+                                    <IconInbox size={24} />
+                                </div>
+                                <span className="text-sm">暂无数据</span>
+                            </div>
+                        ) : (
+                            <ul>{data.map((item, index) => <RankItem key={index} item={item} index={index} maxValue={maxValue} type={type} />)}</ul>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- PODIUM COMPONENT ---
+        const Podium = ({ top3 }) => {
+            const [first, second, third] = [top3[0], top3[1], top3[2]];
+
+            const Bar = ({ rank, item, heightClass, colorClass, delay }) => (
+                <div className={`flex flex-col items-center justify-end w-1/3 ${delay} px-1`}>
+                    {item ? (
+                        <React.Fragment>
+                            <div className="mb-2 text-center w-full">
+                               <span className={`block font-bold drop-shadow-md text-xl md:text-2xl truncate w-full ${rank === 1 ? 'text-yellow-300' : 'text-white'}`}>{item.className}</span>
+                               <span className="text-[10px] md:text-xs bg-white/20 px-2 py-1 rounded-full whitespace-nowrap">{(Number(item.totalWeight) || 0).toFixed(1)} kg</span>
+                            </div>
+                            <div className={`w-full ${heightClass} ${colorClass} rounded-t-lg relative shadow-lg flex items-end justify-center pb-2 border-t border-white/20`}>
+                                <span className="text-4xl font-black text-black/20 absolute bottom-2">{rank}</span>
+                                    {rank === 1 && <IconCrown size={40} className="absolute -top-12 text-yellow-300 animate-bounce" />}
+                            </div>
+                        </React.Fragment>
+                    ) : (
+                        <div className={`w-full ${heightClass} bg-white/5 rounded-t-lg`}></div>
+                    )}
+                </div>
+            );
+
+            return (
+                <div className="flex items-end justify-center h-full w-full px-2 gap-2">
+                    <Bar rank={2} item={second} heightClass="h-20" colorClass="bg-slate-400" delay="animate-pop" />
+                    <Bar rank={1} item={first} heightClass="h-32" colorClass="bg-yellow-500" delay="animate-pop" />
+                    <Bar rank={3} item={third} heightClass="h-12" colorClass="bg-amber-700" delay="animate-pop" />
+                </div>
+            );
+        };
+
+        return (
+            <div className="min-h-screen pb-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+                {/* Header */}
+                <header className="bg-emerald-600 text-white shadow-xl sticky top-0 z-50 backdrop-blur-md bg-opacity-95">
+                    <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-white/20 rounded-xl shadow-inner"><IconRecycle /></div>
+                            <div className="flex flex-col">
+                                <h1 className="text-xl font-bold tracking-tight">新廊华小校园环保回收计划</h1>
+                                <span className="text-xs font-normal text-emerald-100">Projek Kitar Semula SJKC Ladang Grisek</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <IconCloud connected={isCloudEnabled && !cloudError} />
+                            
+                            {isAdmin ? (
+                                <button onClick={handleLogout} className="flex items-center gap-2 bg-emerald-800/50 hover:bg-emerald-800 text-emerald-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-all">
+                                    <IconUnlock /> 后台已登入
+                                </button>
+                            ) : (
+                                <button onClick={() => setViewMode('login')} className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg transition-all">
+                                    <IconLock /> 后台登入
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </header>
+
+                <main className="max-w-7xl mx-auto p-4 mt-4">
+                    <ErrorBoundary>
+                    {/* VIEW: LOGIN */}
+                    {viewMode === 'login' && (
+                        <div className="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-2xl border border-emerald-100 animate-pop">
+                            <h2 className="text-2xl font-bold text-slate-800 mb-2 text-center">后台登入 / Admin Login</h2>
+                            <p className="text-center text-slate-400 mb-6 text-sm">请输入密码以进入管理界面</p>
+                            <form onSubmit={handleLogin} className="space-y-4">
+                                <input 
+                                    type="password" 
+                                    value={passwordInput}
+                                    onChange={(e) => setPasswordInput(e.target.value)}
+                                    placeholder=""
+                                    className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-center text-lg tracking-widest"
+                                    autoFocus
+                                />
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button type="button" onClick={() => setViewMode('dashboard')} className="w-full py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100">返回主页</button>
+                                    <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg">登入</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* VIEW: ADMIN (Data Entry) */}
+                    {viewMode === 'admin' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-pop">
+                            {/* Input Form Panel (Left) */}
+                            <div className="lg:col-span-1 space-y-6">
+                                <div className="bg-white rounded-2xl shadow-xl border-t-8 border-emerald-500 overflow-hidden">
+                                    <div className="p-6 pb-2">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h2 className="text-xl font-bold text-slate-800">数据录入</h2>
+                                                <p className="text-sm text-slate-400 mt-1">Kemasukan Data</p>
+                                            </div>
+                                            <div className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">Entry</div>
+                                        </div>
+
+                                        {/* Entry Tabs */}
+                                        <div className="flex flex-wrap bg-slate-100 p-1 rounded-lg mb-4 gap-1">
+                                            <button 
+                                                onClick={() => setEntryTab('recycle')} 
+                                                className={`flex-1 min-w-[30%] py-2 text-xs sm:text-sm font-bold rounded-md transition-all flex items-center justify-center gap-2 ${entryTab === 'recycle' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                            >
+                                                <IconRecycle size={16} />
+                                                <span>回收加分<br/><span className="text-[10px] font-normal opacity-80">Tambah</span></span>
+                                            </button>
+                                            <button 
+                                                onClick={() => setEntryTab('penalty')} 
+                                                className={`flex-1 min-w-[30%] py-2 text-xs sm:text-sm font-bold rounded-md transition-all flex items-center justify-center gap-2 ${entryTab === 'penalty' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                            >
+                                                <IconFootprints size={16} />
+                                                <span>碳足迹扣分<br/><span className="text-[10px] font-normal opacity-80">Penalti</span></span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* FORM: RECYCLE */}
+                                    {entryTab === 'recycle' && (
+                                    <div className="px-6 pb-6">
+                                        {/* Batch Mode Switch */}
+                                        <div className="flex justify-end mb-4">
+                                             <div className="flex items-center bg-slate-100 rounded-lg p-1">
+                                                <button onClick={() => setEntryMode('single')} className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${entryMode === 'single' ? 'bg-white text-emerald-600 shadow' : 'text-slate-400'}`}>单人录入</button>
+                                                <button onClick={() => setEntryMode('batch')} className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${entryMode === 'batch' ? 'bg-white text-emerald-600 shadow' : 'text-slate-400'}`}>批量录入 (Batch)</button>
+                                             </div>
+                                        </div>
+                                    
+                                        {entryMode === 'single' ? (
+                                        <form onSubmit={handleSubmit} className="space-y-5">
+                                            {/* Date Picker */}
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                                    <IconCalendar size={14} /> 日期 / Tarikh
+                                                </label>
+                                                <input 
+                                                    type="date" 
+                                                    name="entryDate"
+                                                    value={formData.entryDate}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                                    <IconUser size={14} /> 老师姓名 / Nama Guru
+                                                </label>
+                                                <input 
+                                                    type="text" 
+                                                    name="teacherName"
+                                                    value={formData.teacherName}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Cikgu Tan"
+                                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-bold text-slate-700">班级 / Kelas</label>
+                                                <select name="selectedClass" value={formData.selectedClass} onChange={handleInputChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-lg text-slate-700 outline-none">
+                                                    <option value="">- 选择 / Pilih -</option>
+                                                    {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                                </select>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase">学号 / ID <span className="text-slate-400 font-normal normal-case">(非必填)</span></label>
+                                                    <div className="relative">
+                                                        <input ref={studentIdRef} type="text" name="studentID" value={formData.studentID} onChange={handleInputChange} placeholder="12345" className={`w-full p-3 bg-slate-50 border rounded-xl outline-none ${studentFound ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50' : 'border-slate-200'}`} />
+                                                        {studentFound && <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500"><IconCheck size={16} /></div>}
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase">姓名 / Nama <span className="text-slate-400 font-normal normal-case">(非必填)</span></label>
+                                                    <input 
+                                                        type="text" 
+                                                        name="studentName" 
+                                                        list="student-suggestions" 
+                                                        value={formData.studentName} 
+                                                        onChange={handleInputChange} 
+                                                        placeholder="Ali" 
+                                                        autoComplete="off"
+                                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" 
+                                                    />
+                                                    <datalist id="student-suggestions">
+                                                        {students.filter(s => s.className === formData.selectedClass).map(s => (
+                                                            <option key={s.id} value={s.name}>{s.id}</option>
+                                                        ))}
+                                                    </datalist>
+                                                </div>
+                                            </div>
+                                            
+                                            <p className="text-xs text-slate-400 italic -mt-2">* 如不填写，将仅计入班级总分 / Jika kosong, hanya dikira untuk markah kelas</p>
+
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-bold text-slate-700">重量 / Berat (KG)</label>
+                                                <div className="relative">
+                                                    <input type="number" name="weight" step="0.01" value={formData.weight} onChange={handleInputChange} placeholder="0.00" className="w-full p-4 pl-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl font-mono text-3xl font-bold text-right outline-none" />
+                                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300 font-bold">KG</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-2">
+                                                <button type="submit" disabled={isCloudEnabled && cloudError} className={`flex-1 p-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 ${ (isCloudEnabled && cloudError) ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-800 text-white'}`}>
+                                                    <span>{ (isCloudEnabled && cloudError) ? '连接中... / Menyambung...' : '确认提交 / Hantar'}</span><IconArrowRight />
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={handleResetID}
+                                                    className="w-16 p-4 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 text-slate-500 flex items-center justify-center"
+                                                    title="清空学号 / Reset ID"
+                                                >
+                                                    <IconRefresh size={20} />
+                                                </button>
+                                            </div>
+                                            <p className="text-center text-xs text-slate-400">记录将自动归类为选择的日期</p>
+                                        </form>
+                                        ) : (
+                                            <div className="space-y-4 animate-pop">
+                                                <select 
+                                                    value={batchClass} 
+                                                    onChange={handleBatchClassChange} 
+                                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-lg text-slate-700 outline-none"
+                                                >
+                                                    <option value="">- 选择班级进行批量录入 -</option>
+                                                    {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                                </select>
+                                                
+                                                {batchClass && (
+                                                    <div className="max-h-[300px] overflow-y-auto custom-scrollbar border border-slate-200 rounded-xl relative">
+                                                        <table className="w-full text-sm">
+                                                            <thead className="bg-slate-100 sticky top-0 z-10 shadow-sm">
+                                                                <tr>
+                                                                    <th className="p-2 text-left text-slate-600">姓名</th>
+                                                                    <th className="p-2 w-28 text-center text-slate-600">重量 (KG)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {students.filter(s => s.className === batchClass).map(s => (
+                                                                    <tr key={s.id} className="border-t border-slate-100 hover:bg-slate-50">
+                                                                        <td className="p-2 font-medium text-slate-700">{s.name}</td>
+                                                                        <td className="p-2">
+                                                                            <input 
+                                                                                type="number" 
+                                                                                inputMode="decimal"
+                                                                                step="0.01" 
+                                                                                className="w-full p-2 border border-slate-200 rounded-lg bg-white text-center font-mono font-bold text-emerald-600 focus:ring-2 focus:ring-emerald-500 outline-none"
+                                                                                placeholder="0"
+                                                                                autoComplete="off"
+                                                                                value={batchInputs[s.id] || ''}
+                                                                                onChange={(e) => handleBatchInputChange(s.id, e.target.value)}
+                                                                                onWheel={(e) => e.target.blur()}
+                                                                            />
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                                {students.filter(s => s.className === batchClass).length === 0 && (
+                                                                    <tr>
+                                                                        <td colSpan="2" className="p-8 text-center">
+                                                                            <div className="flex flex-col items-center gap-2 text-slate-400">
+                                                                                <IconUser size={32} className="opacity-50"/>
+                                                                                <p>该班级暂无学生名单</p>
+                                                                                <button 
+                                                                                    onClick={() => setManageTab('students')}
+                                                                                    className="mt-2 text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg border border-blue-100 font-bold hover:bg-blue-100 transition-colors"
+                                                                                >
+                                                                                    前往添加学生
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                )}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                )}
+                                                
+                                                {batchClass && students.filter(s => s.className === batchClass).length > 0 && (
+                                                    <button onClick={handleBatchSubmit} className="w-full bg-slate-900 hover:bg-slate-800 text-white p-3 rounded-xl font-bold shadow-lg transition-colors flex items-center justify-center gap-2">
+                                                        <span>批量提交 (Hantar Semua)</span>
+                                                        <IconCheck size={18} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    )}
+
+                                    {/* FORM: PENALTY */}
+                                    {entryTab === 'penalty' && (
+                                    <form onSubmit={handlePenaltySubmit} className="px-6 pb-6 space-y-5">
+                                        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 flex gap-2">
+                                            <IconAlertTriangle size={16} />
+                                            <span>扣分记录将直接从班级总分中减去。<br/>Markah akan ditolak daripada jumlah kelas.</span>
+                                        </div>
+
+                                        {/* Date Picker */}
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                                <IconCalendar size={14} /> 日期 / Tarikh
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                name="entryDate"
+                                                value={penaltyData.entryDate}
+                                                onChange={handlePenaltyChange}
+                                                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-slate-700">班级 / Kelas</label>
+                                            <select name="selectedClass" value={penaltyData.selectedClass} onChange={handlePenaltyChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-lg text-slate-700 outline-none">
+                                                <option value="">- 选择 / Pilih -</option>
+                                                {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-slate-700">扣分原因 / Sebab</label>
+                                            <select name="reason" value={penaltyData.reason} onChange={handlePenaltyChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none">
+                                                <option value="Food Waste">浪费食物 / Pembaziran Makanan</option>
+                                                <option value="Electricity">浪费电源 / Pembaziran Elektrik</option>
+                                                <option value="Others">其他 / Lain-lain</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-red-700">扣除数值 / Nilai Penalti (KG Equivalent)</label>
+                                            <div className="relative">
+                                                <input type="number" name="penaltyValue" step="0.01" value={penaltyData.penaltyValue} onChange={handlePenaltyChange} placeholder="0.00" className="w-full p-4 pl-6 bg-red-50 border border-red-200 text-red-800 rounded-xl font-mono text-3xl font-bold text-right outline-none" />
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-red-300 font-bold">- KG</span>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" disabled={isCloudEnabled && cloudError} className={`w-full p-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 ${ (isCloudEnabled && cloudError) ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
+                                            <span>确认扣分 / Sahkan Penalti</span>
+                                        </button>
+                                    </form>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Recent & Management (Right) */}
+                            <div className="lg:col-span-2 space-y-6">
+                                
+                                {/* 1. Recent Records Card */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-bold text-slate-700">最近记录 / Rekod Terkini</h3>
+                                        <div className="flex gap-2">
+                                            {/* 🟢 新增：一键清空按钮 */}
+                                            <button onClick={handleDeleteAllEntries} className="text-xs bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 font-bold border border-red-200 flex items-center gap-1 transition-colors">
+                                                <IconTrash size={12}/> 一键清空 (Padam Semua)
+                                            </button>
+                                            <button onClick={exportCSV} className="text-xs bg-emerald-50 text-emerald-600 px-3 py-1 rounded hover:bg-emerald-100 font-bold border border-emerald-200 flex items-center gap-1">
+                                                <IconDownload size={12}/> Export
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2 relative">
+                                        {loading && (
+                                            <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10 backdrop-blur-sm">
+                                                <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                                            </div>
+                                        )}
+                                        {entries.map(entry => (
+                                            <div key={entry.id} className={`flex items-center justify-between p-3 rounded-xl border ${entry.type === 'deduction' ? 'bg-red-50 border-red-100' : 'bg-slate-50 border-slate-100'}`}>
+                                                <div>
+                                                    <div className="font-bold text-slate-700 text-sm flex items-center gap-2">
+                                                        {entry.type === 'deduction' && <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px]">PENALTI</span>}
+                                                        <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px]">{entry.calendarYear || 'N/A'}</span>
+                                                        <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px]">{entry.month ? entry.month.split('/')[1] : 'N/A'}</span>
+                                                        <span className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs">{entry.className}</span>
+                                                        
+                                                        {entry.type === 'deduction' 
+                                                            ? <span className="text-red-600">{entry.reason}</span>
+                                                            : ((entry.name || entry.studentID) ? (entry.name || `ID: ${entry.studentID}`) : <span className="text-slate-400 italic font-normal">班级贡献</span>)
+                                                        }
+                                                    </div>
+                                                    <div className="text-[10px] text-slate-400 mt-1 flex gap-2">
+                                                        <span>{entry.displayTime}</span>
+                                                        {entry.teacherName && <span className="text-slate-500 font-medium">• 老师: {entry.teacherName}</span>}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <span className={`font-mono font-bold ${entry.type === 'deduction' ? 'text-red-600' : 'text-emerald-600'}`}>
+                                                        {(Number(entry.weight) || 0).toFixed(2)}
+                                                    </span>
+                                                    <button onClick={() => handleDelete(entry.id)} className="text-slate-400 hover:text-red-500"><IconTrash /></button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {entries.length === 0 && <div className="text-center text-slate-300 text-sm py-10">暂无数据</div>}
+                                    </div>
+                                </div>
+
+                                {/* 2. Management Panel (Students & Backup) */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                    <div className="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                                        <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                                            <IconSettings size={18} /> 系统管理 / Pengurusan
+                                        </h3>
+                                        <div className="flex bg-slate-200 rounded-lg p-1">
+                                            <button 
+                                                onClick={() => setManageTab('students')}
+                                                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${manageTab === 'students' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                学生名单
+                                            </button>
+                                            <button 
+                                                onClick={() => setManageTab('backup')}
+                                                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${manageTab === 'backup' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                系统备份
+                                            </button>
+                                            <button 
+                                                onClick={() => setManageTab('logs')}
+                                                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${manageTab === 'logs' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                日志 (Audit)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {!isSystemUnlocked ? (
+                                    <div className="p-8 flex flex-col items-center justify-center space-y-4">
+                                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-2">
+                                            <IconLock size={32} />
+                                        </div>
+                                        <h4 className="font-bold text-slate-700">受保护区域 / Kawasan Terlindung</h4>
+                                        <p className="text-xs text-slate-500 text-center max-w-xs mb-2">请输入安全密码以管理学生名单和系统备份。</p>
+                                        <form onSubmit={handleSystemUnlock} className="flex gap-2 w-full max-w-xs">
+                                            <input 
+                                                type="password" 
+                                                value={systemPasswordInput}
+                                                onChange={(e) => setSystemPasswordInput(e.target.value)}
+                                                className="flex-1 p-2 border border-slate-300 rounded-lg text-center outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="••••••••"
+                                            />
+                                            <button type="submit" className="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold">解锁</button>
+                                        </form>
+                                    </div>
+                                    ) : (
+                                    <div>
+                                        {/* FORM: STUDENTS IMPORT & MANAGEMENT */}
+                                        {manageTab === 'students' && (
+                                        <div className="px-6 py-6 space-y-5">
+                                            
+                                            {/* Smart Import Section (New) */}
+                                            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                                                <h4 className="font-bold text-emerald-800 text-sm mb-2 flex items-center gap-2">
+                                                    <IconFileUp size={16}/> 智能导入 (Smart Import)
+                                                </h4>
+                                                <p className="text-xs text-emerald-600 mb-3">
+                                                    支持直接上传包含多个班级的 CSV 名单 (例如: 2026 Namelist.csv)。<br/>
+                                                    系统将自动识别班级、学号和姓名。
+                                                </p>
+                                                <div className="relative">
+                                                    <input 
+                                                        type="file" 
+                                                        accept=".csv"
+                                                        ref={smartImportRef}
+                                                        onChange={handleSmartImport}
+                                                        className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <hr className="border-slate-200" />
+                                            
+                                            {/* Search & List Section */}
+                                            <div className="space-y-2">
+                                                <div className="relative">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="🔍 搜索学生 (姓名/ID/班级) / Cari..." 
+                                                        value={searchTerm}
+                                                        onChange={e => setSearchTerm(e.target.value)}
+                                                        className="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IconSearch size={16}/></div>
+                                                </div>
+                                                
+                                                <div className="bg-slate-50 border border-slate-200 rounded-xl max-h-60 overflow-y-auto custom-scrollbar">
+                                                    {filteredStudents.length === 0 ? (
+                                                        <div className="p-4 text-center text-slate-400 text-sm">暂无学生 / Tiada Data</div>
+                                                    ) : (
+                                                        <table className="w-full text-left text-sm">
+                                                            <thead className="bg-slate-100 text-slate-600 font-bold sticky top-0">
+                                                                <tr>
+                                                                    <th className="p-3 w-10 text-center">
+                                                                        <input 
+                                                                            type="checkbox" 
+                                                                            onChange={toggleSelectAll}
+                                                                            checked={filteredStudents.length > 0 && selectedStudentIds.size === filteredStudents.length}
+                                                                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                                        />
+                                                                    </th>
+                                                                    <th className="p-3">ID</th>
+                                                                    <th className="p-3">姓名/Nama</th>
+                                                                    <th className="p-3">班级/Kelas</th>
+                                                                    <th className="p-3 text-right">操作</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {filteredStudents.map(student => (
+                                                                    <tr key={student.id} className="border-t border-slate-200 hover:bg-white transition-colors">
+                                                                        <td className="p-3 text-center">
+                                                                            <input 
+                                                                                type="checkbox" 
+                                                                                checked={selectedStudentIds.has(student.id)}
+                                                                                onChange={() => toggleSelectOne(student.id)}
+                                                                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                                            />
+                                                                        </td>
+                                                                        <td className="p-3 font-mono text-slate-500">{student.id}</td>
+                                                                        <td className="p-3 font-bold text-slate-700">{student.name}</td>
+                                                                        <td className="p-3"><span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">{student.className}</span></td>
+                                                                        <td className="p-3 text-right flex justify-end gap-2">
+                                                                            <button onClick={() => setEditingStudent(student)} className="p-1.5 bg-slate-200 hover:bg-blue-100 text-slate-500 hover:text-blue-600 rounded-lg transition-colors"><IconEdit size={14}/></button>
+                                                                            <button onClick={() => handleDeleteSingleStudent(student.id)} className="p-1.5 bg-slate-200 hover:bg-red-100 text-slate-500 hover:text-red-600 rounded-lg transition-colors"><IconTrash size={14}/></button>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    )}
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs text-slate-400 pt-1">
+                                                    <span>已选中: {selectedStudentIds.size} 人</span>
+                                                    <span>总人数: {students.length}</span>
+                                                </div>
+
+                                                {/* 🟢 批量删除按钮移动到了这里 */}
+                                                {selectedStudentIds.size > 0 && (
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={handleBatchDelete}
+                                                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-bold flex items-center justify-center gap-1 shadow-md animate-pop text-sm mt-2"
+                                                    >
+                                                        <IconTrash size={16}/> 删除选中 ({selectedStudentIds.size})
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <hr className="border-slate-200" />
+
+                                            {/* Import Section */}
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-4">
+                                                    <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700 h-full">
+                                                        <p className="font-bold mb-1">批量导入 / Import Pukal:</p>
+                                                        <ol className="list-decimal ml-4 space-y-1">
+                                                            <li>选择<b>班级</b> / Pilih Kelas</li>
+                                                            <li>复制 Excel (学号, 姓名)</li>
+                                                            <li>粘贴 / Paste: <code>1001, Ali</code></li>
+                                                        </ol>
+                                                    </div>
+                                                    
+                                                    {/* 🔴 原来的位置已移除 */}
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <select 
+                                                        value={importClass} 
+                                                        onChange={(e) => setImportClass(e.target.value)} 
+                                                        className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500"
+                                                    >
+                                                        <option value="">- 班级 -</option>
+                                                        {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                                    </select>
+                                                    <textarea 
+                                                        value={importText}
+                                                        onChange={(e) => setImportText(e.target.value)}
+                                                        className="w-full h-20 p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-xs focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                                        placeholder={`1001, Ali\n1002, Bob`}
+                                                    ></textarea>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={handleImportStudents}
+                                                        disabled={isCloudEnabled && cloudError}
+                                                        className={`w-full text-white py-2 rounded-lg font-bold text-sm shadow-md ${ (isCloudEnabled && cloudError) ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                                                    >
+                                                        导入 (Import)
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        )}
+
+                                        {/* FORM: BACKUP & RESTORE */}
+                                        {manageTab === 'backup' && (
+                                        <div className="px-6 py-6 space-y-6">
+                                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+                                                <div>
+                                                    <h3 className="font-bold text-slate-700 mb-1 flex items-center gap-2">
+                                                        <IconSave size={18}/> 备份数据 / Sandaran
+                                                    </h3>
+                                                    <p className="text-xs text-slate-500">下载当前所有数据 (.json)</p>
+                                                </div>
+                                                <button 
+                                                    onClick={handleBackupData}
+                                                    className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold shadow-md flex items-center gap-2 text-sm"
+                                                >
+                                                    <IconDownload size={16}/> 下载
+                                                </button>
+                                            </div>
+
+                                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                                <h3 className="font-bold text-slate-700 mb-2 flex items-center gap-2">
+                                                    <IconUpload size={18}/> 恢复数据 / Pulihkan
+                                                </h3>
+                                                <p className="text-xs text-slate-500 mb-4">
+                                                    从备份文件恢复。需要安全密码。
+                                                </p>
+                                                <div className="flex gap-2">
+                                                    <input 
+                                                        type="file" 
+                                                        accept=".json"
+                                                        ref={fileInputRef}
+                                                        className="flex-1 text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200"
+                                                    />
+                                                    <button 
+                                                        onClick={() => requestSecureAction(() => fileInputRef.current && handleRestoreData({target: fileInputRef.current}))}
+                                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md text-sm"
+                                                    >
+                                                        恢复
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="pt-4 border-t border-slate-100">
+                                                <button 
+                                                    type="button" 
+                                                    onClick={handleClearAll}
+                                                    className="w-full text-red-500 hover:text-red-700 text-xs font-bold text-center flex items-center justify-center gap-2 py-2"
+                                                >
+                                                    <IconTrash size={14}/> 重置系统 (Reset Sistem)
+                                                </button>
+                                            </div>
+                                        </div>
+                                        )}
+                                        
+                                        {/* FORM: AUDIT LOGS */}
+                                        {manageTab === 'logs' && (
+                                            <div className="px-6 py-6 h-[400px] overflow-y-auto custom-scrollbar">
+                                                <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                                    <IconClipboardList size={18}/> 操作日志 / Log Aktiviti
+                                                </h3>
+                                                {auditLogs.length === 0 ? (
+                                                    <div className="text-center text-slate-400 text-sm py-10">暂无日志</div>
+                                                ) : (
+                                                    <div className="space-y-3">
+                                                        {auditLogs.map(log => (
+                                                            <div key={log.id} className="text-xs border-b border-slate-100 pb-2">
+                                                                <div className="flex justify-between text-slate-400 mb-1">
+                                                                    <span>{log.timestamp}</span>
+                                                                    <span className="font-bold uppercase tracking-wide">{log.action}</span>
+                                                                </div>
+                                                                <div className="text-slate-700 font-medium">{log.details}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    )}
+                                </div>
+
+                            </div>
+                        </div>
+                    )}
+                    </ErrorBoundary>
+
+                    {/* VIEW: DASHBOARD (Public) */}
+                    {viewMode === 'dashboard' && (
+                        <div className="space-y-6 animate-pop" ref={dashboardRef}>
+                            
+                            {/* Dashboard Stats & Filter Bar */}
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                {/* Total Stats */}
+                                <div className="md:col-span-4 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10"><IconLeaf /></div>
+                                    <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest mb-1">总回收量 / Jumlah</p>
+                                    <div className="text-5xl font-black leading-none flex items-baseline gap-2">
+                                        {stats.grandTotal.toFixed(2)} <span className="text-lg font-medium text-emerald-300">KG</span>
+                                    </div>
+                                    <p className="text-xs text-emerald-200/80 mt-2">
+                                        {parseInt(filterMonthStart) === 0 && parseInt(filterMonthEnd) === 11 
+                                            ? `${filterYear} 全年` 
+                                            : `${filterYear}年 ${MONTH_OPTIONS[filterMonthStart].split('/')[1]} - ${MONTH_OPTIONS[filterMonthEnd].split('/')[1]}`}
+                                    </p>
+                                </div>
+
+                                {/* Advanced Filters */}
+                                <div className="md:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-center">
+                                    <div className="flex items-center gap-2 text-slate-700 mb-3">
+                                        <IconFilter />
+                                        <h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3>
+                                    </div>
+                                    <div className="flex flex-wrap gap-4">
+                                        <div className="flex-1 min-w-[120px]">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">年份 / Tahun</label>
+                                            <select value={filterYear} onChange={e => setFilterYear(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="flex-[2] min-w-[200px] flex gap-2 items-end">
+                                            <div className="flex-1">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">从 / Dari</label>
+                                                <select value={filterMonthStart} onChange={e => setFilterMonthStart(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                    {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                                                </select>
+                                            </div>
+                                            <span className="pb-3 text-slate-300">→</span>
+                                            <div className="flex-1">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">到 / Hingga</label>
+                                                <select value={filterMonthEnd} onChange={e => setFilterMonthEnd(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                    {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Leaderboards Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[500px]">
+                                <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" />
+                                <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" />
+                                <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" />
+                                <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" />
+                            </div>
+
+                             {/* Bottom Buttons */}
+                            <div className="flex justify-center flex-wrap gap-4 pt-8 pb-4">
+                                <button 
+                                    id="poster-btn"
+                                    onClick={handleGenerateClassPoster}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95"
+                                >
+                                    <IconImage /> 生成班级月报
+                                </button>
+                                <button 
+                                    id="poster-indiv-btn-lower"
+                                    onClick={() => handleGenerateIndivPoster('lower')}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95"
+                                >
+                                    <IconCrown /> 王者榜 (低年级)
+                                </button>
+                                <button 
+                                    id="poster-indiv-btn-upper"
+                                    onClick={() => handleGenerateIndivPoster('upper')}
+                                    className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95"
+                                >
+                                    <IconCrown /> 王者榜 (高年级)
+                                </button>
+                                <button 
+                                    id="ai-report-btn"
+                                    onClick={handleGenerateAIReport}
+                                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95"
+                                >
+                                    <IconSparkles className="text-yellow-300" /> ✨ AI 环保分析师
+                                </button>
+                                <button 
+                                    id="export-img-btn"
+                                    onClick={handleExportImage}
+                                    className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95"
+                                >
+                                    <IconCamera /> 📸 保存当前报表
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                </main>
+
+                {/* Footer */}
+                <footer className="text-center py-8 text-slate-400 text-sm">
+                    <p className="font-bold text-slate-500">© {new Date().getFullYear()} 新廊华小生态永续教育小组</p>
+                    <p className="text-xs opacity-80 mt-1 italic">Jawatankuasa Pendidikan Kelestarian SJKC Ladang Grisek</p>
+                </footer>
+                
+                {/* Notification Toast */}
+                {notification && (
+                    <div className={`fixed top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-bold z-[70] animate-pop ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
+                        <span>{notification.type === 'success' ? '✓' : '!'}</span>
+                        {notification.msg}
+                    </div>
+                )}
+
+                {/* Confirm Modal (Yes/No) */}
+                {confirmModal.show && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-pop">
+                            <h3 className={`text-xl font-bold mb-2 ${confirmModal.isDestructive ? 'text-red-600' : 'text-slate-800'}`}>{confirmModal.title}</h3>
+                            <p className="text-slate-600 mb-6">{confirmModal.msg}</p>
+                            <div className="flex justify-end gap-3">
+                                <button onClick={() => setConfirmModal({ ...confirmModal, show: false })} className="px-4 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100">取消</button>
+                                <button onClick={confirmModal.onConfirm} className={`px-4 py-2 rounded-lg font-bold text-white shadow-lg ${confirmModal.isDestructive ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'}`}>确定</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Security Check Modal (Password) */}
+                {securityCheck.show && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-pop border-2 border-red-100 relative">
+                            <button 
+                                onClick={() => {
+                                    setSecurityCheck({ show: false, callback: null, error: '' });
+                                    setSecurityInput('');
+                                }}
+                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition-colors"
+                            >
+                                <IconX size={20} />
+                            </button>
+                            
+                            <h3 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
+                                <IconLock size={18}/> 安全验证
+                            </h3>
+                            
+                            <form onSubmit={handleSecurityVerify}>
+                                <p className="text-sm text-slate-500 mb-2">请输入安全密码以继续操作：</p>
+                                <input 
+                                    type="password" 
+                                    value={securityInput} 
+                                    onChange={(e) => setSecurityInput(e.target.value)} 
+                                    className="w-full p-3 border border-slate-300 rounded-lg text-center text-xl mb-4 focus:ring-2 focus:ring-red-500 outline-none" 
+                                    autoFocus 
+                                    placeholder="••••••••"
+                                />
+                                {securityCheck.error && <p className="text-xs text-red-500 text-center mb-2">{securityCheck.error}</p>}
+                                <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold shadow-md transition-colors">验证 / Sahkan</button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+                
+                {/* AI Report Modal */}
+                {aiReport.show && (
+                    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-purple-900/70 backdrop-blur-sm">
+                        <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden animate-pop border-4 border-purple-200">
+                            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white flex justify-between items-center">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <IconSparkles className="animate-pulse text-yellow-300" /> AI 环保分析师报告
+                                </h3>
+                                <button onClick={() => setAiReport({ ...aiReport, show: false })} className="text-purple-200 hover:text-white">✕</button>
+                            </div>
+                            <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                {aiReport.loading ? (
+                                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                                        <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+                                        <p className="text-slate-500 animate-pulse">正在生成智能分析... / Sedang menganalisis...</p>
+                                    </div>
+                                ) : (
+                                    <div className="prose prose-purple max-w-none text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(aiReport.content) }}></div>
+                                )}
+                            </div>
+                            <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
+                                <button onClick={() => setAiReport({ ...aiReport, show: false })} className="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-bold">关闭 / Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                 {/* Poster Modal */}
+                 {showPosterModal && posterData && (
+                    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full overflow-hidden animate-pop flex flex-col max-h-[95vh]">
+                            <div className="p-4 bg-slate-100 border-b flex justify-between items-center">
+                                <h3 className="font-bold text-slate-800">海报预览 (16:9) / Poster Preview</h3>
+                                <button onClick={() => setShowPosterModal(false)}><IconX /></button>
+                            </div>
+                            <div className="p-6 bg-slate-900 flex justify-center overflow-y-auto custom-scrollbar">
+                                <div ref={posterRef} className={`w-[880px] aspect-video ${posterType.includes('individual') ? 'bg-[#0f172a]' : 'bg-gradient-to-br from-emerald-600 to-teal-800'} text-white shadow-2xl relative overflow-hidden flex flex-col`}>
+                                    
+                                    {/* Game Style Background for Individual Poster */}
+                                    {posterType.includes('individual') && (
+                                        <React.Fragment>
+                                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-slate-900 to-black opacity-80"></div>
+                                            <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')]"></div>
+                                            {/* Glow effects */}
+                                            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-[100px]"></div>
+                                            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
+                                        </React.Fragment>
+                                    )}
+
+                                    {/* Normal Background for Class Poster */}
+                                    {posterType === 'class' && (
+                                        <React.Fragment>
+                                            <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                                            <div className="absolute -top-20 -right-20 w-64 h-64 bg-white rounded-full blur-3xl opacity-20"></div>
+                                        </React.Fragment>
+                                    )}
+                                    
+                                    {/* Poster Container Padding */}
+                                    <div className="relative z-10 flex flex-col h-full p-8">
+
+                                        {/* Header */}
+                                        <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`p-3 rounded-full backdrop-blur-sm border ${posterType.includes('individual') ? 'bg-yellow-500/20 border-yellow-400/50' : 'bg-white/20 border-white/30'}`}>
+                                                    {posterType.includes('individual') ? <IconSword size={32} className="text-yellow-400" /> : <IconTrophy size={32} className="text-yellow-300" />}
+                                                </div>
+                                                <div>
+                                                    <h2 className={`text-3xl font-black tracking-tight leading-none ${posterType.includes('individual') ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200 drop-shadow-sm' : 'text-white'}`}>
+                                                        {posterType === 'class' ? '校园环保回收月报' : '回收王者荣耀 (TOP 20)'}
+                                                    </h2>
+                                                    <p className={`text-xs font-bold uppercase tracking-[0.2em] mt-1 ${posterType.includes('individual') ? 'text-blue-300' : 'text-white/80'}`}>
+                                                        {posterType === 'class' ? 'Laporan Bulanan Kitar Semula' : 
+                                                         posterType === 'individual_lower' ? 'The King of Recycling (Tahap 1)' : 'The King of Recycling (Tahap 2)'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className={`text-sm font-bold px-3 py-1 rounded-full ${posterType.includes('individual') ? 'bg-blue-600/30 border border-blue-400/30 text-blue-200' : ''}`}>
+                                                    {posterData.date}
+                                                </div>
+                                                <p className="text-[10px] opacity-50 mt-1 uppercase tracking-wider">SJKC LADANG GRISEK</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Class Poster Content (Podium) */}
+                                        {posterType === 'class' && (
+                                            <div className="grid grid-cols-2 gap-8 flex-1">
+                                                {/* Lower Primary Column */}
+                                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col">
+                                                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                                                        <span className="bg-blue-500 text-xs px-2 py-1 rounded">Tahap 1</span> 低年级组
+                                                    </h3>
+                                                    <div className="flex-1 flex items-end justify-center pb-2">
+                                                        <Podium top3={posterData.lower} />
+                                                    </div>
+                                                </div>
+
+                                                {/* Upper Primary Column */}
+                                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col">
+                                                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                                                        <span className="bg-purple-500 text-xs px-2 py-1 rounded">Tahap 2</span> 高年级组
+                                                    </h3>
+                                                    <div className="flex-1 flex items-end justify-center pb-2">
+                                                        <Podium top3={posterData.upper} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Individual Poster Content (Game Style) */}
+                                        {posterType.includes('individual') && (
+                                            <div className="flex flex-col h-full">
+                                                {/* TOP 3 HERO CARDS */}
+                                                <div className="flex justify-center items-end gap-6 mb-6 px-10">
+                                                    
+                                                    {/* Rank 2 (Silver) */}
+                                                    <div className="w-1/4 relative group">
+                                                        <div className="absolute inset-0 bg-slate-400/20 blur-xl rounded-full"></div>
+                                                        <div className="relative bg-gradient-to-b from-slate-700 to-slate-900 border border-slate-400/50 rounded-xl overflow-hidden p-3 text-center transform translate-y-4">
+                                                            <div className="absolute top-0 left-0 w-full h-1 bg-slate-400"></div>
+                                                            <div className="text-4xl mb-1 filter drop-shadow-lg">🥈</div>
+                                                            <div className="text-slate-200 font-bold truncate text-lg">{posterData.topList[1]?.name || '-'}</div>
+                                                            <div className="text-xs text-slate-400 font-mono mb-2">{posterData.topList[1]?.className || '-'}</div>
+                                                            <div className="bg-slate-800/50 rounded-lg py-1 border border-slate-600">
+                                                                <span className="text-white font-black text-xl">{(posterData.topList[1]?.totalWeight || 0).toFixed(1)}</span>
+                                                                <span className="text-[10px] text-slate-500 ml-1">KG</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Rank 1 (Gold/MVP) */}
+                                                    <div className="w-1/3 relative z-20">
+                                                        <div className="absolute inset-0 bg-yellow-500/30 blur-2xl rounded-full"></div>
+                                                        <div className="relative bg-gradient-to-b from-yellow-900/80 to-slate-900 border-2 border-yellow-500 rounded-2xl overflow-hidden p-5 text-center shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                                                            <div className="absolute top-0 left-0 w-full h-1.5 bg-yellow-400 shadow-[0_0_10px_#facc15]"></div>
+                                                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-5xl animate-bounce filter drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">👑</div>
+                                                            <div className="mt-4 text-yellow-100 font-bold text-2xl truncate leading-tight">{posterData.topList[0]?.name || '-'}</div>
+                                                            <div className="text-sm text-yellow-500/80 font-bold mb-3">{posterData.topList[0]?.className || '-'}</div>
+                                                            <div className="bg-gradient-to-r from-yellow-900/50 to-amber-900/50 rounded-xl py-2 border border-yellow-500/30">
+                                                                <span className="text-yellow-400 font-black text-4xl tracking-tighter">{(posterData.topList[0]?.totalWeight || 0).toFixed(1)}</span>
+                                                                <span className="text-xs text-yellow-600 ml-1 font-bold">KG</span>
+                                                            </div>
+                                                            <div className="mt-2 text-[10px] text-yellow-500 uppercase tracking-[0.3em] font-black">MVP</div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Rank 3 (Bronze) */}
+                                                    <div className="w-1/4 relative group">
+                                                        <div className="absolute inset-0 bg-orange-700/20 blur-xl rounded-full"></div>
+                                                        <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 border border-orange-700/50 rounded-xl overflow-hidden p-3 text-center transform translate-y-6">
+                                                            <div className="absolute top-0 left-0 w-full h-1 bg-orange-600"></div>
+                                                            <div className="text-4xl mb-1 filter drop-shadow-lg">🥉</div>
+                                                            <div className="text-orange-100 font-bold truncate text-lg">{posterData.topList[2]?.name || '-'}</div>
+                                                            <div className="text-xs text-orange-400/60 font-mono mb-2">{posterData.topList[2]?.className || '-'}</div>
+                                                            <div className="bg-slate-800/50 rounded-lg py-1 border border-slate-600">
+                                                                <span className="text-white font-black text-xl">{(posterData.topList[2]?.totalWeight || 0).toFixed(1)}</span>
+                                                                <span className="text-[10px] text-slate-500 ml-1">KG</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                {/* THE REST (4-20) */}
+                                                <div className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 backdrop-blur-sm grid grid-cols-2 gap-x-8 gap-y-1 content-start relative overflow-hidden">
+                                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+                                                    
+                                                    {/* Left Column (4-11) */}
+                                                    <div className="space-y-1.5">
+                                                        {posterData.topList.slice(3, 11).map((item, idx) => (
+                                                            <div key={idx + 3} className="flex items-center justify-between p-1.5 rounded bg-slate-800/60 border border-slate-700/30 hover:bg-slate-700/60 transition-colors">
+                                                                <div className="flex items-center gap-3 w-full overflow-hidden">
+                                                                    <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center rounded bg-slate-700 text-[10px] font-bold text-slate-300 font-mono">{idx + 4}</div>
+                                                                    <div className="truncate flex-1 flex items-baseline gap-2">
+                                                                        <span className="text-slate-200 font-bold text-xs truncate">{item.name}</span>
+                                                                        <span className="text-[10px] text-slate-500">{item.className}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="font-mono font-bold text-xs text-blue-300">{(item.totalWeight || 0).toFixed(1)}</div>
+                                                            </div>
+                                                        ))}
+                                                        {/* Filler for layout balance */}
+                                                        {Array.from({ length: Math.max(0, 8 - posterData.topList.slice(3, 11).length) }).map((_, i) => (
+                                                            <div key={`empty-l-${i}`} className="h-[30px] rounded bg-slate-800/20 border border-transparent"></div>
+                                                        ))}
+                                                    </div>
+                                                    
+                                                    {/* Right Column (12-20) */}
+                                                    <div className="space-y-1.5">
+                                                        {posterData.topList.slice(11, 20).map((item, idx) => (
+                                                            <div key={idx + 11} className="flex items-center justify-between p-1.5 rounded bg-slate-800/60 border border-slate-700/30 hover:bg-slate-700/60 transition-colors">
+                                                                <div className="flex items-center gap-3 w-full overflow-hidden">
+                                                                    <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center rounded bg-slate-700 text-[10px] font-bold text-slate-300 font-mono">{idx + 12}</div>
+                                                                    <div className="truncate flex-1 flex items-baseline gap-2">
+                                                                        <span className="text-slate-200 font-bold text-xs truncate">{item.name}</span>
+                                                                        <span className="text-[10px] text-slate-500">{item.className}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="font-mono font-bold text-xs text-blue-300">{(item.totalWeight || 0).toFixed(1)}</div>
+                                                            </div>
+                                                        ))}
+                                                         {Array.from({ length: Math.max(0, 9 - posterData.topList.slice(11, 20).length) }).map((_, i) => (
+                                                            <div key={`empty-r-${i}`} className="h-[30px] rounded bg-slate-800/20 border border-transparent"></div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Footer (Inside Poster) */}
+                                    {posterType.includes('individual') && (
+                                        <div className="absolute bottom-3 right-6 z-20 flex gap-2">
+                                             <div className="text-[8px] text-white/30 uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded">Game Data: {posterData.date}</div>
+                                        </div>
+                                    )}
+
+                                </div>
+                            </div>
+                            <div className="p-4 bg-white border-t flex justify-center">
+                                <button onClick={downloadPoster} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2">
+                                    <IconDownload size={18} /> 下载海报图片 (Download)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit Student Modal */}
+                {editingStudent && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-pop">
+                            <h3 className="text-xl font-bold mb-4 text-slate-800">编辑学生 / Kemaskini</h3>
+                            <form onSubmit={handleUpdateStudent} className="space-y-4">
+                                <div>
+                                    <label className="text-xs font-bold text-slate-500">ID (不可更改)</label>
+                                    <input type="text" value={editingStudent.id} disabled className="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 font-mono" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-slate-500">姓名 / Nama</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingStudent.name} 
+                                        onChange={e => setEditingStudent({...editingStudent, name: e.target.value})}
+                                        className="w-full p-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                        required 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-slate-500">班级 / Kelas</label>
+                                    <select 
+                                        value={editingStudent.className} 
+                                        onChange={e => setEditingStudent({...editingStudent, className: e.target.value})}
+                                        className="w-full p-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                        required
+                                    >
+                                        {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                    </select>
+                                </div>
+                                <div className="flex gap-2 pt-2">
+                                    <button type="button" onClick={() => setEditingStudent(null)} className="flex-1 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100">取消</button>
+                                    <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold shadow-md">保存</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+</script>
+</body>
+</html>
