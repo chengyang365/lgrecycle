@@ -100,15 +100,8 @@
 
 <script type="text/babel">
     // --- 🟢 Configuration ---
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrVGnNy7-tq_JEt-Se5CbS9H1RNYi7ENtpEfi_seOoperA2Dz9fO4jkxuGax820P8D/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdz0FFWnp1naifnqcsZN8JRNv4v7NpGqYW32YG-YesVpaK-w1tMrJ5WKp9QUfu3ck/exec"; 
     
-    // --- Gemini API Key ---
-    // Note: In a production environment, this should not be exposed.
-    // For this standalone file to work with AI features, insert your key below.
-    const apiKey = "AIzaSyDwb2wqmo1VyjLz0WfFoYsUnlqzAOb6wWo"; 
-
-    const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
-
     // --- Error Boundary ---
     class ErrorBoundary extends Component {
         constructor(props) {
@@ -144,10 +137,6 @@
             return this.props.children;
         }
     }
-
-    // --- Constants ---
-    const ADMIN_PASSWORD = "1049"; 
-    const SECURITY_PASSWORD = "88888888"; 
 
     // --- Audio Engine ---
     const playSound = (type) => {
@@ -503,7 +492,16 @@
         // --- Handlers ---
         const handleLogin = async (e) => {
             e.preventDefault();
-            if (passwordInput === ADMIN_PASSWORD) {
+            setLoading(true);
+    try {
+            // 使用 GET 方法调用 action=verifyAdmin
+            // encodeURIComponent 很重要，防止密码中有特殊字符破坏 URL
+            const url = `${GOOGLE_SCRIPT_URL}?action=verifyAdmin&password=${encodeURIComponent(passwordInput)}`;
+            
+            const response = await fetch(url);
+            const data = await response.json(); 
+            
+            if (data.status === 'success') {
                 setIsAdmin(true);
                 setViewMode('admin');
                 setPasswordInput('');
@@ -513,6 +511,10 @@
                 playSound('error'); 
                 showNotification("密码错误 / Kata laluan salah", "error");
             }
+        } catch(err) {
+            console.error(err);
+        }
+     
         };
         
         const handleSystemUnlock = (e) => {
@@ -1168,6 +1170,7 @@
             const prompt = `You are the eco-ambassador for SJKC Ladang Grisek (新廊华小). Write a motivating report (max 150 words) based on this data: Total Recycled: ${stats.grandTotal.toFixed(2)} KG. Top Classes: ${stats.classUpper.slice(0,2).map(c=>c.className).join(', ')}. Use emojis.`;
 
             try {
+                const url = `${GOOGLE_SCRIPT_URL}?action=generateAiReport&prompt=${encodeURIComponent(prompt)}`;
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
