@@ -2466,7 +2466,7 @@
                                     theme="red"
                                 />
                                 {securityCheck.error && <p className="text-xs text-red-500 text-center mt-2">{securityCheck.error}</p>}
-                                <button disabled={securityCheck.verifying || securityInput.length <= 8} type="submit" className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold shadow-md transition-colors disabled:bg-slate-500 flex justify-center items-center gap-2">
+                                <button disabled={securityCheck.verifying || securityInput.length < 8} type="submit" className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold shadow-md transition-colors disabled:bg-slate-500 flex justify-center items-center gap-2">
                                     {securityCheck.verifying ? <Spinner /> : "验证 / Sahkan"}
                                 </button>
                             </form>
