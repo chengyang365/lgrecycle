@@ -89,6 +89,21 @@
             opacity: 0.7;
             filter: grayscale(0.5);
         }
+        
+        /* Hide transparent text selection */
+        .secure-input::selection {
+            background: transparent;
+            color: transparent;
+        }
+        
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
+        }
     </style>
 </head>
 <body>
@@ -122,7 +137,7 @@
 
 <script type="text/babel">
     // --- 🟢 Configuration ---
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEu8iCeTa0uDYRi1Zw8WoJodgpycpTqu2vdl1XlrIl4hVFS4nrFWoeShgrqD04Qn6Z/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwms0S4YcoFb6SOexAy_3JkySaVn8M--8rbbOGwdii80RSfJL8QxCa4QlgbjqQCHL1C/exec"; 
     
     // --- Error Boundary ---
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
@@ -244,6 +259,7 @@
     const IconMenu = ({ size = 24 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
     const IconPlus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
     const IconMinus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+    const IconUsers = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
 
     const IconCloud = ({ connected }) => (
         <div className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${connected ? 'bg-emerald-800 text-emerald-200' : 'bg-red-800 text-red-200'}`}>
@@ -293,6 +309,27 @@
         return <span className="w-6 h-6 flex items-center justify-center bg-slate-100 text-slate-500 rounded-full text-xs font-bold">{rank}</span>;
     };
 
+    // --- Helper for Dual Line Name ---
+    const renderName = (name) => {
+        if (!name) return '';
+        const chineseRegex = /[\u4e00-\u9fa5]+/g;
+        const chineseMatches = name.match(chineseRegex);
+        
+        if (chineseMatches) {
+            const chineseName = chineseMatches.join(' ');
+            // Remove Chinese characters and parens to get the other name
+            const malayName = name.replace(chineseRegex, '').replace(/[()]/g, '').trim(); 
+            
+            return (
+                <span className="flex flex-col items-start text-left leading-tight min-w-0">
+                    <span className="text-sm md:text-base font-bold truncate w-full">{chineseName}</span>
+                    {malayName && <span className="text-[0.7em] opacity-70 font-normal -mt-0.5 truncate w-full">{malayName}</span>}
+                </span>
+            );
+        }
+        return <span className="truncate w-full block">{name}</span>;
+    };
+
     // --- Sub-Components ---
     
     const RankItem = ({ item, index, maxValue, type }) => {
@@ -310,19 +347,24 @@
                 ></div>
                 
                 <div className={`relative flex items-center justify-between p-3 rounded-lg border transition-all ${isChampion ? 'rank-1-glow border-yellow-200' : 'border-transparent hover:border-emerald-100 hover:bg-white/50'}`}>
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 flex justify-center relative">
+                    <div className="flex items-center gap-3 overflow-hidden flex-1">
+                        <div className="w-8 flex justify-center relative flex-shrink-0">
                             <Medal rank={index + 1} />
                             {isChampion && <div className="absolute -top-3 -right-2 animate-bounce"><IconCrown size={14}/></div>}
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                                 <span className={`font-bold text-lg leading-tight ${isChampion ? 'text-yellow-700' : 'text-slate-700'}`}>
-                                    {type === 'class' ? item.className : item.name}
+                                    {type === 'class' ? item.className : renderName(item.name)}
                                 </span>
                                 {type === 'class' && vouchers > 0 && (
-                                     <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                     <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex-shrink-0">
                                          <IconTicket size={12} /> RM{rewardValue}
+                                     </div>
+                                )}
+                                {type === 'class' && item.totalDeduction > 0 && (
+                                     <div className="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 flex-shrink-0" title="已扣除的碳足迹">
+                                         <IconFootprints size={12} /> -{item.totalDeduction}kg
                                      </div>
                                 )}
                             </div>
@@ -335,7 +377,7 @@
                             )}
                         </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0 ml-2">
                         <span className={`font-black text-lg block ${isChampion ? 'text-yellow-600' : 'text-emerald-700'}`}>
                             {(Number(item.totalWeight) || 0).toFixed(2)}
                         </span>
@@ -406,46 +448,43 @@
 
     // --- Secure Password Input Component ---
     const SecurePasswordInput = ({ value, onChange, placeholder, autoFocus, theme = "emerald" }) => {
-        const focusClass = theme === "red" 
-            ? "focus-within:ring-red-100 focus-within:border-red-500" 
-            : "focus-within:ring-emerald-100 focus-within:border-emerald-500";
-
+        const borderClass = theme === "red" 
+            ? "focus-within:border-red-500 focus-within:ring-red-100" 
+            : "focus-within:border-emerald-500 focus-within:ring-emerald-100";
+            
         const handleChange = (e) => {
-             // Only allow numbers
-            const val = e.target.value.replace(/[^0-9]/g, '');
+            const val = e.target.value.replace(/[^0-9]/g, ''); // 仅限数字
             onChange({ target: { value: val } });
         };
 
         return (
-            <div className={`relative w-full bg-white border border-slate-200 rounded-xl transition-all ${focusClass} focus-within:ring-4 overflow-hidden`}>
-                {/* Visual Placeholder / Bullets */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-                    {value.length > 0 ? (
-                        <div className="flex gap-2">
-                            {value.split('').map((_, i) => (
-                                <div key={i} className="w-3 h-3 bg-slate-800 rounded-full animate-pop flex-shrink-0"></div>
-                            ))}
-                        </div>
-                    ) : (
-                        <span className="text-slate-400 text-lg tracking-widest opacity-40">{placeholder}</span>
-                    )}
-                </div>
-
-                {/* Invisible Input for Capture */}
+            <div className={`relative w-full h-14 bg-white border border-slate-200 rounded-xl transition-all ${borderClass} focus-within:ring-4 flex items-center justify-center overflow-hidden`}>
+                
+                {/* 1. 真正的 Input (透明层，铺满整个 div) */}
                 <input 
                     type="tel"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     value={value}
                     onChange={handleChange}
-                    className="w-full p-4 bg-transparent text-transparent caret-transparent outline-none relative z-10 font-[0] tracking-[10em]" 
-                    style={{ color: 'transparent', textShadow: 'none', caretColor: 'transparent' }}
+                    className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-text"
                     autoComplete="off"
                     autoCorrect="off" 
                     autoCapitalize="off" 
                     spellCheck="false"
                     autoFocus={autoFocus}
                 />
+
+                {/* 2. 视觉层 (圆点) */}
+                <div className="flex gap-3 pointer-events-none z-10">
+                    {value.length > 0 ? (
+                        value.split('').map((_, i) => (
+                            <div key={i} className={`w-3 h-3 rounded-full animate-pop flex-shrink-0 ${theme === 'red' ? 'bg-red-600' : 'bg-emerald-600'}`}></div>
+                        ))
+                    ) : (
+                        <span className="text-slate-300 text-lg tracking-widest font-mono">{placeholder}</span>
+                    )}
+                </div>
             </div>
         );
     };
@@ -500,6 +539,9 @@
         
         // Mobile Menu State
         const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+        const [isPublicDashboardOpen, setIsPublicDashboardOpen] = useState(() => {
+             return localStorage.getItem('sjkc_public_dashboard') !== 'false';
+        });
 
         // Entry Mode
         const [entryMode, setEntryMode] = useState('single'); 
@@ -524,6 +566,10 @@
         const [filterMonthStart, setFilterMonthStart] = useState(0); 
         const [filterMonthEnd, setFilterMonthEnd] = useState(11); 
 
+        // Dashboard State
+        const [dashboardViewMode, setDashboardViewMode] = useState('overall'); // 'overall' or 'class'
+        const [selectedDashboardClass, setSelectedDashboardClass] = useState('');
+
         // Input Form State
         const todayStr = new Date().toISOString().split('T')[0];
         const [formData, setFormData] = useState({ 
@@ -538,15 +584,17 @@
         const [weightRows, setWeightRows] = useState(['']);
 
         // Penalty Form State
-        const [penaltyData, setPenaltyData] = useState({
-            teacherName: '',
-            selectedClass: '',
-            reason: 'Food Waste',
-            penaltyValue: '', 
-            month: MONTH_OPTIONS[new Date().getMonth()],
-            calendarYear: currentYear,
-            entryDate: todayStr
+        const [penaltyUnlocked, setPenaltyUnlocked] = useState(false); // Default locked
+        
+        // 🟢 FIX: Static 3-row penalty inputs
+        const [penaltyInputs, setPenaltyInputs] = useState({
+            'Food Waste': '',
+            'Electricity': '',
+            'Others': ''
         });
+        
+        const [penaltyMonth, setPenaltyMonth] = useState(new Date().getMonth());
+        const [penaltyClass, setPenaltyClass] = useState('');
 
         // Request Delete State
         const [deleteRequestModal, setDeleteRequestModal] = useState({ show: false, id: null, reason: '' });
@@ -564,10 +612,56 @@
         const [notification, setNotification] = useState(null);
         const [confirmModal, setConfirmModal] = useState({ show: false, title: '', msg: '', onConfirm: null, isDestructive: false });
         
-        // AI Report State
-        const [aiReport, setAiReport] = useState({ show: false, content: '', loading: false });
-
         const studentIdRef = useRef(null);
+
+        // --- Helper Functions (Defined inside App to access state) ---
+        const showNotification = (msg, type) => {
+            setNotification({ msg, type });
+            setTimeout(() => setNotification(null), 2500);
+        };
+
+        const togglePublicDashboard = () => {
+            const newState = !isPublicDashboardOpen;
+            setIsPublicDashboardOpen(newState);
+            localStorage.setItem('sjkc_public_dashboard', newState);
+            showNotification(newState ? "公共仪表板已开放 / Dashboard Dibuka" : "公共仪表板已关闭 / Dashboard Ditutup", "success");
+        };
+
+        const exportCSV = () => {
+            if (entries.length === 0) {
+                showNotification("没有数据 / Tiada Data", "error");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Type,Reason,Year,Month,Time,Teacher,Class,StudentID,Name,Weight(kg),Status\n";
+            entries.forEach(e => {
+                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle';
+                const reason = e.type === 'deduction' ? e.reason : '-';
+                const status = e.status === 'deleted' ? 'Deleted' : 'Active';
+                csvContent += `${e.id},${type},${reason},${e.calendarYear || ''},${e.month || ''},${e.displayTime},${e.teacherName || ''},${e.className},${e.studentID},${e.name},${e.weight},${status}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        const sendToSheet = async (action, data = null) => {
+            if (!isCloudEnabled || cloudError) return { status: 'offline' };
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action, ...data })
+                });
+                return { status: 'success' };
+            } catch (e) {
+                return { status: 'error' };
+            }
+        };
 
         // --- Logger ---
         const addLog = useCallback((action, details) => {
@@ -599,7 +693,8 @@
                 setLoading(true);
                 const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getEntries');
                 if (!res.ok) throw new Error("Network response was not ok");
-                const data = await res.json();
+                const json = await res.json();
+                const data = json.data;
                 if (!Array.isArray(data)) { setLoading(false); return; }
                 const uniqueEntries = Array.from(new Map(data.map(item => [item.id, item])).values());
                 uniqueEntries.sort((a, b) => b.createdAt - a.createdAt);
@@ -619,7 +714,8 @@
             try {
                 const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getStudents');
                 if (!res.ok) throw new Error("Network response was not ok");
-                const data = await res.json();
+                const json = await res.json();
+                const data = json.data; 
                 if (!Array.isArray(data)) return;
                 const uniqueStudents = Array.from(new Map(data.map(item => [item.id, item])).values());
                 setStudents(uniqueStudents);
@@ -674,9 +770,19 @@
                 const w = Number(entry.weight) || 0;
                 grandTotal += w;
                 if (!classTotals[entry.className]) {
-                    classTotals[entry.className] = { className: entry.className, totalWeight: 0, grade: entry.year };
+                    classTotals[entry.className] = { 
+                        className: entry.className, 
+                        totalWeight: 0, 
+                        grade: entry.year,
+                        totalDeduction: 0 // Initialize
+                    };
                 }
                 classTotals[entry.className].totalWeight += w;
+                
+                // Track deduction
+                if (entry.type === 'deduction') {
+                     classTotals[entry.className].totalDeduction += Math.abs(w);
+                }
                 
                 if (entry.type === 'recycle' && (entry.name || entry.studentID)) {
                     let uniqueKey = entry.studentID ? `ID-${entry.studentID}` : `NAME-${entry.className}-${entry.name}`;
@@ -701,6 +807,26 @@
                 indivUpper: sortedIndividuals.filter(i => i.grade >= 4)
             };
         }, [filteredEntries]);
+
+        const classStats = useMemo(() => {
+            if (!selectedDashboardClass) return [];
+            
+            const classEntries = filteredEntries.filter(e => e.className === selectedDashboardClass && e.type === 'recycle');
+            const studentTotals = {};
+
+            classEntries.forEach(entry => {
+                let uniqueKey = entry.studentID ? entry.studentID : entry.name;
+                if (!uniqueKey) return; // Skip if no identifier
+
+                if (!studentTotals[uniqueKey]) {
+                    studentTotals[uniqueKey] = { name: entry.name || 'Unknown', totalWeight: 0 };
+                }
+                studentTotals[uniqueKey].totalWeight += Number(entry.weight);
+            });
+
+            return Object.values(studentTotals).sort((a, b) => b.totalWeight - a.totalWeight);
+
+        }, [filteredEntries, selectedDashboardClass]);
 
         // --- Handlers ---
         const handleLogin = async (e) => {
@@ -753,7 +879,8 @@
                     setFormData(prev => ({...prev, [name]: value, studentName: match.name, selectedClass: match.className || prev.selectedClass}));
                     setStudentFound(true);
                 } else {
-                    setFormData(prev => ({ ...prev, [name]: value }));
+                    // 🟢 FIX: Clear name and class if ID doesn't match
+                    setFormData(prev => ({ ...prev, [name]: value, studentName: '', selectedClass: '' }));
                     setStudentFound(false);
                 }
             } else if (name === 'studentName') {
@@ -769,16 +896,21 @@
             }
         };
 
-        const handleResetID = () => {
-            setFormData(prev => ({ ...prev, studentID: '', studentName: '', weight: '' }));
+        const clearID = () => {
+            setFormData(prev => ({ ...prev, studentID: '' }));
             setStudentFound(false);
-            setWeightRows(['']); // Reset weight rows
             if(studentIdRef.current) studentIdRef.current.focus();
         };
 
-        const handlePenaltyChange = (e) => {
-            const { name, value } = e.target;
-            setPenaltyData(prev => ({ ...prev, [name]: value }));
+        const clearName = () => {
+            setFormData(prev => ({ ...prev, studentName: '' }));
+        };
+
+        const handleResetID = () => {
+            setFormData(prev => ({ ...prev, studentID: '', studentName: '', weight: '' }));
+            setStudentFound(false);
+            setWeightRows(['']); 
+            if(studentIdRef.current) studentIdRef.current.focus();
         };
 
         const toggleSelectAll = (e) => {
@@ -798,13 +930,10 @@
 
         // --- NEW Weight Row Handlers ---
         const handleWeightRowChange = (index, value) => {
-            // Allow numbers and decimal point
             const sanitizedValue = value.replace(/[^0-9.]/g, '');
-            // Prevent multiple dots
             const parts = sanitizedValue.split('.');
             let finalValue = parts[0];
             if (parts.length > 1) {
-                // Ensure only 2 decimal places
                 finalValue += '.' + parts.slice(1).join('').slice(0, 2);
             }
 
@@ -824,9 +953,151 @@
             }
         };
 
+        const clearWeightRow = (index) => {
+            const newRows = [...weightRows];
+            newRows[index] = '';
+            setWeightRows(newRows);
+        };
+
         const calculateTotalWeight = () => {
             return weightRows.reduce((acc, curr) => acc + (parseFloat(curr) || 0), 0);
         };
+
+        // --- Batch Entry Handlers (Restored) ---
+        const handleBatchClassChange = (e) => {
+            const cls = e.target.value;
+            setBatchClass(cls);
+            setBatchInputs({}); 
+        };
+
+        const handleBatchInputChange = (studentId, weight) => {
+             // Allow numbers and decimal point
+            const sanitizedValue = weight.replace(/[^0-9.]/g, '');
+            // Prevent multiple dots
+            const parts = sanitizedValue.split('.');
+            let finalValue = parts[0];
+            if (parts.length > 1) {
+                // Ensure only 2 decimal places
+                finalValue += '.' + parts.slice(1).join('').slice(0, 2);
+            }
+
+            setBatchInputs(prev => ({
+                ...prev,
+                [studentId]: finalValue
+            }));
+        };
+
+        const handleBatchSubmit = async () => {
+            const entriesToAdd = [];
+            const timestamp = Date.now();
+            const entryDateObj = new Date(formData.entryDate); 
+            const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
+            const currentYearInt = entryDateObj.getFullYear();
+            // 🟢 修改：无论日期选哪天，都显示当前的实际录入时间
+            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
+            const studentGrade = batchClass ? (parseInt(batchClass.charAt(0)) || 0) : 0;
+
+            Object.keys(batchInputs).forEach(studentId => {
+                const weightVal = parseFloat(batchInputs[studentId]);
+                if (weightVal > 0) {
+                    const student = students.find(s => s.id === studentId);
+                    entriesToAdd.push({
+                        id: (timestamp + Math.random()).toString(),
+                        type: 'recycle',
+                        teacherName: formData.teacherName.trim() || 'Batch', 
+                        name: student ? student.name : 'Unknown',
+                        studentID: studentId,
+                        className: batchClass,
+                        weight: weightVal,
+                        month: currentMonthStr, 
+                        calendarYear: currentYearInt,
+                        year: studentGrade,
+                        createdAt: entryDateObj.getTime(),
+                        displayTime: displayTime
+                    });
+                }
+            });
+
+            if (entriesToAdd.length === 0) return showNotification("请输入至少一个重量 / Masukkan berat", "error");
+
+            setLoading(true);
+
+            setEntries(prev => [...entriesToAdd, ...prev]); 
+            addLog('Batch Add Entries', `Added ${entriesToAdd.length} entries for ${batchClass}`);
+            
+            if (isCloudEnabled && !cloudError) {
+                await sendToSheet('addEntriesBatch', { data: entriesToAdd });
+            }
+            
+            setBatchInputs({});
+            setLoading(false);
+            
+            showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
+        };
+
+        // --- Penalty Batch Handlers (REFACTORED) ---
+        const handlePenaltyInputChange = (reason, value) => {
+            // Filter non-numeric (Integers only)
+            const sanitizedValue = value.replace(/[^0-9]/g, '');
+            setPenaltyInputs(prev => ({ ...prev, [reason]: sanitizedValue }));
+        };
+
+        const handlePenaltyBatchSubmit = async () => {
+            if (!penaltyClass) return showNotification("请选择班级 / Pilih Kelas", "error");
+            
+            // Check if at least one value exists
+            const hasData = Object.values(penaltyInputs).some(val => parseFloat(val) > 0);
+            if (!hasData) return showNotification("请输入至少一项数值 / Masukkan nilai", "error");
+
+            setLoading(true);
+
+            const entryDateObj = new Date();
+            entryDateObj.setMonth(penaltyMonth);
+            const studentGrade = parseInt(penaltyClass.charAt(0)) || 0;
+            const currentMonthStr = MONTH_OPTIONS[penaltyMonth];
+            const currentYearInt = entryDateObj.getFullYear();
+
+            const entriesToAdd = [];
+
+            Object.entries(penaltyInputs).forEach(([reason, value]) => {
+                // 使用 parseInt 确保提交的数值是整数
+                const val = parseInt(value, 10);
+                if (val > 0) {
+                    entriesToAdd.push({
+                        id: (Date.now() + Math.random()).toString(),
+                        type: 'deduction',
+                        teacherName: 'Admin',
+                        name: '', 
+                        studentID: '',
+                        className: penaltyClass,
+                        reason: reason, // "Food Waste", "Electricity", "Others"
+                        weight: -Math.abs(val),
+                        month: currentMonthStr,
+                        calendarYear: currentYearInt,
+                        year: studentGrade,
+                        createdAt: Date.now(),
+                        displayTime: "PENALTY"
+                    });
+                }
+            });
+
+            setEntries(prev => [...entriesToAdd, ...prev]);
+            addLog('Add Penalty Batch', `Added ${entriesToAdd.length} penalties for ${penaltyClass}`);
+
+            if (isCloudEnabled && !cloudError) {
+                await sendToSheet('addEntriesBatch', { data: entriesToAdd });
+            }
+
+            setLoading(false);
+            // Reset inputs
+            setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' });
+            showNotification("扣分记录已提交 / Penalti Berjaya", "success");
+        };
+
+        const handlePenaltyChange = (e) => {
+             // Placeholder for penalty data change if needed, currently using state directly
+        };
+
 
         // --- SUBMIT HANDLERS ---
         const handleSubmit = async (e) => {
@@ -842,7 +1113,6 @@
                 return showNotification("请填写完整信息 (班级 & 重量)", "error");
             }
 
-            // Start Loading immediately (Block Double Submit)
             setLoading(true);
 
             const entryDateObj = new Date(formData.entryDate);
@@ -872,55 +1142,13 @@
             }
 
             setLoading(false);
-            setWeightRows(['']); // Reset weight rows
+            setWeightRows(['']); 
             if(studentIdRef.current) studentIdRef.current.focus();
             
             showNotification("记录添加成功 / Berjaya", "success");
         };
 
-        const handlePenaltySubmit = async (e) => {
-            e.preventDefault();
-            if (!penaltyData.selectedClass || !penaltyData.penaltyValue || parseFloat(penaltyData.penaltyValue) <= 0) {
-                return showNotification("请填写完整扣分信息", "error");
-            }
-
-            requestSecureAction(async () => {
-                // Start Loading immediately (Block Double Submit)
-                setLoading(true);
-
-                const entryDateObj = new Date(penaltyData.entryDate);
-                const studentGrade = penaltyData.selectedClass ? (parseInt(penaltyData.selectedClass.charAt(0)) || 0) : 0;
-                const weightVal = -Math.abs(parseFloat(penaltyData.penaltyValue));
-
-                const newEntry = {
-                    id: (Date.now()).toString(),
-                    type: 'deduction',
-                    teacherName: penaltyData.teacherName || 'Admin',
-                    name: '', 
-                    studentID: '',
-                    className: penaltyData.selectedClass,
-                    reason: penaltyData.reason,
-                    weight: weightVal,
-                    month: MONTH_OPTIONS[entryDateObj.getMonth()],
-                    calendarYear: entryDateObj.getFullYear(),
-                    year: studentGrade,
-                    createdAt: entryDateObj.getTime(),
-                    displayTime: "PENALTY"
-                };
-
-                setEntries(prev => [newEntry, ...prev]);
-                addLog('Add Penalty', `${newEntry.className}: ${newEntry.weight}kg (${newEntry.reason})`);
-
-                if (isCloudEnabled && !cloudError) {
-                    await sendToSheet('addEntry', { data: newEntry });
-                }
-
-                setLoading(false);
-                setPenaltyData(prev => ({ ...prev, penaltyValue: '' }));
-                
-                showNotification("扣分记录已添加 / Penalti Berjaya", "success");
-            });
-        };
+        // Note: handlePenaltySubmit is replaced by handlePenaltyBatchSubmit for the new UI
 
         const handleRequestDelete = (id) => {
             setDeleteRequestModal({ show: true, id: id, reason: '' });
@@ -953,7 +1181,6 @@
 
         const handleApproveDelete = (id) => {
             requestSecureAction(async () => {
-                // Soft Delete: Mark as deleted but keep in state for strike-through effect
                 setEntries(prev => prev.map(e => e.id === id ? {...e, status: 'deleted'} : e));
                 setPendingDeletions(prev => prev.filter(e => e.id !== id));
                 addLog('Delete Entry', `Deleted Entry ID: ${id} (Approved)`);
@@ -1026,71 +1253,6 @@
             });
         };
 
-        const handleBatchClassChange = (e) => {
-            const cls = e.target.value;
-            setBatchClass(cls);
-            setBatchInputs({}); 
-        };
-
-        const handleBatchInputChange = (studentId, weight) => {
-            setBatchInputs(prev => ({
-                ...prev,
-                [studentId]: weight
-            }));
-        };
-
-        const handleBatchSubmit = async () => {
-            const entriesToAdd = [];
-            const timestamp = Date.now();
-            const entryDateObj = new Date(formData.entryDate); 
-            const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
-            const currentYearInt = entryDateObj.getFullYear();
-            const displayTime = (formData.entryDate === new Date().toISOString().split('T')[0]) 
-                ? new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'})
-                : "Manual Entry";
-            const studentGrade = batchClass ? (parseInt(batchClass.charAt(0)) || 0) : 0;
-
-            Object.keys(batchInputs).forEach(studentId => {
-                const weightVal = parseFloat(batchInputs[studentId]);
-                if (weightVal > 0) {
-                    const student = students.find(s => s.id === studentId);
-                    entriesToAdd.push({
-                        id: (timestamp + Math.random()).toString(),
-                        type: 'recycle',
-                        teacherName: formData.teacherName.trim(), 
-                        name: student ? student.name : 'Unknown',
-                        studentID: studentId,
-                        className: batchClass,
-                        weight: weightVal,
-                        month: currentMonthStr, 
-                        calendarYear: currentYearInt,
-                        year: studentGrade,
-                        createdAt: entryDateObj.getTime(),
-                        displayTime: displayTime
-                    });
-                }
-            });
-
-            if (entriesToAdd.length === 0) return showNotification("请输入至少一个重量 / Masukkan berat", "error");
-
-            // Start Loading immediately (Block Double Submit)
-            setLoading(true);
-
-            setEntries(prev => [...entriesToAdd, ...prev]); 
-            addLog('Batch Add Entries', `Added ${entriesToAdd.length} entries for ${batchClass}`);
-            
-            if (isCloudEnabled && !cloudError) {
-                for (const entry of entriesToAdd) {
-                   await sendToSheet('addEntry', { data: entry });
-                }
-            }
-            
-            setBatchInputs({});
-            setLoading(false);
-            
-            showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
-        };
-
         // --- Poster Generation ---
         const handleGenerateClassPoster = () => {
             setPosterType('class');
@@ -1125,6 +1287,32 @@
                 setShowPosterModal(false);
             });
         };
+        
+        const handleExportImage = () => {
+            if (!dashboardRef.current) return;
+            const btn = document.getElementById('export-img-btn');
+            // AI button removed, no need to hide
+            const posterBtn = document.getElementById('poster-btn');
+            const posterIndivBtnLower = document.getElementById('poster-indiv-btn-lower');
+            const posterIndivBtnUpper = document.getElementById('poster-indiv-btn-upper');
+            
+            if(btn) btn.style.display = 'none'; 
+            if(posterBtn) posterBtn.style.display = 'none';
+            if(posterIndivBtnLower) posterIndivBtnLower.style.display = 'none';
+            if(posterIndivBtnUpper) posterIndivBtnUpper.style.display = 'none';
+            
+            showNotification("正在生成图片...", "success");
+            html2canvas(dashboardRef.current, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `SJKCLG_Recycling_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                if(btn) btn.style.display = 'flex'; 
+                if(posterBtn) posterBtn.style.display = 'flex';
+                if(posterIndivBtnLower) posterIndivBtnLower.style.display = 'flex';
+                if(posterIndivBtnUpper) posterIndivBtnUpper.style.display = 'flex';
+            });
+        };
 
         // --- Security Functions ---
         const requestSecureAction = (callback) => {
@@ -1138,7 +1326,6 @@
             e.preventDefault();
             const cb = securityCheck.callback;
             
-            // Set verifying state to true to block double submit
             setSecurityCheck(prev => ({ ...prev, verifying: true }));
 
             try {
@@ -1148,328 +1335,20 @@
 
                 if (data.status === 'success') {
                     setSecurityCheck({ show: false, callback: null, error: '', verifying: false });
-                    // If callback exists, execute it (e.g., delete approved)
                     if (cb) {
                         cb();
                     } else if (viewMode === 'management') {
-                        // If no callback and in management mode (unlocking the screen)
                         setIsSystemUnlocked(true);
                         playSound('success');
                         showNotification("系统管理已解锁 / Sistem Dibuka", "success");
-                    } else {
-                        // General unlock (e.g. going to dashboard)
-                        if (viewMode === 'dashboard') {
-                             // This case is handled by handleGoToDashboard setting the viewMode inside the callback
-                        }
+                    } else if (entryTab === 'penalty') {
+                         setPenaltyUnlocked(true);
                     }
                 } else {
                     setSecurityCheck(prev => ({ ...prev, error: '密码错误 / Salah', verifying: false }));
                 }
             } catch (err) {
                  setSecurityCheck(prev => ({ ...prev, error: '网络错误 / Ralat Rangkaian', verifying: false }));
-            }
-        };
-
-        // --- API Helper ---
-        const sendToSheet = async (action, data = null) => {
-            if (!isCloudEnabled || cloudError) return { status: 'offline' };
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action, ...data })
-                });
-                return { status: 'success' };
-            } catch (e) {
-                return { status: 'error' };
-            }
-        };
-
-        const showNotification = (msg, type) => {
-            setNotification({ msg, type });
-            setTimeout(() => setNotification(null), 2500);
-        };
-
-        // --- Student Management Functions ---
-        const handleSmartImport = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const text = event.target.result;
-                const lines = text.split(/\r?\n/);
-                let currentClass = '';
-                const newStudents = [];
-                
-                lines.forEach(line => {
-                    const classMatch = line.match(/(?:Kelas|班级)[：:]\s*(\d+[A-Z]+)/i);
-                    if (classMatch) {
-                        currentClass = classMatch[1];
-                        return;
-                    }
-                    if (!currentClass) return;
-                    
-                    const parts = line.split(',');
-                    if (parts.length >= 4) {
-                        const id = parts[1].trim();
-                        if (/^\d+$/.test(id)) {
-                            const nameEn = parts[2].trim();
-                            const nameCn = parts[3].trim();
-                            const cleanName = `${nameEn} ${nameCn}`.replace(/"/g, '').trim();
-                            
-                            if (id && cleanName) {
-                                newStudents.push({
-                                    id: id,
-                                    name: cleanName,
-                                    className: currentClass
-                                });
-                            }
-                        }
-                    }
-                });
-                
-                if (newStudents.length > 0) {
-                    addLog('Smart Import', `Imported ${newStudents.length} students`);
-                     setStudents(prev => {
-                        const existingIds = new Set(prev.map(s => s.id));
-                        const uniqueNew = newStudents.filter(s => !existingIds.has(s.id));
-                        return [...prev, ...uniqueNew];
-                    });
-
-                    if (isCloudEnabled && !cloudError) {
-                        setLoading(true);
-                        await sendToSheet('importStudents', { data: newStudents });
-                        setLoading(false);
-                    }
-                    playSound('success');
-                    showNotification(`成功导入 ${newStudents.length} 名学生 (Smart Import)`, "success");
-                } else {
-                    showNotification("未能识别有效数据 / Format Salah", "error");
-                }
-                
-                if (smartImportRef.current) smartImportRef.current.value = "";
-            };
-            reader.readAsText(file);
-        };
-
-        const handleImportStudents = async () => {
-            if (!importClass) return showNotification("请先选择班级 / Sila pilih kelas dahulu", "error");
-            if (!importText.trim()) return showNotification("请输入数据 / Masukkan Data", "error");
-            
-            const lines = importText.split('\n');
-            const studentData = [];
-            
-            lines.forEach(line => {
-                const parts = line.split(/,|\t/).map(s => s.trim());
-                if (parts.length >= 2) {
-                    const id = parts[0];
-                    const name = parts[1];
-                    if (id && name) {
-                        studentData.push({ id, name, className: importClass });
-                    }
-                }
-            });
-
-            if (studentData.length === 0) return showNotification("数据格式错误", "error");
-
-            addLog('Import Students', `Imported ${studentData.length} to ${importClass}`);
-            
-            setStudents(prev => {
-                const existingIds = new Set(prev.map(s => s.id));
-                const newUnique = studentData.filter(s => !existingIds.has(s.id));
-                return [...prev, ...newUnique];
-            });
-
-            if (isCloudEnabled && !cloudError) {
-                setLoading(true);
-                await sendToSheet('importStudents', { data: studentData });
-                setLoading(false);
-            }
-            
-            playSound('success'); 
-            showNotification(`成功导入 ${studentData.length} 名学生`, "success");
-            setImportText('');
-        };
-
-        const handleUpdateStudent = async (e) => {
-            e.preventDefault();
-            if (!editingStudent || !editingStudent.name || !editingStudent.className) return;
-            
-            addLog('Update Student', `Updated ID: ${editingStudent.id}`);
-            
-            setStudents(prev => prev.map(s => s.id === editingStudent.id ? editingStudent : s));
-
-            if (isCloudEnabled && !cloudError) {
-                setLoading(true);
-                await sendToSheet('updateStudent', { data: editingStudent });
-                setLoading(false);
-            }
-            showNotification("学生资料已更新 / Berjaya Kemaskini", "success");
-            setEditingStudent(null);
-        };
-
-        const handleDeleteSingleStudent = (id) => {
-            setConfirmModal({
-                show: true,
-                title: "删除学生 / Padam Murid",
-                msg: "确定要删除此学生吗？/ Padam murid ini?",
-                isDestructive: true,
-                onConfirm: async () => {
-                    setConfirmModal(prev => ({ ...prev, show: false }));
-                    
-                    setStudents(prev => prev.filter(s => s.id !== id));
-                    addLog('Delete Student', `Deleted ID: ${id}`);
-
-                    if (isCloudEnabled && !cloudError) {
-                        setLoading(true);
-                        await sendToSheet('deleteStudent', { id });
-                        setLoading(false);
-                    }
-                    showNotification("学生已删除 / Murid Dipadam", "success");
-                }
-            });
-        };
-
-        const exportCSV = () => {
-            if (entries.length === 0) {
-                showNotification("没有数据 / Tiada Data", "error");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,ID,Type,Reason,Year,Month,Time,Teacher,Class,StudentID,Name,Weight(kg),Status\n";
-            entries.forEach(e => {
-                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle';
-                const reason = e.type === 'deduction' ? e.reason : '-';
-                const status = e.status === 'deleted' ? 'Deleted' : 'Active';
-                csvContent += `${e.id},${type},${reason},${e.calendarYear || ''},${e.month || ''},${e.displayTime},${e.teacherName || ''},${e.className},${e.studentID},${e.name},${e.weight},${status}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        };
-
-        const handleBackupData = () => {
-            const backupData = {
-                timestamp: Date.now(),
-                date: new Date().toISOString(),
-                entries: entries,
-                students: students
-            };
-            
-            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showNotification("备份文件已下载 / Berjaya Muat Turun", "success");
-        };
-
-        const handleRestoreData = (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (!data.entries || !data.students) throw new Error("Invalid Format");
-
-                    setLoading(true);
-                    setEntries(data.entries);
-                    setStudents(data.students);
-                    addLog('System Restore', 'Restored data from backup file');
-                    
-                    let msg = "数据已加载 (本地)";
-                    if (isCloudEnabled && !cloudError) {
-                        msg += " - 注意：刷新后将重新加载云端数据";
-                    } else {
-                        msg += " - 离线模式已保存";
-                    }
-
-                    showNotification(msg, "success");
-                    playSound('success');
-                } catch (err) {
-                    showNotification("恢复失败：文件格式错误 / Ralat Format", "error");
-                    playSound('error');
-                } finally {
-                    setLoading(false);
-                    if(fileInputRef.current) fileInputRef.current.value = "";
-                }
-            };
-            reader.readAsText(file);
-        };
-
-        const handleClearAll = () => {
-            setConfirmModal({
-                show: true, title: "⚠️ 系统重置", msg: "确定要清空所有数据吗？此操作不可逆！/ Reset Sistem?", isDestructive: true,
-                onConfirm: () => {
-                    setConfirmModal(prev => ({ ...prev, show: false }));
-                    requestSecureAction(async () => {
-                        setEntries([]);
-                        addLog('System Reset', 'Cleared ALL recycling data');
-                        showNotification("系统已重置 / Sistem Direset", "success");
-                        if (isCloudEnabled && !cloudError) {
-                            setLoading(true);
-                            await sendToSheet('clearAllEntries');
-                            setLoading(false);
-                        } 
-                    });
-                }
-            });
-        };
-
-        const handleExportImage = () => {
-            if (!dashboardRef.current) return;
-            const btn = document.getElementById('export-img-btn');
-            const aiBtn = document.getElementById('ai-report-btn');
-            const posterBtn = document.getElementById('poster-btn');
-            const posterIndivBtnLower = document.getElementById('poster-indiv-btn-lower');
-            const posterIndivBtnUpper = document.getElementById('poster-indiv-btn-upper');
-            
-            if(btn) btn.style.display = 'none'; 
-            if(aiBtn) aiBtn.style.display = 'none';
-            if(posterBtn) posterBtn.style.display = 'none';
-            if(posterIndivBtnLower) posterIndivBtnLower.style.display = 'none';
-            if(posterIndivBtnUpper) posterIndivBtnUpper.style.display = 'none';
-            
-            showNotification("正在生成图片...", "success");
-            html2canvas(dashboardRef.current, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `SJKCLG_Recycling_${new Date().toISOString().slice(0,10)}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                if(btn) btn.style.display = 'flex'; 
-                if(aiBtn) aiBtn.style.display = 'flex';
-                if(posterBtn) posterBtn.style.display = 'flex';
-                if(posterIndivBtnLower) posterIndivBtnLower.style.display = 'flex';
-                if(posterIndivBtnUpper) posterIndivBtnUpper.style.display = 'flex';
-            });
-        };
-
-        const handleGenerateAIReport = async () => {
-            setAiReport({ show: true, content: '', loading: true });
-            const prompt = `You are the eco-ambassador for SJK (C) Ladang Grisek. Write a motivating report (max 150 words) based on this data: Total Recycled: ${stats.grandTotal.toFixed(2)} KG. Top Classes: ${stats.classUpper.slice(0,2).map(c=>c.className).join(', ')}. Use emojis.`;
-
-            try {
-                const url = `${GOOGLE_SCRIPT_URL}?action=generateAiReport&prompt=${encodeURIComponent(prompt)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    setAiReport({ show: true, content: data.data, loading: false });
-                    playSound('success');
-                } else {
-                    throw new Error(data.data || "Unknown Error");
-                }
-            } catch (error) {
-                setAiReport({ show: true, content: "AI 服务暂时不可用，请稍后再试 / Ralat Sambungan AI", loading: false });
             }
         };
 
@@ -1480,14 +1359,24 @@
                     <header className="bg-emerald-600 text-white shadow-xl sticky top-0 z-50 backdrop-blur-md bg-opacity-95">
                         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between relative">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-white/20 rounded-xl shadow-inner"><IconRecycle /></div>
+                                <div className="p-2 bg-white/20 rounded-xl shadow-inner text-2xl leading-none">♻️</div>
                                 <div className="flex flex-col">
-                                    <h1 className="text-base md:text-xl font-bold tracking-tight">新廊华小校园环保回收计划</h1>
+                                    <h1 className="text-sm md:text-xl font-bold tracking-tight whitespace-nowrap">新廊华小校园环保回收计划</h1>
                                     <span className="text-[10px] md:text-xs font-normal text-emerald-100">Projek Kitar Semula SJK (C) Ladang Grisek</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
                                 <IconCloud connected={isCloudEnabled && !cloudError} />
+                                
+                                {!isAdmin && (
+                                    <button 
+                                        onClick={() => setViewMode('landing')}
+                                        className="bg-emerald-800/30 hover:bg-emerald-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 border border-emerald-500/30"
+                                    >
+                                        <IconHome size={18} />
+                                        <span className="hidden sm:inline">主页 / Utama</span>
+                                    </button>
+                                )}
                                 
                                 {isAdmin && (
                                     <React.Fragment>
@@ -1547,8 +1436,8 @@
                     {viewMode === 'landing' && (
                         <div className="max-w-md mx-auto mt-20 bg-white p-10 rounded-3xl shadow-2xl border border-emerald-100 animate-pop text-center relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
-                            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600">
-                                <IconRecycle size={40} />
+                            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
+                                ♻️
                             </div>
                             <h2 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">欢迎来到<br/>新廊华小校园环保回收计划系统</h2>
                             <p className="text-slate-400 mb-8 text-sm leading-relaxed">
@@ -1571,6 +1460,15 @@
                                     {loading ? <Spinner /> : <React.Fragment>进入系统 / Masuk <IconArrowRight size={18} /></React.Fragment>}
                                 </button>
                             </form>
+                            
+                            <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+                                <button 
+                                    onClick={() => isPublicDashboardOpen ? setViewMode('dashboard') : showNotification("仪表板未开放 / Dashboard ditutup", "error")}
+                                    className={`text-emerald-600 font-bold text-sm hover:underline flex items-center justify-center gap-1 mx-auto ${!isPublicDashboardOpen ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    带我到仪表盘 / Ke Dashboard <IconArrowRight size={14} />
+                                </button>
+                            </div>
                         </div>
                     )}
 
@@ -1664,30 +1562,42 @@
                                                 <div className="space-y-1">
                                                     <label className="text-xs font-bold text-slate-500 uppercase">学号 / ID <span className="text-slate-400 font-normal normal-case">(非必填 / BUKAN WAJIB)</span></label>
                                                     <div className="relative">
-                                                        <input ref={studentIdRef} type="text" name="studentID" value={formData.studentID} onChange={handleInputChange} placeholder="26001" className={`w-full p-3 bg-slate-50 border rounded-xl outline-none ${studentFound ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50' : 'border-slate-200'}`} />
-                                                        {studentFound && <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500"><IconCheck size={16} /></div>}
+                                                        <input ref={studentIdRef} type="text" name="studentID" value={formData.studentID} onChange={handleInputChange} placeholder="26001" className={`w-full p-3 pr-16 bg-slate-50 border rounded-xl outline-none ${studentFound ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50' : 'border-slate-200'}`} />
+                                                        {formData.studentID && (
+                                                            <button type="button" onClick={clearID} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600">
+                                                                <IconX size={16} />
+                                                            </button>
+                                                        )}
+                                                        {studentFound && <div className="absolute right-10 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none"><IconCheck size={16} /></div>}
                                                     </div>
                                                 </div>
                                                 <div className="space-y-1">
                                                     <label className="text-xs font-bold text-slate-500 uppercase">姓名 / Nama <span className="text-slate-400 font-normal normal-case">(非必填 / BUKAN WAJIB)</span></label>
-                                                    <input 
-                                                        type="text" 
-                                                        name="studentName" 
-                                                        list="student-suggestions" 
-                                                        value={formData.studentName} 
-                                                        onChange={handleInputChange} 
-                                                        placeholder="ALI 阿里" 
-                                                        autoComplete="off"
-                                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" 
-                                                    />
-                                                    <datalist id="student-suggestions">
-                                                        {students.filter(s => s.className === formData.selectedClass).map(s => (
-                                                            <option key={s.id} value={s.name}>{s.id}</option>
-                                                        ))}
-                                                    </datalist>
+                                                    <div className="relative">
+                                                        <input 
+                                                            type="text" 
+                                                            name="studentName" 
+                                                            list="student-suggestions" 
+                                                            value={formData.studentName} 
+                                                            onChange={handleInputChange} 
+                                                            placeholder="阿里 ALI" 
+                                                            autoComplete="off"
+                                                            className="w-full p-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl outline-none" 
+                                                        />
+                                                        {formData.studentName && (
+                                                            <button type="button" onClick={clearName} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600">
+                                                                <IconX size={16} />
+                                                            </button>
+                                                        )}
+                                                        <datalist id="student-suggestions">
+                                                            {students.filter(s => s.className === formData.selectedClass).map(s => (
+                                                                <option key={s.id} value={s.name}>{s.id}</option>
+                                                            ))}
+                                                        </datalist>
+                                                    </div>
                                                 </div>
                                             </div>
-
+                                            
                                             <div className="space-y-1">
                                                 <label className="text-sm font-bold text-slate-700">重量 / Berat (KG) <span className="text-red-500">*</span></label>
                                                 
@@ -1701,10 +1611,15 @@
                                                                 value={rowValue} 
                                                                 onChange={(e) => handleWeightRowChange(index, e.target.value)} 
                                                                 placeholder="0.00" 
-                                                                className="w-full p-4 pl-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl font-mono text-3xl font-bold text-right outline-none" 
+                                                                className="w-full p-4 pl-6 pr-10 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl font-mono text-3xl font-bold text-right outline-none" 
                                                                 required={index === 0} 
                                                             />
                                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300 font-bold">KG</span>
+                                                            {rowValue && (
+                                                                <button type="button" onClick={() => clearWeightRow(index)} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-emerald-400 hover:text-emerald-600">
+                                                                    <IconX size={20} />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                         {index === weightRows.length - 1 ? (
                                                             <button 
@@ -1732,7 +1647,7 @@
                                                 <div className="text-right text-xs font-bold text-emerald-600 mt-1">
                                                     总计 / Jumlah: {calculateTotalWeight().toFixed(2)} KG
                                                 </div>
-                                                <p className="text-xs text-slate-400 mt-1">提示：请输入准确重量，保留两位小数，无需自行进位 / Sila masukkan berat tepat (2 titik perpuluhan), jangan bundarkan.</p>
+                                                <p className="text-xs text-slate-400 mt-1">提示：不要自行将小数进位 / Jangan bundarkan perpuluhan sendiri.</p>
                                             </div>
 
                                             <div className="flex gap-2">
@@ -1744,7 +1659,7 @@
                                                     onClick={handleResetID}
                                                     disabled={loading}
                                                     className="w-16 p-4 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 text-slate-500 flex items-center justify-center disabled:opacity-50"
-                                                    title="清空学号 / Reset ID"
+                                                    title="重置 / Reset"
                                                 >
                                                     <IconRefresh size={20} />
                                                 </button>
@@ -1821,70 +1736,108 @@
 
                                     {/* FORM: PENALTY */}
                                     {entryTab === 'penalty' && (
-                                    <form onSubmit={handlePenaltySubmit} className="px-6 pb-6 space-y-5">
-                                        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 flex gap-2">
-                                            <IconAlertTriangle size={16} />
-                                            <span>扣分记录将直接从班级总分中减去。<br/>Markah akan ditolak daripada jumlah kelas.</span>
-                                        </div>
+                                        <div className="relative min-h-[400px]">
+                                            {/* 🔒 Lock Overlay Modal */}
+                                            {!penaltyUnlocked && (
+                                                <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-b-2xl">
+                                                    <div className="bg-white p-8 rounded-2xl shadow-2xl border border-red-100 flex flex-col items-center max-w-xs mx-auto animate-pop">
+                                                        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-3 shadow-inner">
+                                                            <IconLock size={32} />
+                                                        </div>
+                                                        <h4 className="font-bold text-slate-800 text-lg mb-1">需要权限 / Perlu Kebenaran</h4>
+                                                        <p className="text-xs text-slate-500 text-center mb-6 leading-relaxed">
+                                                            此模组涉及扣分操作，需要管理员权限验证。<br/>
+                                                            <span className="opacity-70">Sila masukkan kata laluan untuk akses.</span>
+                                                        </p>
+                                                        <SecurePasswordInput 
+                                                            value={securityInput}
+                                                            onChange={(e) => setSecurityInput(e.target.value)}
+                                                            placeholder="♻♲♻♲♻♲♻♲"
+                                                            autoFocus={false}
+                                                            theme="red"
+                                                        />
+                                                        <button 
+                                                            disabled={securityCheck.verifying || securityInput.length < 8}
+                                                            onClick={(e) => handleSecurityVerify(e)} 
+                                                            className="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 w-full justify-center disabled:bg-slate-400"
+                                                        >
+                                                            {securityCheck.verifying ? <Spinner /> : "解锁 / Buka Kunci"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
 
-                                        {/* Date Picker */}
-                                        <div className="space-y-1">
-                                            <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                                <IconCalendar size={14} /> 日期 / Tarikh
-                                            </label>
-                                            <input 
-                                                type="date" 
-                                                name="entryDate"
-                                                value={penaltyData.entryDate}
-                                                onChange={handlePenaltyChange}
-                                                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
-                                            />
-                                        </div>
+                                            {/* Form Content (Blurred when locked) */}
+                                            <div className={`px-6 pb-6 space-y-5 transition-all duration-500 ${!penaltyUnlocked ? 'opacity-40 pointer-events-none filter blur-[2px] select-none' : 'opacity-100'}`}>
+                                                <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 flex gap-2">
+                                                    <IconAlertTriangle size={16} />
+                                                    <span>批量录入将自动生成多条记录。<br/>Rekod pukal akan dijana secara automatik.</span>
+                                                </div>
 
-                                        <div className="space-y-1">
-                                            <label className="text-sm font-bold text-slate-700">班级 / Kelas</label>
-                                            <select name="selectedClass" value={penaltyData.selectedClass} onChange={handlePenaltyChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-lg text-slate-700 outline-none">
-                                                <option value="">- 选择 / Pilih -</option>
-                                                {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
-                                            </select>
-                                        </div>
+                                                {/* Top Selection Row */}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-1">
+                                                        <label className="text-sm font-bold text-slate-700">月份 / Bulan</label>
+                                                        <select value={penaltyMonth} onChange={(e) => setPenaltyMonth(parseInt(e.target.value))} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none">
+                                                            {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-sm font-bold text-slate-700">班级 / Kelas</label>
+                                                        <select value={penaltyClass} onChange={(e) => setPenaltyClass(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none">
+                                                            <option value="">- 选择 -</option>
+                                                            {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                                        </select>
+                                                    </div>
+                                                </div>
 
-                                        <div className="space-y-1">
-                                            <label className="text-sm font-bold text-slate-700">扣分原因 / Sebab</label>
-                                            <select name="reason" value={penaltyData.reason} onChange={handlePenaltyChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none">
-                                                <option value="Food Waste">浪费食物 / Pembaziran Makanan</option>
-                                                <option value="Electricity">浪费电源 / Pembaziran Elektrik</option>
-                                                <option value="Others">其他 / Lain-lain</option>
-                                            </select>
-                                        </div>
+                                                {/* Penalty List Builder - FIXED 3 Rows */}
+                                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase mb-3 block">填写KG扣除数值 / Masukkan Nilai Penalti (KG)</label>
+                                                    <div className="space-y-3">
+                                                        {['Food Waste', 'Electricity', 'Others'].map((reason) => (
+                                                            <div key={reason} className="flex items-center gap-3 bg-white p-2 rounded-lg border border-slate-200">
+                                                                <div className="flex-1">
+                                                                    <div className="text-sm font-bold text-slate-700">
+                                                                        {reason === 'Food Waste' ? '浪费食物 / Pembaziran Makanan' : 
+                                                                         reason === 'Electricity' ? '浪费电源 / Pembaziran Elektrik' : 
+                                                                         '其他 (Lain-lain)'}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="w-32 relative">
+                                                                    <input 
+                                                                        type="tel"
+                                                                        inputMode="numeric"
+                                                                        value={penaltyInputs[reason]}
+                                                                        onChange={(e) => handlePenaltyInputChange(reason, e.target.value)}
+                                                                        placeholder="0" 
+                                                                        className="w-full p-2 pl-2 pr-8 rounded-lg border border-red-200 bg-red-50 text-red-700 font-mono font-bold text-right outline-none focus:ring-2 focus:ring-red-500"
+                                                                    />
+                                                                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-red-400 font-bold">KG</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
 
-                                        <div className="space-y-1">
-                                            <label className="text-sm font-bold text-red-700">扣除数值 / Nilai Penalti (KG Equivalent)</label>
-                                            <div className="relative">
-                                                <input 
-                                                    type="tel"
-                                                    inputMode="decimal"
-                                                    name="penaltyValue"
-                                                    value={penaltyData.penaltyValue} 
-                                                    onChange={handlePenaltyChange} 
-                                                    placeholder="0.00" 
-                                                    className="w-full p-4 pl-6 bg-red-50 border border-red-200 text-red-800 rounded-xl font-mono text-3xl font-bold text-right outline-none" 
-                                                />
-                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-red-300 font-bold">- KG</span>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={handlePenaltyBatchSubmit} 
+                                                    disabled={loading || (isCloudEnabled && cloudError)} 
+                                                    className={`w-full p-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 ${ (loading || (isCloudEnabled && cloudError)) ? 'bg-slate-400 text-slate-200 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white'}`}
+                                                >
+                                                    {loading ? <Spinner /> : <React.Fragment><IconGavel size={18} /><span>一次性提交 (Hantar Semua)</span></React.Fragment>}
+                                                </button>
                                             </div>
                                         </div>
-
-                                        <button type="submit" disabled={loading || (isCloudEnabled && cloudError)} className={`w-full p-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 ${ (loading || (isCloudEnabled && cloudError)) ? 'bg-slate-400 text-slate-200 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
-                                            {loading ? <Spinner /> : <React.Fragment><IconLock size={16} /><span>确认扣分 (需密码) / Sahkan Penalti</span></React.Fragment>}
-                                        </button>
-                                    </form>
                                     )}
+
                                 </div>
                             </div>
 
                             {/* Recent Records (Now: Entry Log) (Right) */}
                             <div className="space-y-6">
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 h-full flex flex-col">
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 h-[600px] flex flex-col p-6">
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="font-bold text-slate-700 flex items-center gap-2">
                                             <IconClipboardList size={20} /> 录入日志 / Log Kemasukan
@@ -1905,8 +1858,8 @@
                                                 <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
                                             </div>
                                         )}
-                                        {/* 🟢 优化：显示最近 50 条。Pending 变灰，Deleted 变 Strikethrough */}
-                                        {entries.slice(0, 50).map(entry => {
+                                        {/* 🟢 优化：显示所有记录（移除 .slice），并使用固定高度容器 */}
+                                        {entries.map(entry => {
                                             const isPending = pendingDeletions.some(p => p.id === entry.id);
                                             const isDeleted = entry.status === 'deleted';
                                             
@@ -1973,21 +1926,28 @@
                                             onClick={() => setManageTab('audit')}
                                             className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'audit' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
-                                            审核 / Kelulusan ({pendingDeletions.length})
+                                            审核 ({pendingDeletions.length})
                                         </button>
                                         <button 
                                             disabled={loading}
                                             onClick={() => setManageTab('students')}
                                             className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'students' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
-                                            学生名单 / Murid
+                                            学生
                                         </button>
                                         <button 
                                             disabled={loading}
                                             onClick={() => setManageTab('backup')}
                                             className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'backup' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
-                                            系统备份 / Sandaran
+                                            备份
+                                        </button>
+                                         <button 
+                                            disabled={loading}
+                                            onClick={() => setManageTab('settings')}
+                                            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'settings' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            设置
                                         </button>
                                     </div>
                                 </div>
@@ -1998,7 +1958,7 @@
                                         <IconLock size={40} />
                                     </div>
                                     <h4 className="font-bold text-slate-700 text-xl">受保护区域 / Kawasan Terlindung</h4>
-                                    <p className="text-sm text-slate-500 text-center max-w-sm mb-4">请输入安全密码以管理学生名单和系统备份。</p>
+                                    <p className="text-sm text-slate-500 text-center max-w-sm mb-4">请输入安全密码以管理系统。</p>
                                     <form onSubmit={handleSecurityVerify} className="flex flex-col gap-4 w-full max-w-sm">
                                         <SecurePasswordInput 
                                             value={securityInput}
@@ -2273,6 +2233,31 @@
                                         </div>
                                     </div>
                                     )}
+
+                                    {/* FORM: SETTINGS */}
+                                    {manageTab === 'settings' && (
+                                    <div className="px-6 py-6 space-y-6">
+                                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+                                            <div>
+                                                <h3 className="font-bold text-slate-700 mb-1 flex items-center gap-2">
+                                                    <IconBarChart size={18}/> 公共仪表板 / Dashboard
+                                                </h3>
+                                                <p className="text-xs text-slate-500">是否允许访客在主页直接进入仪表板</p>
+                                            </div>
+                                            <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out align-middle select-none">
+                                                <input 
+                                                    type="checkbox" 
+                                                    name="toggle" 
+                                                    id="dashboard-toggle" 
+                                                    checked={isPublicDashboardOpen}
+                                                    onChange={togglePublicDashboard}
+                                                    className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"
+                                                />
+                                                <label htmlFor="dashboard-toggle" className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${isPublicDashboardOpen ? 'bg-emerald-500' : 'bg-slate-300'}`}></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    )}
                                 </div>
                                 )}
                             </div>
@@ -2283,8 +2268,7 @@
                     {/* VIEW: DASHBOARD (Public) */}
                     {viewMode === 'dashboard' && (
                         <div className="space-y-6 animate-pop" ref={dashboardRef}>
-                            
-                            {/* Dashboard Stats & Filter Bar */}
+                             {/* Dashboard Stats & Filter Bar */}
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                 {/* Total Stats */}
                                 <div className="md:col-span-4 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
@@ -2302,18 +2286,38 @@
 
                                 {/* Advanced Filters */}
                                 <div className="md:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-center">
-                                    <div className="flex items-center gap-2 text-slate-700 mb-3">
-                                        <IconFilter />
-                                        <h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2 text-slate-700">
+                                            <IconFilter />
+                                            <h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3>
+                                        </div>
+                                        
+                                        {/* Class View Toggle */}
+                                        <div className="bg-slate-100 p-1 rounded-lg flex text-xs">
+                                            <button 
+                                                onClick={() => setDashboardViewMode('overall')}
+                                                className={`px-3 py-1 rounded-md font-bold transition-all ${dashboardViewMode === 'overall' ? 'bg-white shadow text-emerald-700' : 'text-slate-400'}`}
+                                            >
+                                                全校数据
+                                            </button>
+                                            <button 
+                                                onClick={() => setDashboardViewMode('class')}
+                                                className={`px-3 py-1 rounded-md font-bold transition-all ${dashboardViewMode === 'class' ? 'bg-white shadow text-emerald-700' : 'text-slate-400'}`}
+                                            >
+                                                班级详情
+                                            </button>
+                                        </div>
                                     </div>
+
                                     <div className="flex flex-wrap gap-4">
-                                        <div className="flex-1 min-w-[120px]">
+                                        <div className="flex-none w-24">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">年份 / Tahun</label>
-                                            <select disabled={loading} value={filterYear} onChange={e => setFilterYear(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                                            {/* Changed: Disabled Year Filter */}
+                                            <select disabled={true} value={filterYear} onChange={e => setFilterYear(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500 opacity-50 cursor-not-allowed">
                                                 {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
                                             </select>
                                         </div>
-                                        <div className="flex-[2] min-w-[200px] flex gap-2 items-end">
+                                        <div className="flex-[2] min-w-[180px] flex gap-2 items-end">
                                             <div className="flex-1">
                                                 <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">从 / Dari</label>
                                                 <select disabled={loading} value={filterMonthStart} onChange={e => setFilterMonthStart(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
@@ -2328,61 +2332,119 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        
+                                        {/* Class Selector for Class View */}
+                                        {dashboardViewMode === 'class' && (
+                                            <div className="flex-1 min-w-[120px] animate-pop">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">选择班级 / Pilih Kelas</label>
+                                                <select 
+                                                    value={selectedDashboardClass} 
+                                                    onChange={e => setSelectedDashboardClass(e.target.value)} 
+                                                    className="w-full p-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg font-bold outline-none focus:ring-2 focus:ring-emerald-500"
+                                                >
+                                                    <option value="">- 请选择 -</option>
+                                                    {CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                                                </select>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Leaderboards Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[500px]">
-                                <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" />
-                                <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" />
-                                <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" />
-                                <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" />
-                            </div>
+                            {dashboardViewMode === 'overall' ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[500px] animate-pop">
+                                    <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" />
+                                    <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" />
+                                    <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" />
+                                    <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" />
+                                </div>
+                            ) : (
+                                <div className="animate-pop">
+                                    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden h-[500px] flex flex-col">
+                                        <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white flex justify-between items-center">
+                                            <div>
+                                                <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                                                    <IconUsers size={20} className="text-emerald-500" />
+                                                    {selectedDashboardClass ? `${selectedDashboardClass} 班级排行榜` : '请先选择班级'}
+                                                </h3>
+                                                <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mt-1">Ranking Kelas {selectedDashboardClass}</p>
+                                            </div>
+                                            {selectedDashboardClass && (
+                                                <div className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">
+                                                    总人数: {classStats.length}
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                                            {!selectedDashboardClass ? (
+                                                <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2">
+                                                    <IconFilter size={32} />
+                                                    <span>请在上方选择一个班级</span>
+                                                </div>
+                                            ) : classStats.length === 0 ? (
+                                                <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2">
+                                                    <IconInbox size={32} />
+                                                    <span>该班级暂无回收记录</span>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                    {classStats.map((item, index) => (
+                                                        <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-emerald-200 transition-colors bg-white">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-8 flex justify-center">
+                                                                    <Medal rank={index + 1} />
+                                                                </div>
+                                                                <span className="font-bold text-slate-700 truncate max-w-[120px]">{item.name}</span>
+                                                            </div>
+                                                            <span className="font-mono font-bold text-emerald-600">{item.totalWeight.toFixed(2)} <span className="text-[10px] text-slate-400">kg</span></span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
-                             {/* Bottom Buttons */}
-                            <div className="flex justify-center flex-wrap gap-4 pt-8 pb-4">
-                                <button 
-                                    disabled={loading}
-                                    id="poster-btn"
-                                    onClick={handleGenerateClassPoster}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
-                                >
-                                    <IconImage /> 生成班级月报 / Laporan Kelas
-                                </button>
-                                <button 
-                                    disabled={loading}
-                                    id="poster-indiv-btn-lower"
-                                    onClick={() => handleGenerateIndivPoster('lower')}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
-                                >
-                                    <IconCrown /> 王者榜 (低年级)
-                                </button>
-                                <button 
-                                    disabled={loading}
-                                    id="poster-indiv-btn-upper"
-                                    onClick={() => handleGenerateIndivPoster('upper')}
-                                    className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
-                                >
-                                    <IconCrown /> 王者榜 (高年级)
-                                </button>
-                                <button 
-                                    disabled={loading}
-                                    id="ai-report-btn"
-                                    onClick={handleGenerateAIReport}
-                                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
-                                >
-                                    <IconSparkles className="text-yellow-300" /> ✨ AI 环保分析师 / Analisis AI
-                                </button>
-                                <button 
-                                    disabled={loading}
-                                    id="export-img-btn"
-                                    onClick={handleExportImage}
-                                    className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
-                                >
-                                    <IconCamera /> 📸 保存当前报表 / Simpan Gambar
-                                </button>
-                            </div>
+                             {/* Bottom Buttons - Only for Admin */}
+                            {isAdmin && (
+                                <div className="flex justify-center flex-wrap gap-4 pt-8 pb-4">
+                                    <button 
+                                        disabled={loading}
+                                        id="poster-btn"
+                                        onClick={handleGenerateClassPoster}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
+                                    >
+                                        <IconImage /> 生成班级月报 / Laporan Kelas
+                                    </button>
+                                    <button 
+                                        disabled={loading}
+                                        id="poster-indiv-btn-lower"
+                                        onClick={() => handleGenerateIndivPoster('lower')}
+                                        className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
+                                    >
+                                        <IconCrown /> 王者榜 (低年级)
+                                    </button>
+                                    <button 
+                                        disabled={loading}
+                                        id="poster-indiv-btn-upper"
+                                        onClick={() => handleGenerateIndivPoster('upper')}
+                                        className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
+                                    >
+                                        <IconCrown /> 王者榜 (高年级)
+                                    </button>
+                                    <button 
+                                        disabled={loading}
+                                        id="export-img-btn"
+                                        onClick={handleExportImage}
+                                        className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400"
+                                    >
+                                        <IconCamera /> 📸 保存当前报表 / Simpan Gambar
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -2447,7 +2509,7 @@
                                     setSecurityCheck({ show: false, callback: null, error: '' });
                                     setSecurityInput('');
                                 }}
-                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition-colors"
+                                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition-colors"
                             >
                                 <IconX size={20} />
                             </button>
@@ -2474,40 +2536,13 @@
                     </div>
                 )}
                 
-                {/* AI Report Modal */}
-                {aiReport.show && (
-                    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-purple-900/70 backdrop-blur-sm">
-                        <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden animate-pop border-4 border-purple-200">
-                            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white flex justify-between items-center">
-                                <h3 className="text-xl font-bold flex items-center gap-2">
-                                    <IconSparkles className="animate-pulse text-yellow-300" /> AI 环保分析师报告
-                                </h3>
-                                <button onClick={() => setAiReport({ ...aiReport, show: false })} className="text-purple-200 hover:text-white">✕</button>
-                            </div>
-                            <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                                {aiReport.loading ? (
-                                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                                        <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-                                        <p className="text-slate-500 animate-pulse">正在生成智能分析... / Sedang menganalisis...</p>
-                                    </div>
-                                ) : (
-                                    <div className="prose prose-purple max-w-none text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(aiReport.content) }}></div>
-                                )}
-                            </div>
-                            <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
-                                <button onClick={() => setAiReport({ ...aiReport, show: false })} className="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-bold">关闭 / Tutup</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                  {/* Poster Modal */}
                  {showPosterModal && posterData && (
                     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
                         <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full overflow-hidden animate-pop flex flex-col max-h-[95vh]">
                             <div className="p-4 bg-slate-100 border-b flex justify-between items-center">
                                 <h3 className="font-bold text-slate-800">海报预览 (16:9) / Poster Preview</h3>
-                                <button onClick={() => setShowPosterModal(false)}><IconX /></button>
+                                <button onClick={() => setShowPosterModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200"><IconX /></button>
                             </div>
                             <div className="p-6 bg-slate-900 flex justify-center overflow-y-auto custom-scrollbar">
                                 <div className="w-full overflow-x-auto flex justify-center">
@@ -2634,6 +2669,7 @@
                                                                         <span className="text-white font-black text-xl">{(posterData.topList[2]?.totalWeight || 0).toFixed(1)}</span>
                                                                         <span className="text-[10px] text-slate-500 ml-1">KG</span>
                                                                     </div>
+                                                                    
                                                                 </div>
                                                             </div>
 
