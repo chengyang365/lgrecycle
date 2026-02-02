@@ -322,12 +322,12 @@
             
             return (
                 <span className="flex flex-col items-start text-left leading-tight min-w-0">
-                    <span className="text-sm md:text-base font-bold truncate w-full">{chineseName}</span>
-                    {malayName && <span className="text-[0.7em] opacity-70 font-normal -mt-0.5 truncate w-full">{malayName}</span>}
+                    <span className="text-sm md:text-base font-bold w-full break-words">{chineseName}</span>
+                    {malayName && <span className="text-[0.7em] opacity-70 font-normal -mt-0.5 w-full break-words">{malayName}</span>}
                 </span>
             );
         }
-        return <span className="truncate w-full block">{name}</span>;
+        return <span className="w-full block break-words">{name}</span>;
     };
 
     // --- Sub-Components ---
@@ -827,6 +827,15 @@
             return Object.values(studentTotals).sort((a, b) => b.totalWeight - a.totalWeight);
 
         }, [filteredEntries, selectedDashboardClass]);
+
+        const currentDisplayTotal = useMemo(() => {
+            if (selectedDashboardClass) {
+                return filteredEntries
+                    .filter(e => e.className === selectedDashboardClass && e.status !== 'deleted')
+                    .reduce((acc, e) => acc + (Number(e.weight) || 0), 0);
+            }
+            return stats.grandTotal;
+        }, [selectedDashboardClass, filteredEntries, stats.grandTotal]);
 
         // --- Handlers ---
         const handleLogin = async (e) => {
@@ -1771,7 +1780,7 @@
                                             <div className={`px-6 pb-6 space-y-5 transition-all duration-500 ${!penaltyUnlocked ? 'opacity-40 pointer-events-none filter blur-[2px] select-none' : 'opacity-100'}`}>
                                                 <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 flex gap-2">
                                                     <IconAlertTriangle size={16} />
-                                                    <span>批量录入将自动生成多条记录。<br/>Rekod pukal akan dijana secara automatik.</span>
+                                                    <span>批量录入将自动生成多条记录。<br/>Pukal rekod akan dijana automatik.</span>
                                                 </div>
 
                                                 {/* Top Selection Row */}
@@ -2298,13 +2307,13 @@
                                                 onClick={() => setDashboardViewMode('overall')}
                                                 className={`px-3 py-1 rounded-md font-bold transition-all ${dashboardViewMode === 'overall' ? 'bg-white shadow text-emerald-700' : 'text-slate-400'}`}
                                             >
-                                                全校数据 Seluruh Sekolah
+                                                全校数据
                                             </button>
                                             <button 
                                                 onClick={() => setDashboardViewMode('class')}
                                                 className={`px-3 py-1 rounded-md font-bold transition-all ${dashboardViewMode === 'class' ? 'bg-white shadow text-emerald-700' : 'text-slate-400'}`}
                                             >
-                                                班级详情 Ikut Kelas
+                                                班级详情
                                             </button>
                                         </div>
                                     </div>
@@ -2389,19 +2398,17 @@
                                                     <span>该班级暂无回收记录</span>
                                                 </div>
                                             ) : (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                <ul>
                                                     {classStats.map((item, index) => (
-                                                        <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-emerald-200 transition-colors bg-white">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-8 flex justify-center">
-                                                                    <Medal rank={index + 1} />
-                                                                </div>
-                                                                <span className="font-bold text-slate-700 truncate max-w-[120px]">{item.name}</span>
-                                                            </div>
-                                                            <span className="font-mono font-bold text-emerald-600">{item.totalWeight.toFixed(2)} <span className="text-[10px] text-slate-400">kg</span></span>
-                                                        </div>
+                                                        <RankItem 
+                                                            key={index} 
+                                                            item={item} 
+                                                            index={index} 
+                                                            maxValue={classStats[0].totalWeight} 
+                                                            type="student_no_class" 
+                                                        />
                                                     ))}
-                                                </div>
+                                                </ul>
                                             )}
                                         </div>
                                     </div>
