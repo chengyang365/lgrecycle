@@ -2307,13 +2307,13 @@
                                                 onClick={() => setDashboardViewMode('overall')}
                                                 className={`px-3 py-1 rounded-md font-bold transition-all ${dashboardViewMode === 'overall' ? 'bg-white shadow text-emerald-700' : 'text-slate-400'}`}
                                             >
-                                                全校数据
+                                                全校 Sekolah
                                             </button>
                                             <button 
                                                 onClick={() => setDashboardViewMode('class')}
                                                 className={`px-3 py-1 rounded-md font-bold transition-all ${dashboardViewMode === 'class' ? 'bg-white shadow text-emerald-700' : 'text-slate-400'}`}
                                             >
-                                                班级详情
+                                                班级 Kelas
                                             </button>
                                         </div>
                                     </div>
@@ -2362,7 +2362,7 @@
 
                             {/* Leaderboards Grid */}
                             {dashboardViewMode === 'overall' ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[500px] animate-pop">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[2000px md:h-500] animate-pop">
                                     <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" />
                                     <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" />
                                     <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" />
@@ -2370,7 +2370,7 @@
                                 </div>
                             ) : (
                                 <div className="animate-pop">
-                                    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden h-[500px] flex flex-col">
+                                    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden min-h-[500px] flex flex-col">
                                         <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white flex justify-between items-center">
                                             <div>
                                                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
