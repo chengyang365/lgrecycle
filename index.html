@@ -714,7 +714,7 @@
                 const data = json.data;
                 if (!Array.isArray(data)) { setLoading(false); return; }
                 const uniqueEntries = Array.from(new Map(data.map(item => [item.id, item])).values());
-                uniqueEntries.sort((a, b) => b.createdAt - a.createdAt);
+                uniqueEntries.sort((a, b) => Number(b.id) - Number(a.id));
                 const cleaned = uniqueEntries.map(e => ({...e, weight: Number(e.weight) || 0}));
                 setEntries(cleaned);
                 setCloudError(false);
