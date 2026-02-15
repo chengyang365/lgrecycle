@@ -137,7 +137,7 @@
 
 <script type="text/babel">
     // --- 🟢 Configuration ---
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwms0S4YcoFb6SOexAy_3JkySaVn8M--8rbbOGwdii80RSfJL8QxCa4QlgbjqQCHL1C/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0Gj2qPE6clKDydjgmI5URACRD0yKmcOIXL55OpNVoLTkgc2eaWhlSWTt1qCOLEAdl/exec"; 
     
     // --- Error Boundary ---
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
@@ -162,7 +162,7 @@
                 return (
                     <div className="flex flex-col items-center justify-center min-h-screen bg-red-50 p-6 text-center">
                         <h1 className="text-2xl font-bold text-red-600 mb-2">系统发生错误 (Ralat Sistem)</h1>
-                        <p className="text-slate-600 mb-6 max-w-md">请尝试刷新页面，或重置数据。</p>
+                        <p className="text-slate-600 mb-6 max-w-md">请尝试刷新页面。</p>
                         <div className="flex gap-4">
                             <button onClick={() => window.location.reload()} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">刷新 / Refresh</button>
                             <button onClick={this.handleReset} className="bg-red-600 text-white px-6 py-2 rounded-lg font-bold">重置 / Reset</button>
@@ -220,20 +220,69 @@
         }
     };
 
-    // --- Icons (Defined Globally) ---
-    const IconRecycle = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 7.196 9.5 3.1 10.598"/><path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/><path d="m13.378 9.633 4.096 1.098 1.097-4.096"/></svg>;
-    const IconLeaf = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 1.45 10a7.3 7.3 0 0 1-5.3 5.3c-2.88 1.46-5.85 2.12-5.15 2.7ZM2 22C1.75 19 3 16.5 6 16c2 2 3 4 3 6 0 0-4.375.375-7 0Z"/></svg>;
-    const IconTrophy = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
-    const IconInbox = ({ size = 24 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>;
-    const IconFootprints = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 11 3.8 11 8c0 1.25-.76 2.08-1.88 2.48l-.48.17c-1.12.39-1.88 1.23-1.88 2.48v2.87"/><path d="M14 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C8.63 6 7 7.8 7 12c0 1.25.76 2.08 1.88 2.48l.48.17c1.12.39 1.88 1.23 1.88 2.48v2.87"/><path d="M7 22h6"/><path d="M13 22v-4"/><path d="M7 22v-4"/></svg>;
-    const IconTrash = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>;
-    const IconFilter = () => <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
+    // --- Icons (Defined Globally & Safely) ---
+    const IconRecycle = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/>
+            <path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/>
+            <path d="m14 16-3 3 3 3"/>
+            <path d="M8.293 13.596 7.196 9.5 3.1 10.598"/>
+            <path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/>
+            <path d="m13.378 9.633 4.096 1.098 1.097-4.096"/>
+        </svg>
+    );
+
+    const IconLeaf = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 1.45 10a7.3 7.3 0 0 1-5.3 5.3c-2.88 1.46-5.85 2.12-5.15 2.7ZM2 22C1.75 19 3 16.5 6 16c2 2 3 4 3 6 0 0-4.375.375-7 0Z"/>
+        </svg>
+    );
+
+    const IconTrophy = ({ size = 20, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+    );
+
+    const IconInbox = ({ size = 24 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+            <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+        </svg>
+    );
+
+    const IconFootprints = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 11 3.8 11 8c0 1.25-.76 2.08-1.88 2.48l-.48.17c-1.12.39-1.88 1.23-1.88 2.48v2.87"/>
+            <path d="M14 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C8.63 6 7 7.8 7 12c0 1.25.76 2.08 1.88 2.48l.48.17c1.12.39 1.88 1.23 1.88 2.48v2.87"/>
+            <path d="M7 22h6"/>
+            <path d="M13 22v-4"/>
+            <path d="M7 22v-4"/>
+        </svg>
+    );
+
+    const IconTrash = ({ size = 16 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            <line x1="10" x2="10" y1="11" y2="17"/>
+            <line x1="14" x2="14" y1="11" y2="17"/>
+        </svg>
+    );
+
+    const IconFilter = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
     const IconLock = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
-    const IconUnlock = () => <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
-    const IconArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+    const IconUnlock = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
+    const IconArrowRight = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
     const IconUser = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
     const IconAlertTriangle = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>;
-    const IconCamera = () => <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
+    const IconCamera = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
     const IconCheck = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"/></svg>;
     const IconCrown = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className || "text-yellow-500 fill-yellow-500"}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>;
     const IconSparkles = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className || "text-purple-500"}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 5h4"/><path d="M3 9h4"/></svg>;
@@ -245,24 +294,45 @@
     const IconDownload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
     const IconRefresh = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
     const IconSettings = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
-    const IconFileUp = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>;
+    
+    // 🟢 Fixed IconFileUp - Multi-line to prevent truncation errors
+    const IconFileUp = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            <path d="M12 12v6"/>
+            <path d="m15 15-3-3-3 3"/>
+        </svg>
+    );
+
+    // 新增：文件表格图标
+    const IconFileSpreadsheet = ({ size = 20, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            <path d="M8 13h2"/>
+            <path d="M14 13h2"/>
+            <path d="M8 17h2"/>
+            <path d="M14 17h2"/>
+        </svg>
+    );
+
     const IconTicket = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>;
     const IconCalendar = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>;
     const IconClipboardList = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>;
-    const IconImage = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
-    const IconSword = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>;
-    const IconHome = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
-    const IconPenTool = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>;
-    const IconBarChart = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>;
-    const IconGavel = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></svg>;
-    const IconClock = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-    // 新增：折叠箭头图标
     const IconChevronDown = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
-    const IconMenu = ({ size = 24 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
-    const IconPlus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
-    const IconMinus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
-    const IconUsers = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+    
+    // 🟢 Fixed IconPenTool - Re-adding missing component with multi-line
+    const IconPenTool = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m12 19 7-7 3 3-7 7-3-3z"/>
+            <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+            <path d="m2 2 7.586 7.586"/>
+            <circle cx="11" cy="11" r="2"/>
+        </svg>
+    );
 
+    // 🟢 MISSING COMPONENT FIXED
     const IconCloud = ({ connected }) => (
         <div className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${connected ? 'bg-emerald-800 text-emerald-200' : 'bg-red-800 text-red-200'}`}>
             <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></div>
@@ -270,9 +340,63 @@
         </div>
     );
     
-    // --- Spinner Component ---
+    // 🟢 MISSING COMPONENT FIXED
     const Spinner = () => (
         <div className="spinner w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></div>
+    );
+    
+    // 🟢 MISSING COMPONENT FIXED: IconBarChart
+    const IconBarChart = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" x2="12" y1="20" y2="10"/>
+            <line x1="18" x2="18" y1="20" y2="4"/>
+            <line x1="6" x2="6" y1="20" y2="16"/>
+        </svg>
+    );
+
+    // 🟢 MISSING COMPONENT FIXED: IconGavel
+    const IconGavel = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8"/>
+            <path d="m16 16 6-6"/>
+            <path d="m8 8 6-6"/>
+            <path d="m9 7 8 8"/>
+            <path d="m21 11-8-8"/>
+        </svg>
+    );
+
+    // 🟢 MISSING COMPONENT FIXED: IconMenu
+    const IconMenu = ({ size = 24 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" x2="20" y1="12" y2="12"/>
+            <line x1="4" x2="20" y1="6" y2="6"/>
+            <line x1="4" x2="20" y1="18" y2="18"/>
+        </svg>
+    );
+
+    // 🟢 MISSING COMPONENT FIXED: IconPlus
+    const IconPlus = ({ size = 16 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    );
+
+    // 🟢 MISSING COMPONENT FIXED: IconMinus
+    const IconMinus = ({ size = 16 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    );
+
+    // 🟢 MISSING COMPONENT FIXED: IconUsers
+    const IconUsers = ({ size = 20, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
     );
 
     // --- Helpers ---
@@ -319,7 +443,6 @@
         
         if (chineseMatches) {
             const chineseName = chineseMatches.join(' ');
-            // Remove Chinese characters and parens to get the other name
             const malayName = name.replace(chineseRegex, '').replace(/[()]/g, '').trim(); 
             
             return (
@@ -366,7 +489,7 @@
                                 )}
                                 {type === 'class' && item.totalDeduction > 0 && (
                                      <div className="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 flex-shrink-0" title="已扣除的碳足迹">
-                                         <IconFootprints size={12} /> -{item.totalDeduction}kg
+                                         <IconFootprints size={12} /> -{item.totalDeduction.toFixed(2)}kg
                                      </div>
                                 )}
                             </div>
@@ -390,13 +513,11 @@
         );
     };
 
-    // 修改：RankingCard 组件支持折叠
     const RankingCard = ({ title, subTitle, data, type }) => {
-        const [isExpanded, setIsExpanded] = useState(false); // 手机端默认折叠
+        const [isExpanded, setIsExpanded] = useState(false); 
         const maxValue = data.length > 0 ? (data[0].totalWeight || 1) : 1;
         
         return (
-            // 容器高度控制：手机端根据折叠状态变化，电脑端(md)强制撑满(h-full)
             <div className={`bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden flex flex-col transition-all duration-300 ring-1 ring-slate-900/5 ${isExpanded ? 'h-[500px]' : 'h-auto'} md:h-full`}>
                 <div 
                     className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex justify-between items-center cursor-pointer md:cursor-default"
@@ -409,13 +530,11 @@
                         </h3>
                         <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mt-1">{subTitle}</p>
                     </div>
-                    {/* 箭头图标：仅手机显示 (md:hidden)，根据状态旋转 */}
                     <div className={`md:hidden text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
                         <IconChevronDown />
                     </div>
                 </div>
                 
-                {/* 内容区域：手机端根据状态显示/隐藏，电脑端永远显示 (md:block) */}
                 <div className={`flex-1 overflow-y-auto p-4 custom-scrollbar ${isExpanded ? 'block' : 'hidden'} md:block`}>
                      {data.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2">
@@ -459,6 +578,109 @@
                 <Bar rank={2} item={second} heightClass="h-20" colorClass="bg-slate-400" delay="animate-pop" />
                 <Bar rank={1} item={first} heightClass="h-32" colorClass="bg-yellow-500" delay="animate-pop" />
                 <Bar rank={3} item={third} heightClass="h-12" colorClass="bg-amber-700" delay="animate-pop" />
+            </div>
+        );
+    };
+    
+    // --- 📊 Report Component for A4 Export ---
+    const MonthlyReportView = ({ data, config }) => {
+        const { monthIndex, year } = config;
+        const monthName = MONTH_OPTIONS[monthIndex].split('/')[0].trim();
+        const monthNameMalay = MONTH_OPTIONS[monthIndex].split('/')[1].trim();
+        
+        const GroupSection = ({ title, subTitle, classes, individuals }) => (
+            <div className="mb-8 break-inside-avoid">
+                <div className="bg-slate-800 text-white p-3 rounded-t-lg flex justify-between items-center">
+                    <div>
+                        <h2 className="text-xl font-bold">{title}</h2>
+                        <span className="text-sm opacity-80">{subTitle}</span>
+                    </div>
+                </div>
+                <div className="border-x border-b border-slate-300 p-4 bg-white rounded-b-lg">
+                    {/* Class Standings */}
+                    <div className="mb-6">
+                        <h3 className="font-bold text-slate-800 border-b-2 border-emerald-500 inline-block mb-3">班级荣誉榜 / Kedudukan Kelas</h3>
+                        <table className="w-full text-sm border-collapse">
+                            <thead>
+                                <tr className="bg-slate-100 text-slate-600">
+                                    <th className="p-2 text-center w-12">排名</th>
+                                    <th className="p-2 text-left">班级</th>
+                                    <th className="p-2 text-right">回收量(KG)</th>
+                                    <th className="p-2 text-right">奖励金(RM)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {classes.map((c, i) => {
+                                    const isTop3 = i < 3;
+                                    const reward = Math.floor(c.totalWeight / 50) * 10;
+                                    return (
+                                        <tr key={i} className={`border-b border-slate-100 ${isTop3 ? 'bg-yellow-50/50' : ''}`}>
+                                            <td className="p-2 text-center font-bold">
+                                                {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
+                                            </td>
+                                            <td className="p-2 font-bold">{c.className}</td>
+                                            <td className="p-2 text-right font-mono">{c.totalWeight.toFixed(2)}</td>
+                                            <td className="p-2 text-right font-bold text-emerald-600">RM {reward}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {/* Individual Standings */}
+                    <div>
+                        <h3 className="font-bold text-slate-800 border-b-2 border-blue-500 inline-block mb-3">个人荣誉榜 / Tokoh Kitar Semula (TOP 20)</h3>
+                         <table className="w-full text-sm border-collapse">
+                            <thead>
+                                <tr className="bg-slate-100 text-slate-600">
+                                    <th className="p-2 text-center w-12">排名</th>
+                                    <th className="p-2 text-left">姓名 / Nama</th>
+                                    <th className="p-2 text-center w-16">班级</th>
+                                    <th className="p-2 text-right">回收量(KG)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {individuals.slice(0, 20).map((s, i) => (
+                                    <tr key={i} className="border-b border-slate-100">
+                                        <td className="p-2 text-center text-slate-500">{i + 1}</td>
+                                        <td className="p-2 font-medium">{renderName(s.name)}</td>
+                                        <td className="p-2 text-center">{s.className}</td>
+                                        <td className="p-2 text-right font-mono">{s.totalWeight.toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+
+        return (
+            <div id="monthly-report-container" className="bg-white p-8 w-[1000px] min-h-[1414px] mx-auto text-slate-900 font-sans">
+                <div className="text-center mb-8 border-b-4 border-emerald-600 pb-4">
+                    <h1 className="text-3xl font-black text-slate-800 mb-2">新廊华小校园环保回收计划</h1>
+                    <h2 className="text-xl font-bold text-emerald-700">月度总结成绩单 / Laporan Kitar Semula Bulanan</h2>
+                    <p className="text-lg mt-2 font-medium text-slate-500">{monthName} {year} / {monthNameMalay} {year}</p>
+                </div>
+                
+                <GroupSection 
+                    title="低年级组 (一年级 - 三年级)" 
+                    subTitle="Tahap 1 (Tahun 1 - 3)"
+                    classes={data.lower.classes}
+                    individuals={data.lower.individuals}
+                />
+                
+                <GroupSection 
+                    title="高年级组 (四年级 - 六年级)" 
+                    subTitle="Tahap 2 (Tahun 4 - 6)"
+                    classes={data.upper.classes}
+                    individuals={data.upper.individuals}
+                />
+                
+                <div className="text-center text-xs text-slate-400 mt-8">
+                    Generated by SJKC LG Recycling System • {new Date().toLocaleString()}
+                </div>
             </div>
         );
     };
@@ -510,20 +732,14 @@
     const App = () => {
         const [entries, setEntries] = useState(() => {
             try {
-                const saved = localStorage.getItem('sjkc_entries');
-                const parsed = saved ? JSON.parse(saved) : [];
-                if (!Array.isArray(parsed)) return [];
-                const cleaned = parsed.map(e => ({...e, weight: Number(e.weight) || 0}));
-                return Array.from(new Map(cleaned.map(item => [item.id, item])).values());
+                // Initial empty state, will fetch from cloud
+                return [];
             } catch (e) { return []; }
         });
         const [students, setStudents] = useState(() => {
             try {
-                const saved = localStorage.getItem('sjkc_students');
-                const parsed = saved ? JSON.parse(saved) : [];
-                if (!Array.isArray(parsed)) return [];
-                const cleaned = parsed.filter(s => s && typeof s === 'object' && s.id);
-                return Array.from(new Map(cleaned.map(item => [item.id, item])).values());
+                // Initial empty state, will fetch from cloud
+                return [];
             } catch (e) { return []; }
         });
         const [auditLogs, setAuditLogs] = useState(() => {
@@ -546,6 +762,14 @@
         const fileInputRef = useRef(null);
         const smartImportRef = useRef(null);
         const posterRef = useRef(null);
+        
+        // Report State
+        const [showReportModal, setShowReportModal] = useState(false);
+        const [reportData, setReportData] = useState(null);
+        const [reportConfig, setReportConfig] = useState({
+            monthIndex: new Date().getMonth(),
+            year: new Date().getFullYear()
+        });
         
         // App State
         const [viewMode, setViewMode] = useState('landing'); 
@@ -854,6 +1078,70 @@
             return stats.grandTotal;
         }, [selectedDashboardClass, filteredEntries, stats.grandTotal]);
 
+        // --- NEW: Generate Monthly Report Logic ---
+        const handleGenerateReport = () => {
+            const { monthIndex, year } = reportConfig;
+            
+            // Filter ALL entries by selected month/year (ignore dashboard filters)
+            const monthlyEntries = entries.filter(e => {
+                const entryYear = e.calendarYear || new Date(e.createdAt).getFullYear();
+                const entryMonth = e.month ? MONTH_OPTIONS.indexOf(e.month) : new Date(e.createdAt).getMonth();
+                return entryYear === year && entryMonth === monthIndex && e.status !== 'deleted';
+            });
+
+            const classTotals = {};
+            const indivTotals = {};
+
+            monthlyEntries.forEach(e => {
+                const w = Number(e.weight) || 0;
+                if (!classTotals[e.className]) {
+                    classTotals[e.className] = { className: e.className, totalWeight: 0, grade: e.year, totalDeduction: 0 };
+                }
+                classTotals[e.className].totalWeight += w;
+                
+                if (e.type === 'recycle' && (e.name || e.studentID)) {
+                     let uniqueKey = e.studentID ? e.studentID : e.name;
+                     if (!indivTotals[uniqueKey]) {
+                         indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: e.year };
+                     }
+                     indivTotals[uniqueKey].totalWeight += w;
+                }
+            });
+
+            const allClasses = Object.values(classTotals).sort((a,b) => b.totalWeight - a.totalWeight);
+            const allIndivs = Object.values(indivTotals).sort((a,b) => b.totalWeight - a.totalWeight);
+
+            // Filter Top 3 + Qualified (>=50kg)
+            const filterClassList = (list) => {
+                return list.filter((c, index) => index < 3 || c.totalWeight >= 50);
+            };
+
+            setReportData({
+                lower: {
+                    classes: filterClassList(allClasses.filter(c => c.grade <= 3)),
+                    individuals: allIndivs.filter(i => i.grade <= 3)
+                },
+                upper: {
+                    classes: filterClassList(allClasses.filter(c => c.grade >= 4)),
+                    individuals: allIndivs.filter(i => i.grade >= 4)
+                }
+            });
+            setShowReportModal(true);
+        };
+        
+        const downloadReport = () => {
+            const reportNode = document.getElementById('monthly-report-container');
+            if(!reportNode) return;
+            
+            // Use html2canvas to capture the report
+             html2canvas(reportNode, { scale: 2, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `SJKCLG_MonthlyReport_${reportConfig.year}_${reportConfig.monthIndex+1}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        };
+
         // --- Handlers ---
         const handleLogin = async (e) => {
             e.preventDefault();
@@ -1082,6 +1370,8 @@
             const studentGrade = parseInt(penaltyClass.charAt(0)) || 0;
             const currentMonthStr = MONTH_OPTIONS[penaltyMonth];
             const currentYearInt = entryDateObj.getFullYear();
+            const timestamp = Date.now();
+            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
 
             const entriesToAdd = [];
 
@@ -1090,7 +1380,7 @@
                 const val = parseInt(value, 10);
                 if (val > 0) {
                     entriesToAdd.push({
-                        id: (Date.now() + Math.random()).toString(),
+                        id: (timestamp + Math.random()).toString(),
                         type: 'deduction',
                         teacherName: 'Admin',
                         name: '', 
@@ -1102,7 +1392,7 @@
                         calendarYear: currentYearInt,
                         year: studentGrade,
                         createdAt: Date.now(),
-                        displayTime: "PENALTY"
+                        displayTime: displayTime
                     });
                 }
             });
@@ -1144,9 +1434,13 @@
             const entryDateObj = new Date(formData.entryDate);
             const studentGrade = formData.selectedClass ? (parseInt(formData.selectedClass.charAt(0)) || 0) : 0;
             const isManualDate = formData.entryDate !== new Date().toISOString().split('T')[0];
+            
+            // 🟢 Always record timestamp as displayTime
+            const timestamp = Date.now();
+            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
 
             const newEntry = {
-                id: (Date.now()).toString(),
+                id: timestamp.toString(),
                 type: 'recycle',
                 teacherName: formData.teacherName.trim(),
                 name: formData.studentName.trim(),
@@ -1157,7 +1451,7 @@
                 calendarYear: entryDateObj.getFullYear(),
                 year: studentGrade,
                 createdAt: entryDateObj.getTime(),
-                displayTime: isManualDate ? "Manual Entry" : new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'})
+                displayTime: displayTime
             };
 
             setEntries(prev => [newEntry, ...prev]);
@@ -2379,8 +2673,7 @@
 
                             {/* Leaderboards Grid */}
                             {dashboardViewMode === 'overall' ? (
-                                // 修改：父容器高度改为 h-auto (手机) 和 md:h-[600px] (电脑)
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-auto md:h-[600px] animate-pop">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[2000px md:h-500] animate-pop">
                                     <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" />
                                     <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" />
                                     <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" />
