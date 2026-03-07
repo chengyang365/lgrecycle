@@ -1053,10 +1053,10 @@
 
             return {
                 grandTotal,
-                classLower: sortedClasses.filter(c => c.grade <= 3),
-                classUpper: sortedClasses.filter(c => c.grade >= 4),
-                indivLower: sortedIndividuals.filter(i => i.grade <= 3),
-                indivUpper: sortedIndividuals.filter(i => i.grade >= 4)
+                classLower: sortedClasses.filter(c.grade >= 1 && c.grade <= 3),
+                classUpper: sortedClasses.filter(c.grade >= 4 && c.grade <= 6),
+                indivLower: sortedIndividuals.filter(i => i.grade >= 1 && i.grade <= 3),
+                indivUpper: sortedIndividuals.filter(i => i.grade >= 4 && i.grade <= 6)
             };
         }, [filteredEntries]);
 
