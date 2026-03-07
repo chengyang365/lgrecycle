@@ -1021,11 +1021,19 @@
 
                 const w = Number(entry.weight) || 0;
                 grandTotal += w;
+
+                 // 🟢 严格解析年级：优先用 entry.year，如果没有则从 className 提取第一位数字，避免归类错误
+                let grade = parseInt(entry.year);
+                if (isNaN(grade) || grade === 0) {
+                    grade = entry.className ? parseInt(entry.className.charAt(0)) : 0;
+                }
+                if (isNaN(grade)) grade = 0;
+
                 if (!classTotals[entry.className]) {
                     classTotals[entry.className] = { 
                         className: entry.className, 
                         totalWeight: 0, 
-                        grade: entry.year,
+                        grade: grade, // 🟢 写入安全解析后的年级
                         totalDeduction: 0 // Initialize
                     };
                 }
@@ -1089,7 +1097,6 @@
             return stats.grandTotal;
         }, [selectedDashboardClass, filteredEntries, stats.grandTotal]);
 
-        // --- NEW: Generate Monthly Report Logic ---
         const handleGenerateReport = () => {
             const { monthIndex, year } = reportConfig;
             
@@ -1105,15 +1112,23 @@
 
             monthlyEntries.forEach(e => {
                 const w = Number(e.weight) || 0;
+                
+                // 🟢 严格解析年级：优先用 e.year，如果没有则从 className 提取第一位数字
+                let grade = parseInt(e.year);
+                if (isNaN(grade) || grade === 0) {
+                    grade = e.className ? parseInt(e.className.charAt(0)) : 0;
+                }
+                if (isNaN(grade)) grade = 0;
+
                 if (!classTotals[e.className]) {
-                    classTotals[e.className] = { className: e.className, totalWeight: 0, grade: e.year, totalDeduction: 0 };
+                    classTotals[e.className] = { className: e.className, totalWeight: 0, grade: grade, totalDeduction: 0 };
                 }
                 classTotals[e.className].totalWeight += w;
                 
                 if (e.type === 'recycle' && (e.name || e.studentID)) {
                      let uniqueKey = e.studentID ? e.studentID : e.name;
                      if (!indivTotals[uniqueKey]) {
-                         indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: e.year };
+                         indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade };
                      }
                      indivTotals[uniqueKey].totalWeight += w;
                 }
@@ -1129,16 +1144,18 @@
 
             setReportData({
                 lower: {
-                    classes: filterClassList(allClasses.filter(c => c.grade <= 3)),
-                    individuals: allIndivs.filter(i => i.grade <= 3)
+                    // 🟢 严格限定区间，防止 0 或异常字符进入报表
+                    classes: filterClassList(allClasses.filter(c => c.grade >= 1 && c.grade <= 3)),
+                    individuals: allIndivs.filter(i => i.grade >= 1 && i.grade <= 3)
                 },
                 upper: {
-                    classes: filterClassList(allClasses.filter(c => c.grade >= 4)),
-                    individuals: allIndivs.filter(i => i.grade >= 4)
+                    classes: filterClassList(allClasses.filter(c => c.grade >= 4 && c.grade <= 6)),
+                    individuals: allIndivs.filter(i => i.grade >= 4 && i.grade <= 6)
                 }
             });
             setShowReportModal(true);
         };
+
         
         const downloadReport = () => {
             const reportNode = document.getElementById('monthly-report-container');
