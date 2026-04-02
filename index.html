@@ -129,7 +129,7 @@
 <script type="text/babel">
     // --- 🟢 Configuration ---
     // 请确保这是您最新部署的 Google Apps Script URL (新版本)
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV5kaJ0vgsDhB-Ll1pwAVpAevPUMnWqgPmgi52daEXwpY31Xd3k6HpIYV7M05HQoOG/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLpcRedKXZj2tlevGZPdiRziUG_IB0pytG95ofzAebRop8K5gCVe060MR3PHMtPtSc/exec"; 
     
     // --- Error Boundary ---
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
@@ -2333,9 +2333,19 @@
                                                                 : <span className="truncate max-w-[100px] sm:max-w-none">{(entry.name || entry.studentID) ? (entry.name || `ID: ${entry.studentID}`) : <span className="text-slate-400 italic font-normal">班级贡献</span>}</span>
                                                             }
                                                         </div>
-                                                        <div className="text-[10px] text-slate-400 mt-1 flex gap-2">
-                                                            <span>{entry.displayTime}</span>
-                                                            {entry.teacherName && <span className="text-slate-500 font-medium truncate max-w-[80px]">• 老师: {entry.teacherName}</span>}
+                                                        <div className="text-[10px] text-slate-400 mt-1 flex gap-2 whitespace-nowrap">
+                                                            <span>
+                                                                {(() => {
+                                                                    const ts = entry.createdAt;
+                                                                    if (typeof ts === 'string' && (ts.includes('/') || ts.includes('-'))) return ts;
+                                                                    const d = new Date(ts);
+                                                                    if (!isNaN(d.getTime())) {
+                                                                        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${entry.displayTime || ''}`;
+                                                                    }
+                                                                    return entry.displayTime || '';
+                                                                })()}
+                                                            </span>
+                                                            {entry.teacherName && <span className="text-slate-500 font-medium truncate max-w-[120px]">• 老师: {entry.teacherName}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-4 flex-shrink-0">
