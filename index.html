@@ -4,25 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>新廊华小校园环保回收计划 | Projek Kitar Semula SJK (C) Ladang Grisek</title>
-    <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://em-content.zobj.net/source/apple/419/recycling-symbol_267b-fe0f.png">
     <link rel="icon" type="image/png" sizes="192x192" href="https://em-content.zobj.net/source/apple/419/recycling-symbol_267b-fe0f.png">
     <link rel="apple-touch-icon" href="https://em-content.zobj.net/source/apple/419/recycling-symbol_267b-fe0f.png">
     
-    <!-- PWA Manifest -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"SJK (C) Ladang Grisek Recycling","short_name":"SJK (C) Recycling","start_url":".","display":"standalone","background_color":"#f0fdf4","theme_color":"#059669","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/188/188333.png","sizes":"192x192","type":"image/png"}]}'>
     <meta name="theme-color" content="#059669">
     
-    <!-- React & Babel -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- html2canvas for Screenshot -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <!-- jsPDF for PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
@@ -47,6 +44,11 @@
             background: linear-gradient(to right, #fffbeb, #ffffff);
         }
         
+        /* Markdown Styles */
+        .prose p { margin-bottom: 0.5em; }
+        .prose strong { color: #059669; }
+        .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 0.5em; }
+
         /* Print Optimization */
         @media print {
             body { background-color: white; }
@@ -101,7 +103,6 @@
 
 <div id="root"></div>
 
-<!-- Service Worker Registration for PWA -->
 <script>
     if ('serviceWorker' in navigator) {
         const swCode = `
@@ -128,8 +129,7 @@
 
 <script type="text/babel">
     // --- 🟢 Configuration ---
-    // 请确保这是您最新部署的 Google Apps Script URL (新版本)
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLpcRedKXZj2tlevGZPdiRziUG_IB0pytG95ofzAebRop8K5gCVe060MR3PHMtPtSc/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwms0S4YcoFb6SOexAy_3JkySaVn8M--8rbbOGwdii80RSfJL8QxCa4QlgbjqQCHL1C/exec"; 
     
     // --- Error Boundary ---
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
@@ -200,13 +200,73 @@
         } catch (e) { }
     };
 
-    // --- Icons ---
-    const IconRecycle = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 7.196 9.5 3.1 10.598"/><path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/><path d="m13.378 9.633 4.096 1.098 1.097-4.096"/></svg>;
-    const IconLeaf = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 1.45 10a7.3 7.3 0 0 1-5.3 5.3c-2.88 1.46-5.85 2.12-5.15 2.7ZM2 22C1.75 19 3 16.5 6 16c2 2 3 4 3 6 0 0-4.375.375-7 0Z"/></svg>;
-    const IconTrophy = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
-    const IconInbox = ({ size = 24 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>;
-    const IconFootprints = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 14c0-3 2-4.5 3.5-4.5S11 11 11 14s-1.5 6.5-3.5 6.5S4 17 4 14z"/><path d="M4 7h.01"/><path d="M6.5 5.5h.01"/><path d="M9.5 6.5h.01"/><path d="M13 9c0-3 2-4.5 3.5-4.5S20 6 20 9s-1.5 6.5-3.5 6.5S13 12 13 9z"/><path d="M14.5 3.5h.01"/><path d="M17.5 2h.01"/><path d="M20 4h.01"/></svg>;
-    const IconTrash = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>;
+    // --- Effects ---
+    const fireConfetti = () => {
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#34d399', '#facc15', '#fbbf24'] 
+            });
+        }
+    };
+
+    // --- Icons (Defined Globally & Safely) ---
+    const IconRecycle = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/>
+            <path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/>
+            <path d="m14 16-3 3 3 3"/>
+            <path d="M8.293 13.596 7.196 9.5 3.1 10.598"/>
+            <path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/>
+            <path d="m13.378 9.633 4.096 1.098 1.097-4.096"/>
+        </svg>
+    );
+
+    const IconLeaf = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 1.45 10a7.3 7.3 0 0 1-5.3 5.3c-2.88 1.46-5.85 2.12-5.15 2.7ZM2 22C1.75 19 3 16.5 6 16c2 2 3 4 3 6 0 0-4.375.375-7 0Z"/>
+        </svg>
+    );
+
+    const IconTrophy = ({ size = 20, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+    );
+
+    const IconInbox = ({ size = 24 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+            <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+        </svg>
+    );
+
+    const IconFootprints = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M4 14c0-3 2-4.5 3.5-4.5S11 11 11 14s-1.5 6.5-3.5 6.5S4 17 4 14z"/>
+            <path d="M4 7h.01"/><path d="M6.5 5.5h.01"/><path d="M9.5 6.5h.01"/>
+            <path d="M13 9c0-3 2-4.5 3.5-4.5S20 6 20 9s-1.5 6.5-3.5 6.5S13 12 13 9z"/>
+            <path d="M14.5 3.5h.01"/><path d="M17.5 2h.01"/><path d="M20 4h.01"/>
+        </svg>
+    );
+
+    const IconTrash = ({ size = 16 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            <line x1="10" x2="10" y1="11" y2="17"/>
+            <line x1="14" x2="14" y1="11" y2="17"/>
+        </svg>
+    );
+
     const IconFilter = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
     const IconLock = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
     const IconUnlock = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
@@ -216,33 +276,154 @@
     const IconCamera = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
     const IconCheck = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"/></svg>;
     const IconCrown = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className || "text-yellow-500 fill-yellow-500"}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>;
+    const IconSparkles = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className || "text-purple-500"}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 5h4"/><path d="M3 9h4"/></svg>;
     const IconSearch = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
     const IconEdit = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
-    const IconX = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+    const IconX = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 18 12"/></svg>;
     const IconSave = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>;
     const IconUpload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
     const IconDownload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
     const IconRefresh = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
     const IconSettings = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
-    const IconSword = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>;
-    const IconClock = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-    const IconFileUp = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>;
-    const IconFileSpreadsheet = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg>;
-    const IconImage = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
+    
+    // 🟢 Fixed IconSword
+    const IconSword = ({ size = 24, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/>
+            <line x1="13" y1="19" x2="19" y2="13"/>
+            <line x1="16" y1="16" x2="20" y2="20"/>
+            <line x1="19" y1="21" x2="21" y2="19"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconClock
+    const IconClock = ({ size = 16, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconFileUp
+    const IconFileUp = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            <path d="M12 12v6"/>
+            <path d="m15 15-3-3-3 3"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconFileSpreadsheet
+    const IconFileSpreadsheet = ({ size = 20, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            <path d="M8 13h2"/>
+            <path d="M14 13h2"/>
+            <path d="M8 17h2"/>
+            <path d="M14 17h2"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconImage
+    const IconImage = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+        </svg>
+    );
+
     const IconTicket = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>;
     const IconCalendar = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>;
     const IconClipboardList = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>;
     const IconChevronDown = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
-    const IconPenTool = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>;
-    const IconHome = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
-    const IconCloud = ({ connected }) => <div className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${connected ? 'bg-emerald-800 text-emerald-200' : 'bg-red-800 text-red-200'}`}><div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></div>{connected ? 'Online' : 'Offline'}</div>;
-    const Spinner = () => <div className="spinner w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></div>;
-    const IconBarChart = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>;
-    const IconGavel = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></svg>;
-    const IconMenu = ({ size = 24 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
-    const IconPlus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-    const IconMinus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-    const IconUsers = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+    
+    // 🟢 Fixed IconPenTool
+    const IconPenTool = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m12 19 7-7 3 3-7 7-3-3z"/>
+            <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+            <path d="m2 2 7.586 7.586"/>
+            <circle cx="11" cy="11" r="2"/>
+        </svg>
+    );
+    
+    // 🟢 Fixed IconHome
+    const IconHome = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconCloud
+    const IconCloud = ({ connected }) => (
+        <div className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${connected ? 'bg-emerald-800 text-emerald-200' : 'bg-red-800 text-red-200'}`}>
+            <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></div>
+            {connected ? 'Sheets On' : 'Offline Mode'}
+        </div>
+    );
+    
+    // 🟢 Fixed Spinner
+    const Spinner = () => (
+        <div className="spinner w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></div>
+    );
+    
+    // 🟢 Fixed IconBarChart
+    const IconBarChart = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" x2="12" y1="20" y2="10"/>
+            <line x1="18" x2="18" y1="20" y2="4"/>
+            <line x1="6" x2="6" y1="20" y2="16"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconGavel
+    const IconGavel = ({ size = 20 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8"/>
+            <path d="m16 16 6-6"/>
+            <path d="m8 8 6-6"/>
+            <path d="m9 7 8 8"/>
+            <path d="m21 11-8-8"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconMenu
+    const IconMenu = ({ size = 24 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" x2="20" y1="12" y2="12"/>
+            <line x1="4" x2="20" y1="6" y2="6"/>
+            <line x1="4" x2="20" y1="18" y2="18"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconPlus
+    const IconPlus = ({ size = 16 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconMinus
+    const IconMinus = ({ size = 16 }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    );
+
+    // 🟢 Fixed IconUsers
+    const IconUsers = ({ size = 20, className }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+    );
 
     // --- Helpers ---
     const generateClassOptions = () => {
@@ -264,6 +445,14 @@
         "一月 / Jan", "二月 / Feb", "三月 / Mar", "四月 / Apr", "五月 / May", "六月 / Jun",
         "七月 / Jul", "八月 / Aug", "九月 / Sep", "十月 / Oct", "十一月 / Nov", "十二月 / Dec"
     ];
+    
+    // 🟢 Quarters Configuration
+    const QUARTERS = {
+        'Q1': { label: '第一季度 (1-3月)', months: [0, 1, 2] },
+        'Q2': { label: '第二季度 (4-6月)', months: [3, 4, 5] },
+        'Q3': { label: '第三季度 (7-9月)', months: [6, 7, 8] },
+        'Q4': { label: '第四季度 (10-11月)', months: [9, 10] } // 根据要求：第四季度为 10-11月
+    };
     
     const YEAR_OPTIONS = [2026];
 
@@ -299,7 +488,9 @@
     const RankItem = ({ item, index, maxValue, type }) => {
         const percentage = maxValue > 0 ? (item.totalWeight / maxValue) * 100 : 0;
         const isChampion = index === 0;
+        // 🟢 使用提前计算好的每月独立奖励金
         const rewardValue = type === 'class' ? (item.totalReward || 0) : 0;
+        // 视觉上仅使用总重量的余数展示进度，不受历史跨月影响
         const progress = ((item.totalWeight % 50) / 50) * 100;
         
         return (
@@ -420,7 +611,7 @@
         );
     };
     
-    // --- 📊 Report Component for A4 Export ---
+    // --- 📊 Report Component for A4 Export (Monthly) ---
     const MonthlyReportView = ({ data, config }) => {
         const { monthIndex, year } = config;
         const monthName = MONTH_OPTIONS[monthIndex].split('/')[0].trim();
@@ -443,23 +634,23 @@
                                 <tr className="bg-slate-100 text-slate-600">
                                     <th className="p-2 text-center w-12">排名</th>
                                     <th className="p-2 text-left">班级</th>
-                                    <th className="p-2 text-right">回收净重(KG)</th>
                                     <th className="p-2 text-right text-red-500">扣除(KG)</th>
+                                    <th className="p-2 text-right">回收净重(KG)</th>
                                     <th className="p-2 text-right">奖励金(RM)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {classes.map((c, i) => {
                                     const isTop3 = i < 3 && c.totalWeight > 0;
-                                    const reward = c.totalReward || 0;
+                                    const reward = c.totalReward || 0; // 🟢 读取按月独立计算的奖励金
                                     return (
                                         <tr key={i} className={`border-b border-slate-100 ${isTop3 ? 'bg-yellow-50/50' : ''}`}>
                                             <td className="p-2 text-center font-bold">
                                                 {isTop3 ? (i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉') : i + 1}
                                             </td>
                                             <td className="p-2 font-bold">{c.className}</td>
-                                            <td className="p-2 text-right font-mono">{c.totalWeight.toFixed(2)}</td>
                                             <td className="p-2 text-right font-mono text-red-500">{c.totalDeduction > 0 ? `-${c.totalDeduction.toFixed(2)}` : '0.00'}</td>
+                                            <td className="p-2 text-right font-mono font-bold text-emerald-600">{c.totalWeight.toFixed(2)}</td>
                                             <td className="p-2 text-right font-bold text-emerald-600">RM {reward}</td>
                                         </tr>
                                     );
@@ -525,6 +716,106 @@
         );
     };
 
+    // --- 🏆 Report Component for A4 Export (Quarterly) ---
+    const QuarterlyReportView = ({ data, config }) => {
+        const quarterLabel = QUARTERS[config.quarter].label;
+        const year = config.year;
+
+        const GroupList = ({ title, individuals }) => {
+            // 🟢 1. 引入分页状态
+            const [currentPage, setCurrentPage] = useState(1);
+            const recordsPerPage = 10;
+            const totalPages = Math.ceil(individuals.length / recordsPerPage) || 1;
+
+            // 🟢 2. 计算当前页需要显示的数据
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const currentRecords = individuals.slice(startIndex, startIndex + recordsPerPage);
+
+            return (
+                <div className="mb-8 break-inside-avoid">
+                    <div className="bg-slate-800 text-white p-3 rounded-t-lg flex justify-between items-center">
+                        <h2 className="text-xl font-bold">{title}</h2>
+                        
+                        {/* 🟢 3. 分页控制按钮 */}
+                        {totalPages > 1 && (
+                            <div className="flex gap-2 items-center text-sm">
+                                <button 
+                                    data-html2canvas-ignore="true"
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-2 py-1 bg-slate-700 rounded hover:bg-slate-600 disabled:opacity-50 transition-colors"
+                                >
+                                    ◀ 上一页
+                                </button>
+                                <span className="font-mono">第 {currentPage} / {totalPages} 页</span>
+                                <button 
+                                    data-html2canvas-ignore="true"
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-2 py-1 bg-slate-700 rounded hover:bg-slate-600 disabled:opacity-50 transition-colors"
+                                >
+                                    下一页 ▶
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="border-x border-b border-slate-300 p-4 bg-white rounded-b-lg">
+                        <table className="w-full text-sm border-collapse">
+                            <thead>
+                                <tr className="bg-slate-100 text-slate-600">
+                                    <th className="p-2 text-center w-12">排名</th>
+                                    <th className="p-2 text-left">姓名 / Nama</th>
+                                    <th className="p-2 text-center w-24">班级</th>
+                                    <th className="p-2 text-right">累积回收量(KG)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* 🟢 4. 使用切割后的数据渲染，并加上真实排名 */}
+                                {currentRecords.map((s, i) => {
+                                    const rank = startIndex + i; // 计算真实的全局排名
+                                    return (
+                                        <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
+                                            <td className="p-2 text-center font-bold text-slate-500">
+                                                {rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : rank + 1}
+                                            </td>
+                                            <td className="p-2 font-medium">{renderName(s.name)}</td>
+                                            <td className="p-2 text-center"><span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">{s.className}</span></td>
+                                            <td className="p-2 text-right font-mono font-bold text-emerald-600">{s.totalWeight.toFixed(2)}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {individuals.length === 0 && (
+                                    <tr><td colSpan="4" className="text-center p-8 text-slate-400">暂无数据 / Tiada Data</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        return (
+            <div id="quarterly-report-container" className="bg-white p-8 w-[1000px] min-h-[1414px] mx-auto text-slate-900 font-sans">
+                <div className="text-center mb-8 border-b-4 border-blue-600 pb-4 relative">
+                    <div className="absolute top-0 right-0 opacity-20"><IconTrophy size={60}/></div>
+                    <h1 className="text-3xl font-black text-slate-800 mb-2">新廊华小校园环保回收计划</h1>
+                    <h2 className="text-2xl font-black text-blue-700 tracking-widest">季度回收王者荣耀</h2>
+                    <p className="text-sm font-bold text-slate-500 tracking-widest mt-1 mb-2">THE KING OF RECYCLING</p>
+                    <div className="inline-block bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-bold text-sm border border-blue-200">
+                        {year}年 {quarterLabel}
+                    </div>
+                </div>
+                
+                <GroupList title="低年级组 (Tahap 1) - 个人累积排行榜" individuals={data.lower} />
+                <GroupList title="高年级组 (Tahap 2) - 个人累积排行榜" individuals={data.upper} />
+                
+                <div className="text-center text-xs text-slate-400 mt-8">
+                    Generated by SJKC LG Recycling System • {new Date().toLocaleString()}
+                </div>
+            </div>
+        );
+    };
+
     // --- Secure Password Input Component ---
     const SecurePasswordInput = ({ value, onChange, placeholder, autoFocus, theme = "emerald" }) => {
         const borderClass = theme === "red" 
@@ -532,12 +823,14 @@
             : "focus-within:border-emerald-500 focus-within:ring-emerald-100";
             
         const handleChange = (e) => {
-            const val = e.target.value.replace(/[^0-9]/g, ''); 
+            const val = e.target.value.replace(/[^0-9]/g, ''); // 仅限数字
             onChange({ target: { value: val } });
         };
 
         return (
             <div className={`relative w-full h-14 bg-white border border-slate-200 rounded-xl transition-all ${borderClass} focus-within:ring-4 flex items-center justify-center overflow-hidden`}>
+                
+                {/* 1. 真正的 Input (透明层，铺满整个 div) */}
                 <input 
                     type="tel"
                     inputMode="numeric"
@@ -551,6 +844,8 @@
                     spellCheck="false"
                     autoFocus={autoFocus}
                 />
+
+                {/* 2. 视觉层 (圆点) */}
                 <div className="flex gap-3 pointer-events-none z-10">
                     {value.length > 0 ? (
                         value.split('').map((_, i) => (
@@ -566,17 +861,16 @@
 
     // --- Main App Component ---
     const App = () => {
-        // [FIXED] 优先读取本地缓存，离线也能加载数据
         const [entries, setEntries] = useState(() => {
             try {
-                const saved = localStorage.getItem('sjkc_entries');
-                return saved ? JSON.parse(saved) : [];
+                // Initial empty state, will fetch from cloud
+                return [];
             } catch (e) { return []; }
         });
         const [students, setStudents] = useState(() => {
             try {
-                const saved = localStorage.getItem('sjkc_students');
-                return saved ? JSON.parse(saved) : [];
+                // Initial empty state, will fetch from cloud
+                return [];
             } catch (e) { return []; }
         });
         const [auditLogs, setAuditLogs] = useState(() => {
@@ -608,6 +902,14 @@
             year: 2026
         });
         
+        // 🟢 Quarterly Report State
+        const [showQuarterlyModal, setShowQuarterlyModal] = useState(false);
+        const [quarterlyData, setQuarterlyData] = useState(null);
+        const [quarterlyConfig, setQuarterlyConfig] = useState({
+            year: 2026,
+            quarter: 'Q1'
+        });
+        
         // App State
         const [viewMode, setViewMode] = useState('landing'); 
         const [entryTab, setEntryTab] = useState('recycle'); 
@@ -628,6 +930,7 @@
 
         // System Management Lock State
         const [isSystemUnlocked, setIsSystemUnlocked] = useState(false);
+        const [systemPasswordInput, setSystemPasswordInput] = useState('');
         
         // Selection State
         const [selectedStudentIds, setSelectedStudentIds] = useState(new Set());
@@ -657,11 +960,13 @@
             entryDate: todayStr
         });
         const [studentFound, setStudentFound] = useState(false); 
+        // New: Multi-row weight input state
         const [weightRows, setWeightRows] = useState(['']);
 
         // Penalty Form State
-        const [penaltyUnlocked, setPenaltyUnlocked] = useState(false); 
+        const [penaltyUnlocked, setPenaltyUnlocked] = useState(false); // Default locked
         
+        // 🟢 FIX: Static 3-row penalty inputs
         const [penaltyInputs, setPenaltyInputs] = useState({
             'Food Waste': '',
             'Electricity': '',
@@ -670,7 +975,6 @@
         
         const [penaltyMonth, setPenaltyMonth] = useState(new Date().getMonth());
         const [penaltyClass, setPenaltyClass] = useState('');
-        const [penaltyTeacher, setPenaltyTeacher] = useState('');
 
         // Request Delete State
         const [deleteRequestModal, setDeleteRequestModal] = useState({ show: false, id: null, reason: '' });
@@ -690,7 +994,7 @@
         
         const studentIdRef = useRef(null);
 
-        // --- Helper Functions ---
+        // --- Helper Functions (Defined inside App to access state) ---
         const showNotification = (msg, type) => {
             setNotification({ msg, type });
             setTimeout(() => setNotification(null), 2500);
@@ -840,11 +1144,13 @@
             let grandTotal = 0;
 
             filteredEntries.forEach(entry => {
+                // Skip deleted entries from calculation
                 if (entry.status === 'deleted') return;
 
                 const w = Number(entry.weight) || 0;
                 grandTotal += w;
                 
+                // 🟢 严格解析年级：优先用 entry.year，如果没有则从 className 提取第一位数字，避免归类错误
                 let grade = parseInt(entry.year);
                 if (isNaN(grade) || grade === 0) {
                     grade = entry.className ? parseInt(entry.className.charAt(0)) : 0;
@@ -855,17 +1161,19 @@
                     classTotals[entry.className] = { 
                         className: entry.className, 
                         totalWeight: 0, 
-                        grade: grade, 
-                        totalDeduction: 0,
-                        monthlyWeights: {} 
+                        grade: grade, // 🟢 写入安全解析后的年级
+                        totalDeduction: 0, // Initialize
+                        monthlyWeights: {} // 🟢 新增：用于独立跟踪每个月的总重量
                     };
                 }
                 classTotals[entry.className].totalWeight += w;
                 
+                // Track deduction
                 if (entry.type === 'deduction') {
                      classTotals[entry.className].totalDeduction += Math.abs(w);
                 }
                 
+                // 🟢 根据月份记录重量（包含收集与扣分），用于奖励金严格月度独立计算
                 const monthKey = entry.month || 'Unknown';
                 if (!classTotals[entry.className].monthlyWeights[monthKey]) {
                     classTotals[entry.className].monthlyWeights[monthKey] = 0;
@@ -876,7 +1184,7 @@
                     let uniqueKey = entry.studentID ? `ID-${entry.studentID}` : `NAME-${entry.className}-${entry.name}`;
                     let displayName = entry.name || (entry.studentID ? `ID: ${entry.studentID}` : 'Unknown');
                     if (!individualTotals[uniqueKey]) {
-                        individualTotals[uniqueKey] = { name: displayName, studentID: entry.studentID, className: entry.className, totalWeight: 0, grade: grade }; 
+                        individualTotals[uniqueKey] = { name: displayName, studentID: entry.studentID, className: entry.className, totalWeight: 0, grade: grade }; // 🟢 写入安全解析后的年级
                     } else if (entry.name && individualTotals[uniqueKey].name.startsWith('ID:')) {
                         individualTotals[uniqueKey].name = entry.name;
                     }
@@ -884,6 +1192,7 @@
                 }
             });
 
+            // 🟢 新增：计算累加奖励金 (严格基于每个月的数据独立运算并相加)
             Object.values(classTotals).forEach(c => {
                 let reward = 0;
                 Object.values(c.monthlyWeights).forEach(monthWeight => {
@@ -891,7 +1200,7 @@
                         reward += Math.floor(monthWeight / 50) * 10;
                     }
                 });
-                c.totalReward = reward; 
+                c.totalReward = reward; // 写入该班级在这段期间内的实际总奖励金
             });
 
             const sortedClasses = Object.values(classTotals).sort((a, b) => b.totalWeight - a.totalWeight);
@@ -899,6 +1208,7 @@
 
             return {
                 grandTotal,
+                // 🟢 严格限定区间，防止 0 或异常字符进入排名
                 classLower: sortedClasses.filter(c => c.grade >= 1 && c.grade <= 3),
                 classUpper: sortedClasses.filter(c => c.grade >= 4 && c.grade <= 6),
                 indivLower: sortedIndividuals.filter(i => i.grade >= 1 && i.grade <= 3),
@@ -914,7 +1224,7 @@
 
             classEntries.forEach(entry => {
                 let uniqueKey = entry.studentID ? entry.studentID : entry.name;
-                if (!uniqueKey) return; 
+                if (!uniqueKey) return; // Skip if no identifier
 
                 if (!studentTotals[uniqueKey]) {
                     studentTotals[uniqueKey] = { name: entry.name || 'Unknown', totalWeight: 0 };
@@ -935,11 +1245,12 @@
             return stats.grandTotal;
         }, [selectedDashboardClass, filteredEntries, stats.grandTotal]);
 
-        // --- Generate Monthly Report Logic ---
+        // --- NEW: Generate Monthly Report Logic ---
         const handleGenerateReport = (overrideConfig) => {
             const currentConfig = overrideConfig || reportConfig;
             const { monthIndex, year } = currentConfig;
             
+            // Filter ALL entries by selected month/year (ignore dashboard filters)
             const monthlyEntries = entries.filter(e => {
                 const entryYear = e.calendarYear || new Date(e.createdAt).getFullYear();
                 const entryMonth = e.month ? MONTH_OPTIONS.indexOf(e.month) : new Date(e.createdAt).getMonth();
@@ -948,6 +1259,7 @@
 
             const classTotals = {};
             
+            // 🟢 预先填充所有班级，确保即使没有数据的班级也会显示在报表中
             CLASS_OPTIONS.forEach(cls => {
                 const grade = parseInt(cls.charAt(0)) || 0;
                 classTotals[cls] = { className: cls, totalWeight: 0, grade: grade, totalDeduction: 0, monthlyWeights: {} };
@@ -958,6 +1270,7 @@
             monthlyEntries.forEach(e => {
                 const w = Number(e.weight) || 0;
                 
+                // 🟢 严格解析年级：优先用 e.year，如果没有则从 className 提取第一位数字
                 let grade = parseInt(e.year);
                 if (isNaN(grade) || grade === 0) {
                     grade = e.className ? parseInt(e.className.charAt(0)) : 0;
@@ -969,6 +1282,7 @@
                 }
                 classTotals[e.className].totalWeight += w;
                 
+                // 🟢 记录扣除的碳足迹
                 if (e.type === 'deduction') {
                     classTotals[e.className].totalDeduction += Math.abs(w);
                 }
@@ -986,6 +1300,7 @@
                 }
             });
 
+            // 计算该月的独立奖励金
             Object.values(classTotals).forEach(c => {
                 let reward = 0;
                 Object.values(c.monthlyWeights).forEach(mw => {
@@ -1001,10 +1316,12 @@
 
             setReportData({
                 lower: {
+                    // 🟢 显示所有班级
                     classes: allClasses.filter(c => c.grade >= 1 && c.grade <= 3),
                     individuals: allIndivs.filter(i => i.grade >= 1 && i.grade <= 3)
                 },
                 upper: {
+                    // 🟢 显示所有班级
                     classes: allClasses.filter(c => c.grade >= 4 && c.grade <= 6),
                     individuals: allIndivs.filter(i => i.grade >= 4 && i.grade <= 6)
                 }
@@ -1012,6 +1329,51 @@
             setShowReportModal(true);
         };
         
+        // --- 🏆 NEW: Generate Quarterly Report Logic ---
+        const handleGenerateQuarterly = (overrideConfig) => {
+            const currentConfig = overrideConfig || quarterlyConfig;
+            const { quarter, year } = currentConfig;
+            const targetMonths = QUARTERS[quarter].months; // e.g. [0, 1, 2] for Q1
+            
+            // 过滤指定季度与年份的记录
+            const qEntries = entries.filter(e => {
+                const entryYear = e.calendarYear || new Date(e.createdAt).getFullYear();
+                const entryMonth = e.month ? MONTH_OPTIONS.indexOf(e.month) : new Date(e.createdAt).getMonth();
+                
+                // 仅统计个人记录 (e.type === 'recycle') 且未被删除的
+                return entryYear === year && targetMonths.includes(entryMonth) && e.status !== 'deleted' && e.type === 'recycle';
+            });
+
+            const indivTotals = {};
+
+            qEntries.forEach(e => {
+                const w = Number(e.weight) || 0;
+                
+                let grade = parseInt(e.year);
+                if (isNaN(grade) || grade === 0) {
+                    grade = e.className ? parseInt(e.className.charAt(0)) : 0;
+                }
+                if (isNaN(grade)) grade = 0;
+
+                if (e.name || e.studentID) {
+                     let uniqueKey = e.studentID ? e.studentID : e.name;
+                     if (!indivTotals[uniqueKey]) {
+                         indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade };
+                     }
+                     indivTotals[uniqueKey].totalWeight += w;
+                }
+            });
+
+            const allIndivs = Object.values(indivTotals).sort((a,b) => b.totalWeight - a.totalWeight);
+
+            setQuarterlyData({
+                lower: allIndivs.filter(i => i.grade >= 1 && i.grade <= 3),
+                upper: allIndivs.filter(i => i.grade >= 4 && i.grade <= 6)
+            });
+            setShowQuarterlyModal(true);
+        };
+        
+        // --- Download Handlers for Monthly Report ---
         const downloadReportImage = () => {
             const reportNode = document.getElementById('monthly-report-container');
             if(!reportNode) return;
@@ -1032,9 +1394,11 @@
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
                 
+                // 根据 Canvas 比例计算无缝长图 PDF 的尺寸 (以 A4 宽度 210mm 为基准)
                 const pdfWidth = 210;
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                 
+                // 创建自定义尺寸的单页 PDF，避免表格被强制分页切断
                 const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save(`SJKCLG_MonthlyReport_${reportConfig.year}_${reportConfig.monthIndex+1}.pdf`);
@@ -1044,25 +1408,29 @@
         const downloadReportCSV = () => {
             if (!reportData) return;
             let csvContent = "data:text/csv;charset=utf-8,";
-            const bom = "\uFEFF"; 
+            const bom = "\uFEFF"; // 加入 BOM，确保 Excel 打开时中文不乱码
             csvContent += bom;
 
+            // 标题
             csvContent += `新廊华小校园环保回收计划 - 月度总结成绩单,${reportConfig.year}年${reportConfig.monthIndex + 1}月\n\n`;
 
+            // 低年级组 - 班级荣誉榜
             csvContent += "低年级组 (一年级 - 三年级) - 班级荣誉榜\n";
-            csvContent += "排名,班级,回收净重(KG),碳足迹扣除(KG),奖励金(RM)\n";
+            csvContent += "排名,班级,碳足迹扣除(KG),回收净重(KG),奖励金(RM)\n";
             reportData.lower.classes.forEach((c, i) => {
-                csvContent += `${i + 1},${c.className},${c.totalWeight.toFixed(2)},${c.totalDeduction.toFixed(2)},${c.totalReward || 0}\n`;
+                csvContent += `${i + 1},${c.className},${c.totalDeduction.toFixed(2)},${c.totalWeight.toFixed(2)},${c.totalReward || 0}\n`;
             });
             csvContent += "\n";
 
+            // 高年级组 - 班级荣誉榜
             csvContent += "高年级组 (四年级 - 六年级) - 班级荣誉榜\n";
-            csvContent += "排名,班级,回收净重(KG),碳足迹扣除(KG),奖励金(RM)\n";
+            csvContent += "排名,班级,碳足迹扣除(KG),回收净重(KG),奖励金(RM)\n";
             reportData.upper.classes.forEach((c, i) => {
-                csvContent += `${i + 1},${c.className},${c.totalWeight.toFixed(2)},${c.totalDeduction.toFixed(2)},${c.totalReward || 0}\n`;
+                csvContent += `${i + 1},${c.className},${c.totalDeduction.toFixed(2)},${c.totalWeight.toFixed(2)},${c.totalReward || 0}\n`;
             });
             csvContent += "\n";
 
+            // 低年级组 - 个人荣誉榜
             csvContent += "低年级组 (一年级 - 三年级) - 个人荣誉榜 (TOP 20)\n";
             csvContent += "排名,姓名,班级,回收量(KG)\n";
             reportData.lower.individuals.slice(0, 20).forEach((s, i) => {
@@ -1070,6 +1438,7 @@
             });
             csvContent += "\n";
 
+            // 高年级组 - 个人荣誉榜
             csvContent += "高年级组 (四年级 - 六年级) - 个人荣誉榜 (TOP 20)\n";
             csvContent += "排名,姓名,班级,回收量(KG)\n";
             reportData.upper.individuals.slice(0, 20).forEach((s, i) => {
@@ -1080,6 +1449,61 @@
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", `SJKCLG_MonthlyReport_${reportConfig.year}_${reportConfig.monthIndex+1}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+        
+        // --- 🏆 Download Handlers for Quarterly Report ---
+        const downloadQuarterlyImage = () => {
+            const reportNode = document.getElementById('quarterly-report-container');
+            if(!reportNode) return;
+             html2canvas(reportNode, { scale: 2, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `SJKCLG_Quarterly_King_${quarterlyConfig.year}_${quarterlyConfig.quarter}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        };
+
+        const downloadQuarterlyPDF = () => {
+            const reportNode = document.getElementById('quarterly-report-container');
+            if(!reportNode) return;
+            html2canvas(reportNode, { scale: 2, useCORS: true }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdfWidth = 210;
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`SJKCLG_Quarterly_King_${quarterlyConfig.year}_${quarterlyConfig.quarter}.pdf`);
+            });
+        };
+
+        const downloadQuarterlyCSV = () => {
+            if (!quarterlyData) return;
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // With BOM
+            const quarterLabel = QUARTERS[quarterlyConfig.quarter].label;
+
+            csvContent += `新廊华小校园环保回收计划 - 季度回收王者荣耀,${quarterlyConfig.year}年 ${quarterLabel}\n\n`;
+
+            csvContent += "低年级组 (一年级 - 三年级) - 个人累积排行榜\n";
+            csvContent += "排名,姓名,班级,累积回收量(KG)\n";
+            quarterlyData.lower.forEach((s, i) => {
+                csvContent += `${i + 1},${s.name.replace(/,/g, '')},${s.className},${s.totalWeight.toFixed(2)}\n`;
+            });
+            csvContent += "\n";
+
+            csvContent += "高年级组 (四年级 - 六年级) - 个人累积排行榜\n";
+            csvContent += "排名,姓名,班级,累积回收量(KG)\n";
+            quarterlyData.upper.forEach((s, i) => {
+                csvContent += `${i + 1},${s.name.replace(/,/g, '')},${s.className},${s.totalWeight.toFixed(2)}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `SJKCLG_Quarterly_King_${quarterlyConfig.year}_${quarterlyConfig.quarter}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1136,6 +1560,7 @@
                     setFormData(prev => ({...prev, [name]: value, studentName: match.name, selectedClass: match.className || prev.selectedClass}));
                     setStudentFound(true);
                 } else {
+                    // 🟢 FIX: Clear name and class if ID doesn't match
                     setFormData(prev => ({ ...prev, [name]: value, studentName: '', selectedClass: '' }));
                     setStudentFound(false);
                 }
@@ -1184,19 +1609,18 @@
             setSelectedStudentIds(newSet);
         };
 
-        // --- Weight Row Handlers (FIXED: Better decimal handling) ---
+        // --- NEW Weight Row Handlers ---
         const handleWeightRowChange = (index, value) => {
-            let sanitizedValue = value.replace(/[^0-9.]/g, '');
+            const sanitizedValue = value.replace(/[^0-9.]/g, '');
             const parts = sanitizedValue.split('.');
-            if (parts.length > 2) {
-                sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+            let finalValue = parts[0];
+            if (parts.length > 1) {
+                finalValue += '.' + parts.slice(1).join('').slice(0, 2);
             }
-            const regex = /^(\d+(\.\d{0,2})?)?$/;
-            if (regex.test(sanitizedValue) || sanitizedValue === '') {
-                const newRows = [...weightRows];
-                newRows[index] = sanitizedValue;
-                setWeightRows(newRows);
-            }
+
+            const newRows = [...weightRows];
+            newRows[index] = finalValue;
+            setWeightRows(newRows);
         };
 
         const addWeightRow = () => {
@@ -1220,7 +1644,7 @@
             return weightRows.reduce((acc, curr) => acc + (parseFloat(curr) || 0), 0);
         };
 
-        // --- Batch Entry Handlers ---
+        // --- Batch Entry Handlers (Restored) ---
         const handleBatchClassChange = (e) => {
             const cls = e.target.value;
             setBatchClass(cls);
@@ -1228,12 +1652,16 @@
         };
 
         const handleBatchInputChange = (studentId, weight) => {
+             // Allow numbers and decimal point
             const sanitizedValue = weight.replace(/[^0-9.]/g, '');
+            // Prevent multiple dots
             const parts = sanitizedValue.split('.');
             let finalValue = parts[0];
             if (parts.length > 1) {
+                // Ensure only 2 decimal places
                 finalValue += '.' + parts.slice(1).join('').slice(0, 2);
             }
+
             setBatchInputs(prev => ({
                 ...prev,
                 [studentId]: finalValue
@@ -1241,16 +1669,12 @@
         };
 
         const handleBatchSubmit = async () => {
-            if (!formData.teacherName.trim()) {
-                playSound('error');
-                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
-            }
-
             const entriesToAdd = [];
             const timestamp = Date.now();
             const entryDateObj = new Date(formData.entryDate); 
             const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
             const currentYearInt = entryDateObj.getFullYear();
+            // 🟢 修改：无论日期选哪天，都显示当前的实际录入时间
             const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
             const studentGrade = batchClass ? (parseInt(batchClass.charAt(0)) || 0) : 0;
 
@@ -1292,19 +1716,17 @@
             showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
         };
 
-        // --- Penalty Batch Handlers ---
+        // --- Penalty Batch Handlers (REFACTORED) ---
         const handlePenaltyInputChange = (reason, value) => {
+            // Filter non-numeric (Integers only)
             const sanitizedValue = value.replace(/[^0-9]/g, '');
             setPenaltyInputs(prev => ({ ...prev, [reason]: sanitizedValue }));
         };
 
         const handlePenaltyBatchSubmit = async () => {
-            if (!penaltyTeacher.trim()) {
-                playSound('error');
-                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
-            }
             if (!penaltyClass) return showNotification("请选择班级 / Pilih Kelas", "error");
             
+            // Check if at least one value exists
             const hasData = Object.values(penaltyInputs).some(val => parseFloat(val) > 0);
             if (!hasData) return showNotification("请输入至少一项数值 / Masukkan nilai", "error");
 
@@ -1321,16 +1743,17 @@
             const entriesToAdd = [];
 
             Object.entries(penaltyInputs).forEach(([reason, value]) => {
+                // 使用 parseInt 确保提交的数值是整数
                 const val = parseInt(value, 10);
                 if (val > 0) {
                     entriesToAdd.push({
                         id: (timestamp + Math.random()).toString(),
                         type: 'deduction',
-                        teacherName: penaltyTeacher.trim(),
+                        teacherName: 'Admin',
                         name: '', 
                         studentID: '',
                         className: penaltyClass,
-                        reason: reason, 
+                        reason: reason, // "Food Waste", "Electricity", "Others"
                         weight: -Math.abs(val),
                         month: currentMonthStr,
                         calendarYear: currentYearInt,
@@ -1345,16 +1768,20 @@
             addLog('Add Penalty Batch', `Added ${entriesToAdd.length} penalties for ${penaltyClass}`);
 
             if (isCloudEnabled && !cloudError) {
-                // Compatible sending loop for penalties to ensure safety
+                // 🟢 修改：强制使用单条录入循环发送，兼容任何版本的 Google Apps Script，确保 100% 录入成功
                 for (const entry of entriesToAdd) {
                     await sendToSheet('addEntry', { data: entry });
                 }
             }
 
             setLoading(false);
+            // Reset inputs
             setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' });
-            setPenaltyTeacher('');
             showNotification("扣分记录已提交 / Penalti Berjaya", "success");
+        };
+
+        const handlePenaltyChange = (e) => {
+             // Placeholder for penalty data change if needed, currently using state directly
         };
 
 
@@ -1376,7 +1803,9 @@
 
             const entryDateObj = new Date(formData.entryDate);
             const studentGrade = formData.selectedClass ? (parseInt(formData.selectedClass.charAt(0)) || 0) : 0;
+            const isManualDate = formData.entryDate !== new Date().toISOString().split('T')[0];
             
+            // 🟢 Always record timestamp as displayTime
             const timestamp = Date.now();
             const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
 
@@ -1408,6 +1837,8 @@
             
             showNotification("记录添加成功 / Berjaya", "success");
         };
+
+        // Note: handlePenaltySubmit is replaced by handlePenaltyBatchSubmit for the new UI
 
         const handleRequestDelete = (id) => {
             setDeleteRequestModal({ show: true, id: id, reason: '' });
@@ -1550,6 +1981,7 @@
         const handleExportImage = () => {
             if (!dashboardRef.current) return;
             const btn = document.getElementById('export-img-btn');
+            // AI button removed, no need to hide
             const posterBtn = document.getElementById('poster-btn');
             const posterIndivBtnLower = document.getElementById('poster-indiv-btn-lower');
             const posterIndivBtnUpper = document.getElementById('poster-indiv-btn-upper');
@@ -1574,6 +2006,8 @@
 
         // --- Security Functions ---
         const requestSecureAction = (callback) => {
+            // Always show modal for critical actions, even if previously unlocked
+            // This ensures security is checked every time for critical actions
             setSecurityCheck({ show: true, callback: callback, error: '', verifying: false });
             setSecurityInput('');
         };
@@ -1605,166 +2039,6 @@
                 }
             } catch (err) {
                  setSecurityCheck(prev => ({ ...prev, error: '网络错误 / Ralat Rangkaian', verifying: false }));
-            }
-        };
-
-        // --- FIXED: MISSING ADMIN FUNCTIONS ---
-        const handleImportStudents = async () => {
-            if (!importClass) return showNotification("请选择班级", "error");
-            if (!importText.trim()) return showNotification("请输入学生数据", "error");
-
-            const lines = importText.split('\n');
-            const newStudents = [];
-            const timestamp = Date.now();
-
-            lines.forEach((line, index) => {
-                if (!line.trim()) return;
-                const parts = line.split(',');
-                if (parts.length >= 2) {
-                    newStudents.push({
-                        id: parts[0].trim(),
-                        name: parts[1].trim(),
-                        className: importClass,
-                        createdAt: timestamp + index
-                    });
-                }
-            });
-
-            if (newStudents.length === 0) return showNotification("格式错误，无法解析", "error");
-
-            setLoading(true);
-            setStudents(prev => [...newStudents, ...prev]);
-            addLog('Import Students', `Imported ${newStudents.length} to ${importClass}`);
-            
-            if (isCloudEnabled && !cloudError) {
-                await sendToSheet('addStudentsBatch', { data: newStudents });
-            }
-            
-            setImportText('');
-            setLoading(false);
-            showNotification(`成功导入 ${newStudents.length} 名学生`, "success");
-        };
-
-        const handleSmartImport = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const csvData = event.target.result;
-                const lines = csvData.split('\n');
-                const newStudents = [];
-                const timestamp = Date.now();
-
-                lines.forEach((line, index) => {
-                    if (index === 0 || !line.trim()) return; 
-                    const parts = line.split(',').map(p => p.trim());
-                    if (parts.length >= 3) {
-                        newStudents.push({
-                            className: parts[0],
-                            id: parts[1],
-                            name: parts[2],
-                            createdAt: timestamp + index
-                        });
-                    }
-                });
-
-                if (newStudents.length > 0) {
-                    setLoading(true);
-                    setStudents(prev => [...newStudents, ...prev]);
-                    addLog('Smart Import', `Imported ${newStudents.length} students from CSV`);
-                    if (isCloudEnabled && !cloudError) {
-                        await sendToSheet('addStudentsBatch', { data: newStudents });
-                    }
-                    setLoading(false);
-                    showNotification(`CSV 智能导入 ${newStudents.length} 名学生`, "success");
-                } else {
-                    showNotification("CSV 解析失败，请检查格式", "error");
-                }
-                if(smartImportRef.current) smartImportRef.current.value = '';
-            };
-            reader.readAsText(file);
-        };
-
-        const handleUpdateStudent = async (e) => {
-            e.preventDefault();
-            setStudents(prev => prev.map(s => s.id === editingStudent.id ? editingStudent : s));
-            addLog('Edit Student', `Updated ID: ${editingStudent.id}`);
-            
-            if (isCloudEnabled && !cloudError) {
-                await sendToSheet('updateStudent', { data: editingStudent });
-            }
-            
-            setEditingStudent(null);
-            showNotification("学生信息已更新", "success");
-        };
-
-        const handleDeleteSingleStudent = (id) => {
-            if (confirm("确定要删除该学生吗？")) {
-                setStudents(prev => prev.filter(s => s.id !== id));
-                addLog('Delete Student', `Deleted ID: ${id}`);
-                if (isCloudEnabled && !cloudError) {
-                    sendToSheet('deleteStudent', { id });
-                }
-                showNotification("已删除学生", "success");
-            }
-        };
-
-        const handleBackupData = () => {
-            const backupData = {
-                entries,
-                students,
-                auditLogs,
-                timestamp: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            link.href = url;
-            link.click();
-            showNotification("备份已下载", "success");
-        };
-
-        const handleRestoreData = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const data = JSON.parse(event.target.result);
-                    if (data.entries && data.students) {
-                        setEntries(data.entries);
-                        setStudents(data.students);
-                        if (data.auditLogs) setAuditLogs(data.auditLogs);
-                        addLog('System Restore', 'Data restored from backup file');
-                        showNotification("数据恢复成功，建议刷新页面", "success");
-                    } else {
-                        showNotification("无效的备份文件", "error");
-                    }
-                } catch (err) {
-                    showNotification("文件解析失败", "error");
-                }
-                if (fileInputRef.current) fileInputRef.current.value = '';
-            };
-            reader.readAsText(file);
-        };
-
-        const handleClearAll = () => {
-            if (confirm("警告：此操作将清空本地所有学生名单、记录和日志！您确定吗？")) {
-                requestSecureAction(async () => {
-                    setEntries([]);
-                    setStudents([]);
-                    setAuditLogs([]);
-                    setPendingDeletions([]);
-                    localStorage.clear();
-                    addLog('System Reset', 'Cleared all data from settings');
-                    showNotification("系统已完全重置", "success");
-                    if (isCloudEnabled && !cloudError) {
-                        await sendToSheet('clearAllData');
-                    }
-                });
             }
         };
 
@@ -2083,33 +2357,6 @@
                                         </form>
                                         ) : (
                                             <div className="space-y-4 animate-pop">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-1">
-                                                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                                            <IconCalendar size={14} /> 日期 / Tarikh
-                                                        </label>
-                                                        <input 
-                                                            type="date" 
-                                                            name="entryDate"
-                                                            value={formData.entryDate}
-                                                            onChange={handleInputChange}
-                                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                                            <IconUser size={14} /> 老师姓名 / Nama Guru <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input 
-                                                            type="text" 
-                                                            name="teacherName"
-                                                            value={formData.teacherName}
-                                                            onChange={handleInputChange}
-                                                            placeholder="LHY / KCY / HFZ / AMN"
-                                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
-                                                        />
-                                                    </div>
-                                                </div>
                                                 <select 
                                                     value={batchClass} 
                                                     onChange={handleBatchClassChange} 
@@ -2184,7 +2431,7 @@
                                             {!penaltyUnlocked && (
                                                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-b-2xl">
                                                     <div className="bg-white p-8 rounded-2xl shadow-2xl border border-red-100 flex flex-col items-center max-w-xs mx-auto animate-pop">
-                                                        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-3 shadow-inner text-red-500">
+                                                        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-3 shadow-inner">
                                                             <IconLock size={32} />
                                                         </div>
                                                         <h4 className="font-bold text-slate-800 text-lg mb-1">需要权限 / Perlu Kebenaran</h4>
@@ -2210,26 +2457,14 @@
                                                 </div>
                                             )}
 
-                                            {/* Form Content */}
+                                            {/* Form Content (Blurred when locked) */}
                                             <div className={`px-6 pb-6 space-y-5 transition-all duration-500 ${!penaltyUnlocked ? 'opacity-40 pointer-events-none filter blur-[2px] select-none' : 'opacity-100'}`}>
                                                 <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 flex gap-2">
                                                     <IconAlertTriangle size={16} />
                                                     <span>批量录入将自动生成多条记录。<br/>Pukal rekod akan dijana automatik.</span>
                                                 </div>
 
-                                                <div className="space-y-1">
-                                                    <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                                        <IconUser size={14} /> 老师姓名 / Nama Guru <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={penaltyTeacher}
-                                                        onChange={(e) => setPenaltyTeacher(e.target.value)}
-                                                        placeholder="LHY / KCY / HFZ / AMN"
-                                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-red-500"
-                                                    />
-                                                </div>
-
+                                                {/* Top Selection Row */}
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="space-y-1">
                                                         <label className="text-sm font-bold text-slate-700">月份 / Bulan</label>
@@ -2246,6 +2481,7 @@
                                                     </div>
                                                 </div>
 
+                                                {/* Penalty List Builder - FIXED 3 Rows */}
                                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                                                     <label className="text-xs font-bold text-slate-500 uppercase mb-3 block">填写KG扣除数值 / Masukkan Nilai Penalti (KG)</label>
                                                     <div className="space-y-3">
@@ -2289,7 +2525,7 @@
                                 </div>
                             </div>
 
-                            {/* Recent Records (Log) (Right) */}
+                            {/* Recent Records (Now: Entry Log) (Right) */}
                             <div className="space-y-6">
                                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 h-[600px] flex flex-col p-6">
                                     <div className="flex justify-between items-center mb-4">
@@ -2297,6 +2533,7 @@
                                             <IconClipboardList size={20} /> 录入日志 / Log Kemasukan
                                         </h3>
                                         <div className="flex gap-2">
+                                            {/* 一键清空按钮 */}
                                             <button onClick={handleDeleteAllEntries} className="text-xs bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 font-bold border border-red-200 flex items-center gap-1 transition-colors">
                                                 <IconTrash size={12}/> 清空 / Padam
                                             </button>
@@ -2311,6 +2548,7 @@
                                                 <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
                                             </div>
                                         )}
+                                        {/* 🟢 优化：显示所有记录（移除 .slice），并使用固定高度容器 */}
                                         {entries.map(entry => {
                                             const isPending = pendingDeletions.some(p => p.id === entry.id);
                                             const isDeleted = entry.status === 'deleted';
@@ -2333,25 +2571,16 @@
                                                                 : <span className="truncate max-w-[100px] sm:max-w-none">{(entry.name || entry.studentID) ? (entry.name || `ID: ${entry.studentID}`) : <span className="text-slate-400 italic font-normal">班级贡献</span>}</span>
                                                             }
                                                         </div>
-                                                        <div className="text-[10px] text-slate-400 mt-1 flex gap-2 whitespace-nowrap">
-                                                            <span>
-                                                                {(() => {
-                                                                    const ts = entry.createdAt;
-                                                                    if (typeof ts === 'string' && (ts.includes('/') || ts.includes('-'))) return ts;
-                                                                    const d = new Date(ts);
-                                                                    if (!isNaN(d.getTime())) {
-                                                                        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${entry.displayTime || ''}`;
-                                                                    }
-                                                                    return entry.displayTime || '';
-                                                                })()}
-                                                            </span>
-                                                            {entry.teacherName && <span className="text-slate-500 font-medium truncate max-w-[120px]">• 老师: {entry.teacherName}</span>}
+                                                        <div className="text-[10px] text-slate-400 mt-1 flex gap-2">
+                                                            <span>{entry.displayTime}</span>
+                                                            {entry.teacherName && <span className="text-slate-500 font-medium truncate max-w-[80px]">• 老师: {entry.teacherName}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-4 flex-shrink-0">
                                                         <span className={`font-mono font-bold ${entry.type === 'deduction' ? 'text-red-600' : 'text-emerald-600'}`}>
                                                             {(Number(entry.weight) || 0).toFixed(2)}
                                                         </span>
+                                                        {/* 🟢 Delete Button Logic */}
                                                         {!isDeleted && (
                                                             <button 
                                                                 onClick={() => handleRequestDelete(entry.id)} 
@@ -2435,7 +2664,7 @@
                                 </div>
                                 ) : (
                                 <div>
-                                    {/* FORM: AUDIT */}
+                                    {/* 🟢 FORM: AUDIT (NEW) */}
                                     {manageTab === 'audit' && (
                                         <div className="px-6 py-6 h-[500px] overflow-y-auto custom-scrollbar">
                                             <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
@@ -2468,6 +2697,7 @@
                                                                     <span>📅 {req.calendarYear} {req.month}</span>
                                                                     <span>👤 {req.teacherName}</span>
                                                                 </div>
+                                                                {/* Reason Display */}
                                                                 <div className="text-xs text-orange-600 mt-2 bg-orange-50 p-2 rounded-lg border border-orange-100">
                                                                     <strong>原因 / Sebab:</strong> {req.reason || '无理由'}
                                                                 </div>
@@ -2499,7 +2729,7 @@
                                     {manageTab === 'students' && (
                                     <div className="px-6 py-6 space-y-5">
                                         
-                                        {/* Smart Import Section */}
+                                        {/* Smart Import Section (New) */}
                                         <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
                                             <h4 className="font-bold text-emerald-800 text-sm mb-2 flex items-center gap-2">
                                                 <IconFileUp size={16}/> 智能导入 / Import Pintar
@@ -2628,8 +2858,8 @@
                                                 <button 
                                                     type="button" 
                                                     onClick={handleImportStudents}
-                                                    disabled={(isCloudEnabled && cloudError) || loading}
-                                                    className={`w-full text-white py-2 rounded-lg font-bold text-sm shadow-md ${ ((isCloudEnabled && cloudError) || loading) ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                                                    disabled={isCloudEnabled && cloudError || loading}
+                                                    className={`w-full text-white py-2 rounded-lg font-bold text-sm shadow-md ${ (isCloudEnabled && cloudError || loading) ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
                                                 >
                                                     导入 / Import
                                                 </button>
@@ -2728,7 +2958,9 @@
                     {/* VIEW: DASHBOARD (Public) */}
                     {viewMode === 'dashboard' && (
                         <div className="space-y-6 animate-pop" ref={dashboardRef}>
+                             {/* Dashboard Stats & Filter Bar */}
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                {/* Total Stats */}
                                 <div className="md:col-span-4 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-4 opacity-10"><IconLeaf /></div>
                                     <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest mb-1">
@@ -2744,6 +2976,7 @@
                                     </p>
                                 </div>
 
+                                {/* Advanced Filters */}
                                 <div className="md:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-center">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-2 text-slate-700">
@@ -2751,20 +2984,38 @@
                                             <h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3>
                                         </div>
                                         
+                                        {/* Admin Action Buttons for Reports */}
                                         {isAdmin && (
-                                            <button 
-                                                onClick={() => {
-                                                    const config = {
-                                                        monthIndex: parseInt(filterMonthStart),
-                                                        year: filterYear
-                                                    };
-                                                    setReportConfig(config);
-                                                    handleGenerateReport(config);
-                                                }}
-                                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"
-                                            >
-                                                <IconFileSpreadsheet size={16} /> 生成月度总结单
-                                            </button>
+                                            <div className="flex flex-wrap gap-2 justify-end">
+                                                <button 
+                                                    onClick={() => {
+                                                        const config = {
+                                                            monthIndex: parseInt(filterMonthStart),
+                                                            year: filterYear
+                                                        };
+                                                        setReportConfig(config);
+                                                        handleGenerateReport(config);
+                                                    }}
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"
+                                                >
+                                                    <IconFileSpreadsheet size={16} /> 月度总结单
+                                                </button>
+                                                
+                                                {/* 🟢 NEW: Quarterly Report Button */}
+                                                <button 
+                                                    onClick={() => {
+                                                        const config = {
+                                                            year: filterYear,
+                                                            quarter: 'Q1' // Default load Q1
+                                                        };
+                                                        setQuarterlyConfig(config);
+                                                        handleGenerateQuarterly(config);
+                                                    }}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"
+                                                >
+                                                    <IconTrophy size={16} /> 季度王者榜
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
 
@@ -2795,6 +3046,7 @@
                                             </div>
                                         </div>
                                         
+                                        {/* Always Visible Class Selector */}
                                         <div className="flex-1 min-w-[150px]">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">选择班级 / Pilih Kelas</label>
                                             <select 
@@ -2814,6 +3066,7 @@
                                 </div>
                             </div>
 
+                            {/* Leaderboards Grid */}
                             {dashboardViewMode === 'overall' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-auto md:h-[600px] animate-pop">
                                     <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" />
@@ -2868,6 +3121,7 @@
                                 </div>
                             )}
 
+                             {/* Bottom Buttons - Only for Admin */}
                             {isAdmin && (
                                 <div className="flex justify-center flex-wrap gap-4 pt-8 pb-4">
                                     <button 
@@ -2937,7 +3191,7 @@
                     </div>
                 )}
 
-                {/* Delete Request Modal with Reason Input */}
+                {/* 🟢 NEW: Delete Request Modal with Reason Input */}
                 {deleteRequestModal.show && (
                     <div className="fixed inset-0 z-[65] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                         <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-pop">
@@ -3013,6 +3267,7 @@
                                                 <React.Fragment>
                                                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-slate-900 to-black opacity-80"></div>
                                                     <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')]"></div>
+                                                    {/* Glow effects */}
                                                     <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-[100px]"></div>
                                                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
                                                 </React.Fragment>
@@ -3056,6 +3311,7 @@
                                                 {/* Class Poster Content (Podium) */}
                                                 {posterType === 'class' && (
                                                     <div className="grid grid-cols-2 gap-8 flex-1">
+                                                        {/* Lower Primary Column */}
                                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col">
                                                             <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
                                                                 <span className="bg-blue-500 text-xs px-2 py-1 rounded">Tahap 1</span> 低年级组
@@ -3065,6 +3321,7 @@
                                                             </div>
                                                         </div>
 
+                                                        {/* Upper Primary Column */}
                                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col">
                                                             <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
                                                                 <span className="bg-purple-500 text-xs px-2 py-1 rounded">Tahap 2</span> 高年级组
@@ -3079,6 +3336,7 @@
                                                 {/* Individual Poster Content (Game Style) */}
                                                 {posterType.includes('individual') && (
                                                     <div className="flex flex-col h-full">
+                                                        {/* TOP 3 HERO CARDS */}
                                                         <div className="flex justify-center items-end gap-6 mb-6 px-10">
                                                             
                                                             {/* Rank 2 (Silver) */}
@@ -3124,6 +3382,7 @@
                                                                         <span className="text-white font-black text-xl">{(posterData.topList[2]?.totalWeight || 0).toFixed(1)}</span>
                                                                         <span className="text-[10px] text-slate-500 ml-1">KG</span>
                                                                     </div>
+                                                                    
                                                                 </div>
                                                             </div>
 
@@ -3133,6 +3392,7 @@
                                                         <div className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 backdrop-blur-sm grid grid-cols-2 gap-x-8 gap-y-1 content-start relative overflow-hidden">
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
                                                             
+                                                            {/* Left Column (4-11) */}
                                                             <div className="space-y-1.5">
                                                                 {posterData.topList.slice(3, 11).map((item, idx) => (
                                                                     <div key={idx + 3} className="flex items-center justify-between p-1.5 rounded bg-slate-800/60 border border-slate-700/30 hover:bg-slate-700/60 transition-colors">
@@ -3146,11 +3406,13 @@
                                                                         <div className="font-mono font-bold text-xs text-blue-300">{(item.totalWeight || 0).toFixed(1)}</div>
                                                                     </div>
                                                                 ))}
+                                                                {/* Filler for layout balance */}
                                                                 {Array.from({ length: Math.max(0, 8 - posterData.topList.slice(3, 11).length) }).map((_, i) => (
                                                                     <div key={`empty-l-${i}`} className="h-[30px] rounded bg-slate-800/20 border border-transparent"></div>
                                                                 ))}
                                                             </div>
                                                             
+                                                            {/* Right Column (12-20) */}
                                                             <div className="space-y-1.5">
                                                                 {posterData.topList.slice(11, 20).map((item, idx) => (
                                                                     <div key={idx + 11} className="flex items-center justify-between p-1.5 rounded bg-slate-800/60 border border-slate-700/30 hover:bg-slate-700/60 transition-colors">
@@ -3173,11 +3435,13 @@
                                                 )}
                                             </div>
                                             
+                                            {/* Footer (Inside Poster) */}
                                             {posterType.includes('individual') && (
                                                 <div className="absolute bottom-3 right-6 z-20 flex gap-2">
                                                     <div className="text-[8px] text-white/30 uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded">Game Data: {posterData.date}</div>
                                                 </div>
                                             )}
+
                                         </div>
                                     </div>
                                 </div>
@@ -3191,7 +3455,7 @@
                     </div>
                 )}
                 
-                {/* Monthly Report Modal */}
+                {/* 🟢 NEW: Monthly Report Modal */}
                 {showReportModal && reportData && (
                     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                         <div className="bg-slate-200 rounded-xl shadow-2xl max-w-5xl w-full h-[90vh] flex flex-col overflow-hidden animate-pop">
@@ -3230,6 +3494,50 @@
                             
                             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar flex justify-center">
                                 <MonthlyReportView data={reportData} config={reportConfig} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {/* 🏆 NEW: Quarterly Report Modal */}
+                {showQuarterlyModal && quarterlyData && (
+                    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <div className="bg-slate-200 rounded-xl shadow-2xl max-w-5xl w-full h-[90vh] flex flex-col overflow-hidden animate-pop">
+                            <div className="p-4 bg-white border-b flex justify-between items-center shrink-0">
+                                <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                                    <IconTrophy className="text-blue-600"/> 季度回收王者荣耀报表
+                                </h3>
+                                <div className="flex gap-2 items-center">
+                                    <select 
+                                        value={quarterlyConfig.quarter} 
+                                        onChange={e => {
+                                            const newConfig = {...quarterlyConfig, quarter: e.target.value};
+                                            setQuarterlyConfig(newConfig);
+                                            handleGenerateQuarterly(newConfig);
+                                        }}
+                                        className="text-sm border border-blue-300 bg-blue-50 text-blue-700 font-bold rounded p-1 outline-none cursor-pointer hover:bg-blue-100"
+                                    >
+                                        {Object.entries(QUARTERS).map(([key, data]) => <option key={key} value={key}>{data.label}</option>)}
+                                    </select>
+                                    
+                                    <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 gap-1 ml-2">
+                                        <button onClick={downloadQuarterlyImage} className="bg-white hover:bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded text-xs font-bold shadow-sm flex items-center gap-1 transition-colors" title="下载图片 (PNG)">
+                                            <IconImage size={14}/> PNG
+                                        </button>
+                                        <button onClick={downloadQuarterlyPDF} className="bg-white hover:bg-red-50 text-red-600 px-3 py-1.5 rounded text-xs font-bold shadow-sm flex items-center gap-1 transition-colors" title="下载文档 (PDF)">
+                                            <IconDownload size={14}/> PDF
+                                        </button>
+                                        <button onClick={downloadQuarterlyCSV} className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-xs font-bold shadow-sm flex items-center gap-1 transition-colors" title="下载表格 (CSV)">
+                                            <IconFileSpreadsheet size={14}/> CSV
+                                        </button>
+                                    </div>
+                                    
+                                    <button onClick={() => setShowQuarterlyModal(false)} className="w-8 h-8 ml-1 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-500 transition-colors"><IconX size={20}/></button>
+                                </div>
+                            </div>
+                            
+                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar flex justify-center">
+                                <QuarterlyReportView data={quarterlyData} config={quarterlyConfig} />
                             </div>
                         </div>
                     </div>
