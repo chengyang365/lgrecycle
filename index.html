@@ -128,7 +128,6 @@
 
 <script type="text/babel">
     // --- 🟢 Configuration ---
-    // 请确保这是您最新部署的 Google Apps Script URL (新版本)
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLpcRedKXZj2tlevGZPdiRziUG_IB0pytG95ofzAebRop8K5gCVe060MR3PHMtPtSc/exec"; 
     
     // --- Error Boundary ---
@@ -223,8 +222,7 @@
     const IconUpload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
     const IconDownload = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
     const IconRefresh = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
-    const IconSettings = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
-    const IconSword = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>;
+    const IconSettings = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;    const IconSword = ({ size = 24, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>;
     const IconClock = ({ size = 16, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
     const IconFileUp = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>;
     const IconFileSpreadsheet = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg>;
@@ -243,6 +241,8 @@
     const IconPlus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
     const IconMinus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>;
     const IconUsers = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+    const IconUserPlus = ({ size = 16 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>;
+    const IconActivity = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>;
 
     // --- Helpers ---
     const generateClassOptions = () => {
@@ -272,7 +272,14 @@
         'Q4': { label: '第四季度 (10-11月)', months: [9, 10] } // 根据要求：第四季度为 10-11月
     };
 
-    const YEAR_OPTIONS = [2026];
+    const YEAR_OPTIONS = [2026, 2027, 2028, 2029];
+
+    // 🟢 NEW: 获取准确的本地日期字符串 (YYYY-MM-DD)，用于防呆限制未来日期
+    const getLocalDateString = () => {
+        const d = new Date(new Date().getTime() + 8 * 3600 * 1000); // 强制转换为大马时间 GMT+8 计算
+        return d.toISOString().split('T')[0];
+    };
+    const MAX_TODAY_STR = getLocalDateString();
 
     const Medal = ({ rank }) => {
         if (rank === 1) return <span className="text-2xl drop-shadow-md">🥇</span>;
@@ -538,12 +545,10 @@
         const year = config.year;
 
         const GroupList = ({ title, individuals }) => {
-            // 🟢 1. 引入分页状态
             const [currentPage, setCurrentPage] = useState(1);
             const recordsPerPage = 10;
             const totalPages = Math.ceil(individuals.length / recordsPerPage) || 1;
 
-            // 🟢 2. 计算当前页需要显示的数据
             const startIndex = (currentPage - 1) * recordsPerPage;
             const currentRecords = individuals.slice(startIndex, startIndex + recordsPerPage);
 
@@ -552,7 +557,6 @@
                     <div className="bg-slate-800 text-white p-3 rounded-t-lg flex justify-between items-center">
                         <h2 className="text-xl font-bold">{title}</h2>
                         
-                        {/* 🟢 3. 分页控制按钮 */}
                         {totalPages > 1 && (
                             <div className="flex gap-2 items-center text-sm">
                                 <button 
@@ -586,9 +590,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* 🟢 4. 使用切割后的数据渲染，并加上真实排名 */}
                                 {currentRecords.map((s, i) => {
-                                    const rank = startIndex + i; // 计算真实的全局排名
+                                    const rank = startIndex + i; 
                                     return (
                                         <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
                                             <td className="p-2 text-center font-bold text-slate-500">
@@ -673,7 +676,8 @@
 
     // --- Main App Component ---
     const App = () => {
-        // [FIXED] 优先读取本地缓存，离线也能加载数据
+        const currentYear = new Date().getFullYear();
+
         const [entries, setEntries] = useState(() => {
             try {
                 const saved = localStorage.getItem('sjkc_entries');
@@ -712,14 +716,14 @@
         const [reportData, setReportData] = useState(null);
         const [reportConfig, setReportConfig] = useState({
             monthIndex: new Date().getMonth(),
-            year: 2026
+            year: currentYear
         });
         
         // 🟢 Quarterly Report State
         const [showQuarterlyModal, setShowQuarterlyModal] = useState(false);
         const [quarterlyData, setQuarterlyData] = useState(null);
         const [quarterlyConfig, setQuarterlyConfig] = useState({
-            year: 2026,
+            year: currentYear,
             quarter: 'Q1'
         });
 
@@ -753,39 +757,38 @@
         const [posterData, setPosterData] = useState(null);
 
         // Filter State
-        const currentYear = 2026;
         const [filterYear, setFilterYear] = useState(currentYear);
         const [filterMonthStart, setFilterMonthStart] = useState(0); 
         const [filterMonthEnd, setFilterMonthEnd] = useState(11); 
 
         // Dashboard State
-        const [dashboardViewMode, setDashboardViewMode] = useState('overall'); // 'overall' or 'class'
+        const [dashboardViewMode, setDashboardViewMode] = useState('overall'); 
         const [selectedDashboardClass, setSelectedDashboardClass] = useState('');
 
         // Input Form State
-        const todayStr = new Date().toISOString().split('T')[0];
         const [formData, setFormData] = useState({ 
             teacherName: '', 
             studentName: '', 
             studentID: '', 
             selectedClass: '', 
-            entryDate: todayStr
+            entryDate: MAX_TODAY_STR // Initialize with local today string
         });
         const [studentFound, setStudentFound] = useState(false); 
         const [weightRows, setWeightRows] = useState(['']);
 
         // Penalty Form State
         const [penaltyUnlocked, setPenaltyUnlocked] = useState(false); 
-        
         const [penaltyInputs, setPenaltyInputs] = useState({
             'Food Waste': '',
             'Electricity': '',
             'Others': ''
         });
-        
-        const [penaltyMonth, setPenaltyMonth] = useState(new Date().getMonth());
+        const [penaltyDate, setPenaltyDate] = useState(MAX_TODAY_STR); // 🟢 升级：使用日期取代单纯的月份下拉框
         const [penaltyClass, setPenaltyClass] = useState('');
         const [penaltyTeacher, setPenaltyTeacher] = useState('');
+
+        // 🟢 Single Student Add State
+        const [singleStudent, setSingleStudent] = useState({ id: '', name: '', className: '' });
 
         // Request Delete State
         const [deleteRequestModal, setDeleteRequestModal] = useState({ show: false, id: null, reason: '' });
@@ -816,27 +819,6 @@
             setIsPublicDashboardOpen(newState);
             localStorage.setItem('sjkc_public_dashboard', newState);
             showNotification(newState ? "公共仪表板已开放 / Dashboard Dibuka" : "公共仪表板已关闭 / Dashboard Ditutup", "success");
-        };
-
-        const exportCSV = () => {
-            if (entries.length === 0) {
-                showNotification("没有数据 / Tiada Data", "error");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,ID,Type,Reason,Year,Month,Time,Teacher,Class,StudentID,Name,Weight(kg),Status\n";
-            entries.forEach(e => {
-                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle';
-                const reason = e.type === 'deduction' ? e.reason : '-';
-                const status = e.status === 'deleted' ? 'Deleted' : 'Active';
-                csvContent += `${e.id},${type},${reason},${e.calendarYear || ''},${e.month || ''},${e.displayTime},${e.teacherName || ''},${e.className},${e.studentID},${e.name},${e.weight},${status}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         };
 
         const sendToSheet = async (action, data = null) => {
@@ -926,9 +908,41 @@
         }, []);
 
         // --- Logic: Filtering & Stats ---
-        const filteredEntries = useMemo(() => {
+        // 🟢 UPGRADE: Normalize historical entries to correct both Class and Name based on current DB
+        const normalizedEntries = useMemo(() => {
             if (!entries || !Array.isArray(entries)) return [];
-            return entries.filter(entry => {
+            
+            const studentMap = {};
+            students.forEach(s => { studentMap[s.id] = { className: s.className, name: s.name }; });
+
+            return entries.map(entry => {
+                if (entry.type === 'recycle' && entry.studentID) {
+                    const realInfo = studentMap[entry.studentID];
+                    if (realInfo) {
+                        let updated = false;
+                        const newEntry = { ...entry };
+                        
+                        if (realInfo.className && realInfo.className !== entry.className) {
+                            newEntry.className = realInfo.className;
+                            newEntry.originalClassName = entry.className;
+                            updated = true;
+                        }
+                        if (realInfo.name && realInfo.name !== entry.name) {
+                            newEntry.name = realInfo.name;
+                            newEntry.originalName = entry.name;
+                            updated = true;
+                        }
+                        
+                        if (updated) return newEntry;
+                    }
+                }
+                return entry;
+            });
+        }, [entries, students]);
+
+        const filteredEntries = useMemo(() => {
+            if (!normalizedEntries || !Array.isArray(normalizedEntries)) return [];
+            return normalizedEntries.filter(entry => {
                 const entryYear = entry.calendarYear || new Date(entry.createdAt).getFullYear();
                 if (entryYear !== parseInt(filterYear)) return false;
                 let entryMonthIndex = entry.month ? MONTH_OPTIONS.indexOf(entry.month) : new Date(entry.createdAt).getMonth();
@@ -936,7 +950,7 @@
                 if (entryMonthIndex > parseInt(filterMonthEnd)) return false;
                 return true;
             });
-        }, [entries, filterYear, filterMonthStart, filterMonthEnd]);
+        }, [normalizedEntries, filterYear, filterMonthStart, filterMonthEnd]);
 
         const filteredStudents = useMemo(() => {
             if (!students || !Array.isArray(students)) return [];
@@ -1055,10 +1069,10 @@
             const currentConfig = overrideConfig || reportConfig;
             const { monthIndex, year } = currentConfig;
             
-            const monthlyEntries = entries.filter(e => {
+            const monthlyEntries = normalizedEntries.filter(e => {
                 const entryYear = e.calendarYear || new Date(e.createdAt).getFullYear();
                 const entryMonth = e.month ? MONTH_OPTIONS.indexOf(e.month) : new Date(e.createdAt).getMonth();
-                return entryYear === year && entryMonth === monthIndex && e.status !== 'deleted';
+                return entryYear === parseInt(year) && entryMonth === monthIndex && e.status !== 'deleted';
             });
 
             const classTotals = {};
@@ -1127,30 +1141,24 @@
             setShowReportModal(true);
         };
         
-        // --- 🏆 NEW: Generate Quarterly Report Logic ---
         const handleGenerateQuarterly = (overrideConfig) => {
             const currentConfig = overrideConfig || quarterlyConfig;
             const { quarter, year } = currentConfig;
-            const targetMonths = QUARTERS[quarter].months; // e.g. [0, 1, 2] for Q1
+            const targetMonths = QUARTERS[quarter].months; 
             
-            // 过滤指定季度与年份的记录
-            const qEntries = entries.filter(e => {
+            const qEntries = normalizedEntries.filter(e => {
                 const entryYear = e.calendarYear || new Date(e.createdAt).getFullYear();
                 const entryMonth = e.month ? MONTH_OPTIONS.indexOf(e.month) : new Date(e.createdAt).getMonth();
                 
-                // 仅统计个人记录 (e.type === 'recycle') 且未被删除的
-                return entryYear === year && targetMonths.includes(entryMonth) && e.status !== 'deleted' && e.type === 'recycle';
+                return entryYear === parseInt(year) && targetMonths.includes(entryMonth) && e.status !== 'deleted' && e.type === 'recycle';
             });
 
             const indivTotals = {};
 
             qEntries.forEach(e => {
                 const w = Number(e.weight) || 0;
-                
                 let grade = parseInt(e.year);
-                if (isNaN(grade) || grade === 0) {
-                    grade = e.className ? parseInt(e.className.charAt(0)) : 0;
-                }
+                if (isNaN(grade) || grade === 0) grade = e.className ? parseInt(e.className.charAt(0)) : 0;
                 if (isNaN(grade)) grade = 0;
 
                 if (e.name || e.studentID) {
@@ -1171,6 +1179,7 @@
             setShowQuarterlyModal(true);
         };
 
+        // --- Monthly Report Download Functions ---
         const downloadReportImage = () => {
             const reportNode = document.getElementById('monthly-report-container');
             if(!reportNode) return;
@@ -1244,7 +1253,7 @@
             document.body.removeChild(link);
         };
 
-        // 🟢 NEW: Quarterly Report Download Functions
+        // --- Quarterly Report Download Functions ---
         const downloadQuarterlyImage = () => {
             const reportNode = document.getElementById('quarterly-report-container');
             if(!reportNode) return;
@@ -1305,431 +1314,25 @@
             document.body.removeChild(link);
         };
 
-        // --- Handlers ---
-        const handleLogin = async (e) => {
-            e.preventDefault();
-            setLoading(true);
-            try {
-                const url = `${GOOGLE_SCRIPT_URL}?action=verifyAdmin&password=${encodeURIComponent(passwordInput)}`;
-                
-                const response = await fetch(url);
-                const data = await response.json(); 
-                
-                if (data.status === 'success') {
-                    setIsAdmin(true);
-                    setViewMode('admin'); 
-                    setPasswordInput('');
-                    playSound('success'); 
-                    showNotification("登录成功 / Berjaya Log Masuk", "success");
-                } else {
-                    playSound('error'); 
-                    showNotification("密码错误 / Kata laluan salah", "error");
-                }
-            } catch(err) {
-                console.error(err);
-                showNotification("验证失败，请检查网络", "error");
-            } finally {
-                setLoading(false);
+        const exportCSV = () => {
+            if (normalizedEntries.length === 0) {
+                showNotification("没有数据 / Tiada Data", "error");
+                return;
             }
-        };
-        
-        const handleGoToDashboard = () => {
-            requestSecureAction(() => {
-                setViewMode('dashboard');
-                playSound('success');
+            let csvContent = "data:text/csv;charset=utf-8,ID,Type,Reason,Year,Month,Time,Teacher,Class,StudentID,Name,Weight(kg),Status\n";
+            normalizedEntries.forEach(e => {
+                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle';
+                const reason = e.type === 'deduction' ? e.reason : '-';
+                const status = e.status === 'deleted' ? 'Deleted' : 'Active';
+                csvContent += `${e.id},${type},${reason},${e.calendarYear || ''},${e.month || ''},${e.displayTime},${e.teacherName || ''},${e.className},${e.studentID},${e.name},${e.weight},${status}\n`;
             });
-        };
-
-        const handleLogout = () => {
-            setIsAdmin(false);
-            setIsSystemUnlocked(false); 
-            setViewMode('landing');
-            showNotification("已退出系统 / Log Keluar", "success");
-        };
-
-        const handleInputChange = (e) => {
-            const { name, value } = e.target;
-            if (name === 'studentID') {
-                const trimmedId = value.trim();
-                const match = students.find(s => s.id === trimmedId);
-                if (match) {
-                    setFormData(prev => ({...prev, [name]: value, studentName: match.name, selectedClass: match.className || prev.selectedClass}));
-                    setStudentFound(true);
-                } else {
-                    setFormData(prev => ({ ...prev, [name]: value, studentName: '', selectedClass: '' }));
-                    setStudentFound(false);
-                }
-            } else if (name === 'studentName') {
-                const match = students.find(s => s.name.toLowerCase() === value.toLowerCase().trim());
-                if(match) {
-                     setFormData(prev => ({...prev, [name]: value, studentID: match.id, selectedClass: match.className || prev.selectedClass}));
-                     setStudentFound(true);
-                } else {
-                     setFormData(prev => ({ ...prev, [name]: value }));
-                }
-            } else {
-                setFormData(prev => ({ ...prev, [name]: value }));
-            }
-        };
-
-        const clearID = () => {
-            setFormData(prev => ({ ...prev, studentID: '' }));
-            setStudentFound(false);
-            if(studentIdRef.current) studentIdRef.current.focus();
-        };
-
-        const clearName = () => {
-            setFormData(prev => ({ ...prev, studentName: '' }));
-        };
-
-        const handleResetID = () => {
-            setFormData(prev => ({ ...prev, studentID: '', studentName: '', weight: '' }));
-            setStudentFound(false);
-            setWeightRows(['']); 
-            if(studentIdRef.current) studentIdRef.current.focus();
-        };
-
-        const toggleSelectAll = (e) => {
-            if (e.target.checked) {
-                const allIds = new Set(filteredStudents.map(s => s.id));
-                setSelectedStudentIds(allIds);
-            } else {
-                setSelectedStudentIds(new Set());
-            }
-        };
-
-        const toggleSelectOne = (id) => {
-            const newSet = new Set(selectedStudentIds);
-            if (newSet.has(id)) { newSet.delete(id); } else { newSet.add(id); }
-            setSelectedStudentIds(newSet);
-        };
-
-        // --- Weight Row Handlers (FIXED: Better decimal handling) ---
-        const handleWeightRowChange = (index, value) => {
-            let sanitizedValue = value.replace(/[^0-9.]/g, '');
-            const parts = sanitizedValue.split('.');
-            if (parts.length > 2) {
-                sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
-            }
-            const regex = /^(\d+(\.\d{0,2})?)?$/;
-            if (regex.test(sanitizedValue) || sanitizedValue === '') {
-                const newRows = [...weightRows];
-                newRows[index] = sanitizedValue;
-                setWeightRows(newRows);
-            }
-        };
-
-        const addWeightRow = () => {
-            setWeightRows([...weightRows, '']);
-        };
-
-        const removeWeightRow = (index) => {
-            if (weightRows.length > 1) {
-                const newRows = weightRows.filter((_, i) => i !== index);
-                setWeightRows(newRows);
-            }
-        };
-
-        const clearWeightRow = (index) => {
-            const newRows = [...weightRows];
-            newRows[index] = '';
-            setWeightRows(newRows);
-        };
-
-        const calculateTotalWeight = () => {
-            return weightRows.reduce((acc, curr) => acc + (parseFloat(curr) || 0), 0);
-        };
-
-        // --- Batch Entry Handlers ---
-        const handleBatchClassChange = (e) => {
-            const cls = e.target.value;
-            setBatchClass(cls);
-            setBatchInputs({}); 
-        };
-
-        const handleBatchInputChange = (studentId, weight) => {
-            const sanitizedValue = weight.replace(/[^0-9.]/g, '');
-            const parts = sanitizedValue.split('.');
-            let finalValue = parts[0];
-            if (parts.length > 1) {
-                finalValue += '.' + parts.slice(1).join('').slice(0, 2);
-            }
-            setBatchInputs(prev => ({
-                ...prev,
-                [studentId]: finalValue
-            }));
-        };
-
-        const handleBatchSubmit = async () => {
-            if (!formData.teacherName.trim()) {
-                playSound('error');
-                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
-            }
-
-            const entriesToAdd = [];
-            const timestamp = Date.now();
-            const entryDateObj = new Date(formData.entryDate); 
-            const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
-            const currentYearInt = entryDateObj.getFullYear();
-            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
-            const studentGrade = batchClass ? (parseInt(batchClass.charAt(0)) || 0) : 0;
-
-            Object.keys(batchInputs).forEach(studentId => {
-                const weightVal = parseFloat(batchInputs[studentId]);
-                if (weightVal > 0) {
-                    const student = students.find(s => s.id === studentId);
-                    entriesToAdd.push({
-                        id: (timestamp + Math.random()).toString(),
-                        type: 'recycle',
-                        teacherName: formData.teacherName.trim() || 'Batch', 
-                        name: student ? student.name : 'Unknown',
-                        studentID: studentId,
-                        className: batchClass,
-                        weight: weightVal,
-                        month: currentMonthStr, 
-                        calendarYear: currentYearInt,
-                        year: studentGrade,
-                        createdAt: entryDateObj.getTime(),
-                        displayTime: displayTime
-                    });
-                }
-            });
-
-            if (entriesToAdd.length === 0) return showNotification("请输入至少一个重量 / Masukkan berat", "error");
-
-            setLoading(true);
-
-            setEntries(prev => [...entriesToAdd, ...prev]); 
-            addLog('Batch Add Entries', `Added ${entriesToAdd.length} entries for ${batchClass}`);
-            
-            if (isCloudEnabled && !cloudError) {
-                await sendToSheet('addEntriesBatch', { data: entriesToAdd });
-            }
-            
-            setBatchInputs({});
-            setLoading(false);
-            
-            showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
-        };
-
-        // --- Penalty Batch Handlers ---
-        const handlePenaltyInputChange = (reason, value) => {
-            const sanitizedValue = value.replace(/[^0-9]/g, '');
-            setPenaltyInputs(prev => ({ ...prev, [reason]: sanitizedValue }));
-        };
-
-        const handlePenaltyBatchSubmit = async () => {
-            if (!penaltyTeacher.trim()) {
-                playSound('error');
-                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
-            }
-            if (!penaltyClass) return showNotification("请选择班级 / Pilih Kelas", "error");
-            
-            const hasData = Object.values(penaltyInputs).some(val => parseFloat(val) > 0);
-            if (!hasData) return showNotification("请输入至少一项数值 / Masukkan nilai", "error");
-
-            setLoading(true);
-
-            const entryDateObj = new Date();
-            entryDateObj.setMonth(penaltyMonth);
-            const studentGrade = parseInt(penaltyClass.charAt(0)) || 0;
-            const currentMonthStr = MONTH_OPTIONS[penaltyMonth];
-            const currentYearInt = entryDateObj.getFullYear();
-            const timestamp = Date.now();
-            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
-
-            const entriesToAdd = [];
-
-            Object.entries(penaltyInputs).forEach(([reason, value]) => {
-                const val = parseInt(value, 10);
-                if (val > 0) {
-                    entriesToAdd.push({
-                        id: (timestamp + Math.random()).toString(),
-                        type: 'deduction',
-                        teacherName: penaltyTeacher.trim(),
-                        name: '', 
-                        studentID: '',
-                        className: penaltyClass,
-                        reason: reason, 
-                        weight: -Math.abs(val),
-                        month: currentMonthStr,
-                        calendarYear: currentYearInt,
-                        year: studentGrade,
-                        createdAt: Date.now(),
-                        displayTime: displayTime
-                    });
-                }
-            });
-
-            setEntries(prev => [...entriesToAdd, ...prev]);
-            addLog('Add Penalty Batch', `Added ${entriesToAdd.length} penalties for ${penaltyClass}`);
-
-            if (isCloudEnabled && !cloudError) {
-                // Compatible sending loop for penalties to ensure safety
-                for (const entry of entriesToAdd) {
-                    await sendToSheet('addEntry', { data: entry });
-                }
-            }
-
-            setLoading(false);
-            setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' });
-            setPenaltyTeacher('');
-            showNotification("扣分记录已提交 / Penalti Berjaya", "success");
-        };
-
-
-        // --- SUBMIT HANDLERS ---
-        const handleSubmit = async (e) => {
-            e.preventDefault();
-            if (!formData.teacherName) {
-                playSound('error');
-                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
-            }
-            const calculatedTotal = calculateTotalWeight();
-
-            if (!formData.selectedClass || calculatedTotal <= 0) {
-                playSound('error');
-                return showNotification("请填写完整信息 (班级 & 重量)", "error");
-            }
-
-            setLoading(true);
-
-            const entryDateObj = new Date(formData.entryDate);
-            const studentGrade = formData.selectedClass ? (parseInt(formData.selectedClass.charAt(0)) || 0) : 0;
-            
-            const timestamp = Date.now();
-            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
-
-            const newEntry = {
-                id: timestamp.toString(),
-                type: 'recycle',
-                teacherName: formData.teacherName.trim(),
-                name: formData.studentName.trim(),
-                studentID: formData.studentID.trim(),
-                className: formData.selectedClass,
-                weight: parseFloat(calculatedTotal.toFixed(2)),
-                month: MONTH_OPTIONS[entryDateObj.getMonth()],
-                calendarYear: entryDateObj.getFullYear(),
-                year: studentGrade,
-                createdAt: entryDateObj.getTime(),
-                displayTime: displayTime
-            };
-
-            setEntries(prev => [newEntry, ...prev]);
-            addLog('Add Entry', `${newEntry.className}: ${newEntry.weight}kg`);
-            
-            if (isCloudEnabled && !cloudError) {
-                await sendToSheet('addEntry', { data: newEntry });
-            }
-
-            setLoading(false);
-            setWeightRows(['']); 
-            if(studentIdRef.current) studentIdRef.current.focus();
-            
-            showNotification("记录添加成功 / Berjaya", "success");
-        };
-
-        const handleRequestDelete = (id) => {
-            setDeleteRequestModal({ show: true, id: id, reason: '' });
-        };
-
-        const confirmRequestDelete = () => {
-            const { id, reason } = deleteRequestModal;
-            if (!id || !reason.trim()) {
-                return showNotification("请填写删除原因 / Sila nyatakan sebab", "error");
-            }
-            
-            const entryToDelete = entries.find(e => e.id === id);
-            if (!entryToDelete) return;
-
-            if (pendingDeletions.some(p => p.id === id)) {
-                setDeleteRequestModal({ show: false, id: null, reason: '' });
-                return showNotification("该记录已在审核队列中", "error");
-            }
-
-            const request = {
-                ...entryToDelete,
-                reason: reason,
-                requestTime: new Date().toLocaleString()
-            };
-
-            setPendingDeletions(prev => [request, ...prev]);
-            setDeleteRequestModal({ show: false, id: null, reason: '' });
-            showNotification("已发送删除申请 / Permohonan dihantar", "success");
-        };
-
-        const handleApproveDelete = (id) => {
-            requestSecureAction(async () => {
-                setEntries(prev => prev.map(e => e.id === id ? {...e, status: 'deleted'} : e));
-                setPendingDeletions(prev => prev.filter(e => e.id !== id));
-                addLog('Delete Entry', `Deleted Entry ID: ${id} (Approved)`);
-                
-                if (isCloudEnabled && !cloudError) {
-                    await sendToSheet('deleteEntry', { id });
-                }
-                showNotification("记录已删除 / Rekod dipadam", "success");
-            });
-        };
-
-        const handleRejectDelete = (id) => {
-            setPendingDeletions(prev => prev.filter(e => e.id !== id));
-            showNotification("申请已拒绝 / Permohonan ditolak", "error");
-        };
-
-        const handleDeleteAllEntries = () => {
-            setConfirmModal({
-                show: true,
-                title: "⚠️ 危险操作：清空所有记录",
-                msg: "警告：这将永久删除所有回收和扣分数据！\n确定要继续吗？/ Padam SEMUA rekod?",
-                isDestructive: true,
-                onConfirm: () => {
-                    setConfirmModal(prev => ({ ...prev, show: false }));
-                    
-                    setSecurityCheck({ 
-                        show: true, 
-                        error: '',
-                        callback: async () => {
-                            setEntries([]);
-                            setPendingDeletions([]); 
-                            addLog('System Reset', 'Cleared ALL recycling data via Dashboard');
-                            showNotification("所有记录已清空 / Semua rekod dipadam", "success");
-                            
-                            if (isCloudEnabled && !cloudError) {
-                                setLoading(true);
-                                await sendToSheet('clearAllEntries');
-                                setLoading(false);
-                            } 
-                        }
-                    });
-                    setSecurityInput('');
-                }
-            });
-        };
-
-        const handleBatchDelete = () => {
-            if (selectedStudentIds.size === 0) return;
-            
-            setConfirmModal({
-                show: true, 
-                title: "批量删除确认 / Padam Pukal", 
-                msg: `确定删除选中的 ${selectedStudentIds.size} 名学生吗？`, 
-                isDestructive: true,
-                onConfirm: () => {
-                    setConfirmModal(prev => ({ ...prev, show: false }));
-                    setStudents(prev => prev.filter(s => !selectedStudentIds.has(s.id)));
-                    addLog('Batch Delete Students', `Deleted ${selectedStudentIds.size} students`);
-                    setSelectedStudentIds(new Set());
-                    showNotification("已批量删除 (云端同步可能较慢)", "success");
-
-                    if (isCloudEnabled && !cloudError) {
-                        setLoading(true);
-                        const promises = Array.from(selectedStudentIds).map(id => 
-                            sendToSheet('deleteStudent', { id })
-                        );
-                        Promise.all(promises).then(() => setLoading(false));
-                    }
-                }
-            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
 
         // --- Poster Generation ---
@@ -1792,6 +1395,418 @@
             });
         };
 
+        // --- Handlers ---
+        const handleLogin = async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            try {
+                const url = `${GOOGLE_SCRIPT_URL}?action=verifyAdmin&password=${encodeURIComponent(passwordInput)}`;
+                const response = await fetch(url);
+                const data = await response.json(); 
+                
+                if (data.status === 'success') {
+                    setIsAdmin(true);
+                    setViewMode('admin'); 
+                    setPasswordInput('');
+                    playSound('success'); 
+                    showNotification("登录成功 / Berjaya Log Masuk", "success");
+                } else {
+                    playSound('error'); 
+                    showNotification("密码错误 / Kata laluan salah", "error");
+                }
+            } catch(err) {
+                showNotification("验证失败，请检查网络", "error");
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        const handleGoToDashboard = () => {
+            requestSecureAction(() => {
+                setViewMode('dashboard');
+                playSound('success');
+            });
+        };
+
+        const handleLogout = () => {
+            setIsAdmin(false);
+            setIsSystemUnlocked(false); 
+            setViewMode('landing');
+            showNotification("已退出系统 / Log Keluar", "success");
+        };
+
+        const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            if (name === 'studentID') {
+                const trimmedId = value.trim();
+                const match = students.find(s => s.id === trimmedId);
+                if (match) {
+                    setFormData(prev => ({...prev, [name]: value, studentName: match.name, selectedClass: match.className || prev.selectedClass}));
+                    setStudentFound(true);
+                } else {
+                    setFormData(prev => ({ ...prev, [name]: value, studentName: '', selectedClass: '' }));
+                    setStudentFound(false);
+                }
+            } else if (name === 'studentName') {
+                const match = students.find(s => s.name.toLowerCase() === value.toLowerCase().trim());
+                if(match) {
+                     setFormData(prev => ({...prev, [name]: value, studentID: match.id, selectedClass: match.className || prev.selectedClass}));
+                     setStudentFound(true);
+                } else {
+                     setFormData(prev => ({ ...prev, [name]: value }));
+                }
+            } else {
+                setFormData(prev => ({ ...prev, [name]: value }));
+            }
+        };
+
+        const clearID = () => {
+            setFormData(prev => ({ ...prev, studentID: '', ...(studentFound ? {studentName: ''} : {}) }));
+            setStudentFound(false);
+            if(studentIdRef.current) studentIdRef.current.focus();
+        };
+
+        const clearName = () => {
+            setFormData(prev => ({ ...prev, studentName: '', ...(studentFound ? {studentID: ''} : {}) }));
+            setStudentFound(false);
+        };
+
+        const handleResetID = () => {
+            setFormData(prev => ({ ...prev, studentID: '', studentName: '', weight: '' }));
+            setStudentFound(false);
+            setWeightRows(['']); 
+            if(studentIdRef.current) studentIdRef.current.focus();
+        };
+
+        const toggleSelectAll = (e) => {
+            if (e.target.checked) {
+                const allIds = new Set(filteredStudents.map(s => s.id));
+                setSelectedStudentIds(allIds);
+            } else {
+                setSelectedStudentIds(new Set());
+            }
+        };
+
+        const toggleSelectOne = (id) => {
+            const newSet = new Set(selectedStudentIds);
+            if (newSet.has(id)) { newSet.delete(id); } else { newSet.add(id); }
+            setSelectedStudentIds(newSet);
+        };
+
+        // --- Weight Row Handlers
+        const handleWeightRowChange = (index, value) => {
+            let sanitizedValue = value.replace(/[^0-9.]/g, '');
+            const parts = sanitizedValue.split('.');
+            if (parts.length > 2) {
+                sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+            }
+            const regex = /^(\d+(\.\d{0,2})?)?$/;
+            if (regex.test(sanitizedValue) || sanitizedValue === '') {
+                const newRows = [...weightRows];
+                newRows[index] = sanitizedValue;
+                setWeightRows(newRows);
+            }
+        };
+
+        const addWeightRow = () => setWeightRows([...weightRows, '']);
+        const removeWeightRow = (index) => { if (weightRows.length > 1) setWeightRows(weightRows.filter((_, i) => i !== index)); };
+        const clearWeightRow = (index) => { const newRows = [...weightRows]; newRows[index] = ''; setWeightRows(newRows); };
+        const calculateTotalWeight = () => weightRows.reduce((acc, curr) => acc + (parseFloat(curr) || 0), 0);
+
+        // --- Batch Entry Handlers ---
+        const handleBatchClassChange = (e) => {
+            const cls = e.target.value;
+            setBatchClass(cls);
+            setBatchInputs({}); 
+        };
+
+        const handleBatchInputChange = (studentId, weight) => {
+            const sanitizedValue = weight.replace(/[^0-9.]/g, '');
+            const parts = sanitizedValue.split('.');
+            let finalValue = parts[0];
+            if (parts.length > 1) finalValue += '.' + parts.slice(1).join('').slice(0, 2);
+            setBatchInputs(prev => ({...prev, [studentId]: finalValue}));
+        };
+
+        const handleBatchSubmit = async () => {
+            if (!formData.teacherName.trim()) {
+                playSound('error');
+                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
+            }
+
+            const entriesToAdd = [];
+            const timestamp = Date.now();
+            const entryDateObj = new Date(formData.entryDate); 
+            const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
+            const currentYearInt = entryDateObj.getFullYear();
+            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
+            const studentGrade = batchClass ? (parseInt(batchClass.charAt(0)) || 0) : 0;
+
+            Object.keys(batchInputs).forEach(studentId => {
+                const weightVal = parseFloat(batchInputs[studentId]);
+                if (weightVal > 0) {
+                    const student = students.find(s => s.id === studentId);
+                    entriesToAdd.push({
+                        id: (timestamp + Math.random()).toString(),
+                        type: 'recycle',
+                        teacherName: formData.teacherName.trim() || 'Batch', 
+                        name: student ? student.name : 'Unknown',
+                        studentID: studentId,
+                        className: batchClass,
+                        weight: weightVal,
+                        month: currentMonthStr, 
+                        calendarYear: currentYearInt,
+                        year: studentGrade,
+                        createdAt: entryDateObj.getTime(),
+                        displayTime: displayTime
+                    });
+                }
+            });
+
+            if (entriesToAdd.length === 0) return showNotification("请输入至少一个重量 / Masukkan berat", "error");
+
+            setLoading(true);
+            setEntries(prev => [...entriesToAdd, ...prev]); 
+            addLog('Batch Add Entries', `Added ${entriesToAdd.length} entries for ${batchClass}`);
+            
+            if (isCloudEnabled && !cloudError) await sendToSheet('addEntriesBatch', { data: entriesToAdd });
+            
+            setBatchInputs({});
+            setLoading(false);
+            showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
+        };
+
+        // --- Penalty Batch Handlers ---
+        const handlePenaltyInputChange = (reason, value) => {
+            const sanitizedValue = value.replace(/[^0-9]/g, '');
+            setPenaltyInputs(prev => ({ ...prev, [reason]: sanitizedValue }));
+        };
+
+        const handlePenaltyBatchSubmit = async () => {
+            if (!penaltyTeacher.trim()) {
+                playSound('error');
+                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
+            }
+            if (!penaltyClass) return showNotification("请选择班级 / Pilih Kelas", "error");
+            
+            const hasData = Object.values(penaltyInputs).some(val => parseFloat(val) > 0);
+            if (!hasData) return showNotification("请输入至少一项数值 / Masukkan nilai", "error");
+
+            setLoading(true);
+
+            // 🟢 UPGRADE: Use specific penalty date instead of just month
+            const entryDateObj = new Date(penaltyDate);
+            const studentGrade = parseInt(penaltyClass.charAt(0)) || 0;
+            const currentMonthStr = MONTH_OPTIONS[entryDateObj.getMonth()];
+            const currentYearInt = entryDateObj.getFullYear();
+            const timestamp = Date.now();
+            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
+
+            const entriesToAdd = [];
+
+            Object.entries(penaltyInputs).forEach(([reason, value]) => {
+                const val = parseInt(value, 10);
+                if (val > 0) {
+                    entriesToAdd.push({
+                        id: (timestamp + Math.random()).toString(),
+                        type: 'deduction',
+                        teacherName: penaltyTeacher.trim(),
+                        name: '', 
+                        studentID: '',
+                        className: penaltyClass,
+                        reason: reason, 
+                        weight: -Math.abs(val),
+                        month: currentMonthStr,
+                        calendarYear: currentYearInt,
+                        year: studentGrade,
+                        createdAt: entryDateObj.getTime(),
+                        displayTime: displayTime
+                    });
+                }
+            });
+
+            setEntries(prev => [...entriesToAdd, ...prev]);
+            addLog('Add Penalty Batch', `Added ${entriesToAdd.length} penalties for ${penaltyClass}`);
+
+            if (isCloudEnabled && !cloudError) {
+                for (const entry of entriesToAdd) {
+                    await sendToSheet('addEntry', { data: entry });
+                }
+            }
+
+            setLoading(false);
+            setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' });
+            setPenaltyTeacher('');
+            showNotification("扣分记录已提交 / Penalti Berjaya", "success");
+        };
+
+        // --- SUBMIT HANDLERS ---
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (!formData.teacherName) {
+                playSound('error');
+                return showNotification("请填写老师姓名 / Nama Guru Diperlukan", "error");
+            }
+            const calculatedTotal = calculateTotalWeight();
+
+            if (!formData.selectedClass || calculatedTotal <= 0) {
+                playSound('error');
+                return showNotification("请填写完整信息 (班级 & 重量)", "error");
+            }
+
+            setLoading(true);
+
+            let finalClass = formData.selectedClass;
+            if (formData.studentID) {
+                const matchedStudent = students.find(s => s.id === formData.studentID);
+                if (matchedStudent && matchedStudent.className) {
+                    finalClass = matchedStudent.className;
+                }
+            }
+
+            const entryDateObj = new Date(formData.entryDate);
+            const studentGrade = finalClass ? (parseInt(finalClass.charAt(0)) || 0) : 0;
+            
+            const timestamp = Date.now();
+            const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'});
+
+            const newEntry = {
+                id: timestamp.toString(),
+                type: 'recycle',
+                teacherName: formData.teacherName.trim(),
+                name: formData.studentName.trim(),
+                studentID: formData.studentID.trim(),
+                className: finalClass,
+                weight: parseFloat(calculatedTotal.toFixed(2)),
+                month: MONTH_OPTIONS[entryDateObj.getMonth()],
+                calendarYear: entryDateObj.getFullYear(),
+                year: studentGrade,
+                createdAt: entryDateObj.getTime(),
+                displayTime: displayTime
+            };
+
+            setEntries(prev => [newEntry, ...prev]);
+            addLog('Add Entry', `${newEntry.className}: ${newEntry.weight}kg`);
+            
+            if (isCloudEnabled && !cloudError) await sendToSheet('addEntry', { data: newEntry });
+
+            setLoading(false);
+            setWeightRows(['']); 
+            if(studentIdRef.current) studentIdRef.current.focus();
+            showNotification("记录添加成功 / Berjaya", "success");
+        };
+
+        const handleRequestDelete = (id) => setDeleteRequestModal({ show: true, id: id, reason: '' });
+
+        const confirmRequestDelete = () => {
+            const { id, reason } = deleteRequestModal;
+            if (!id || !reason.trim()) return showNotification("请填写删除原因 / Sila nyatakan sebab", "error");
+            
+            const entryToDelete = normalizedEntries.find(e => e.id === id);
+            if (!entryToDelete) return;
+
+            if (pendingDeletions.some(p => p.id === id)) {
+                setDeleteRequestModal({ show: false, id: null, reason: '' });
+                return showNotification("该记录已在审核队列中", "error");
+            }
+
+            const request = { ...entryToDelete, reason: reason, requestTime: new Date().toLocaleString() };
+            setPendingDeletions(prev => [request, ...prev]);
+            setDeleteRequestModal({ show: false, id: null, reason: '' });
+            showNotification("已发送删除申请 / Permohonan dihantar", "success");
+        };
+
+        const handleApproveDelete = (id) => {
+            requestSecureAction(async () => {
+                setEntries(prev => prev.map(e => e.id === id ? {...e, status: 'deleted'} : e));
+                setPendingDeletions(prev => prev.filter(e => e.id !== id));
+                addLog('Delete Entry', `Deleted Entry ID: ${id} (Approved)`);
+                if (isCloudEnabled && !cloudError) await sendToSheet('deleteEntry', { id });
+                showNotification("记录已删除 / Rekod dipadam", "success");
+            });
+        };
+
+        const handleRejectDelete = (id) => {
+            setPendingDeletions(prev => prev.filter(e => e.id !== id));
+            showNotification("申请已拒绝 / Permohonan ditolak", "error");
+        };
+
+        const handleDeleteAllEntries = () => {
+            setConfirmModal({
+                show: true,
+                title: "⚠️ 危险操作：清空所有记录",
+                msg: "警告：这将永久删除所有回收和扣分数据！\n确定要继续吗？/ Padam SEMUA rekod?",
+                isDestructive: true,
+                onConfirm: () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    setSecurityCheck({ 
+                        show: true, error: '',
+                        callback: async () => {
+                            setEntries([]); setPendingDeletions([]); 
+                            addLog('System Reset', 'Cleared ALL recycling data via Dashboard');
+                            showNotification("所有记录已清空 / Semua rekod dipadam", "success");
+                            if (isCloudEnabled && !cloudError) {
+                                setLoading(true);
+                                await sendToSheet('clearAllEntries');
+                                setLoading(false);
+                            } 
+                        }
+                    });
+                    setSecurityInput('');
+                }
+            });
+        };
+
+        const handleBatchDelete = () => {
+            if (selectedStudentIds.size === 0) return;
+            setConfirmModal({
+                show: true, title: "批量删除确认 / Padam Pukal", msg: `确定删除选中的 ${selectedStudentIds.size} 名学生吗？`, isDestructive: true,
+                onConfirm: () => {
+                    setConfirmModal(prev => ({ ...prev, show: false }));
+                    setStudents(prev => prev.filter(s => !selectedStudentIds.has(s.id)));
+                    addLog('Batch Delete Students', `Deleted ${selectedStudentIds.size} students`);
+                    setSelectedStudentIds(new Set());
+                    showNotification("已批量删除 (云端同步可能较慢)", "success");
+
+                    if (isCloudEnabled && !cloudError) {
+                        setLoading(true);
+                        Promise.all(Array.from(selectedStudentIds).map(id => sendToSheet('deleteStudent', { id })))
+                               .then(() => setLoading(false));
+                    }
+                }
+            });
+        };
+
+        // 🟢 NEW: Add Single Student Handler
+        const handleAddSingleStudent = async (e) => {
+            e.preventDefault();
+            if (!singleStudent.id.trim() || !singleStudent.name.trim() || !singleStudent.className) {
+                return showNotification("请填写完整信息", "error");
+            }
+            if (students.some(s => s.id === singleStudent.id.trim())) {
+                return showNotification("该学号已存在", "error");
+            }
+
+            const newStudentObj = {
+                id: singleStudent.id.trim(),
+                name: singleStudent.name.trim(),
+                className: singleStudent.className,
+                createdAt: Date.now()
+            };
+
+            setLoading(true);
+            setStudents(prev => [newStudentObj, ...prev]);
+            addLog('Add Single Student', `Added ${newStudentObj.name} (${newStudentObj.id}) to ${newStudentObj.className}`);
+            
+            if (isCloudEnabled && !cloudError) {
+                await sendToSheet('addStudentsBatch', { data: [newStudentObj] });
+            }
+            
+            setSingleStudent({ id: '', name: '', className: '' });
+            setLoading(false);
+            showNotification(`已添加学生: ${newStudentObj.name}`, "success");
+        };
+
         // --- Security Functions ---
         const requestSecureAction = (callback) => {
             setSecurityCheck({ show: true, callback: callback, error: '', verifying: false });
@@ -1801,7 +1816,6 @@
         const handleSecurityVerify = async (e) => {
             e.preventDefault();
             const cb = securityCheck.callback;
-            
             setSecurityCheck(prev => ({ ...prev, verifying: true }));
 
             try {
@@ -1811,13 +1825,11 @@
 
                 if (data.status === 'success') {
                     setSecurityCheck({ show: false, callback: null, error: '', verifying: false });
-                    if (cb) {
-                        cb();
-                    } else if (viewMode === 'management') {
-                        setIsSystemUnlocked(true);
-                        playSound('success');
-                        showNotification("系统管理已解锁 / Sistem Dibuka", "success");
-                    } else if (entryTab === 'penalty') {
+                    if (cb) { cb(); } 
+                    else if (viewMode === 'management') {
+                        setIsSystemUnlocked(true); playSound('success'); showNotification("系统管理已解锁 / Sistem Dibuka", "success");
+                    } 
+                    else if (entryTab === 'penalty') {
                          setPenaltyUnlocked(true);
                     }
                 } else {
@@ -1828,7 +1840,6 @@
             }
         };
 
-        // --- FIXED: MISSING ADMIN FUNCTIONS ---
         const handleImportStudents = async () => {
             if (!importClass) return showNotification("请选择班级", "error");
             if (!importText.trim()) return showNotification("请输入学生数据", "error");
@@ -1856,9 +1867,7 @@
             setStudents(prev => [...newStudents, ...prev]);
             addLog('Import Students', `Imported ${newStudents.length} to ${importClass}`);
             
-            if (isCloudEnabled && !cloudError) {
-                await sendToSheet('addStudentsBatch', { data: newStudents });
-            }
+            if (isCloudEnabled && !cloudError) await sendToSheet('addStudentsBatch', { data: newStudents });
             
             setImportText('');
             setLoading(false);
@@ -1881,10 +1890,7 @@
                     const parts = line.split(',').map(p => p.trim());
                     if (parts.length >= 3) {
                         newStudents.push({
-                            className: parts[0],
-                            id: parts[1],
-                            name: parts[2],
-                            createdAt: timestamp + index
+                            className: parts[0], id: parts[1], name: parts[2], createdAt: timestamp + index
                         });
                     }
                 });
@@ -1893,9 +1899,7 @@
                     setLoading(true);
                     setStudents(prev => [...newStudents, ...prev]);
                     addLog('Smart Import', `Imported ${newStudents.length} students from CSV`);
-                    if (isCloudEnabled && !cloudError) {
-                        await sendToSheet('addStudentsBatch', { data: newStudents });
-                    }
+                    if (isCloudEnabled && !cloudError) await sendToSheet('addStudentsBatch', { data: newStudents });
                     setLoading(false);
                     showNotification(`CSV 智能导入 ${newStudents.length} 名学生`, "success");
                 } else {
@@ -1910,11 +1914,7 @@
             e.preventDefault();
             setStudents(prev => prev.map(s => s.id === editingStudent.id ? editingStudent : s));
             addLog('Edit Student', `Updated ID: ${editingStudent.id}`);
-            
-            if (isCloudEnabled && !cloudError) {
-                await sendToSheet('updateStudent', { data: editingStudent });
-            }
-            
+            if (isCloudEnabled && !cloudError) await sendToSheet('updateStudent', { data: editingStudent });
             setEditingStudent(null);
             showNotification("学生信息已更新", "success");
         };
@@ -1923,33 +1923,24 @@
             if (confirm("确定要删除该学生吗？")) {
                 setStudents(prev => prev.filter(s => s.id !== id));
                 addLog('Delete Student', `Deleted ID: ${id}`);
-                if (isCloudEnabled && !cloudError) {
-                    sendToSheet('deleteStudent', { id });
-                }
+                if (isCloudEnabled && !cloudError) sendToSheet('deleteStudent', { id });
                 showNotification("已删除学生", "success");
             }
         };
 
         const handleBackupData = () => {
-            const backupData = {
-                entries,
-                students,
-                auditLogs,
-                timestamp: new Date().toISOString()
-            };
+            const backupData = { entries, students, auditLogs, timestamp: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            link.href = url;
-            link.click();
+            link.href = url; link.click();
             showNotification("备份已下载", "success");
         };
 
         const handleRestoreData = (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (event) => {
                 try {
@@ -1974,16 +1965,10 @@
         const handleClearAll = () => {
             if (confirm("警告：此操作将清空本地所有学生名单、记录和日志！您确定吗？")) {
                 requestSecureAction(async () => {
-                    setEntries([]);
-                    setStudents([]);
-                    setAuditLogs([]);
-                    setPendingDeletions([]);
-                    localStorage.clear();
+                    setEntries([]); setStudents([]); setAuditLogs([]); setPendingDeletions([]); localStorage.clear();
                     addLog('System Reset', 'Cleared all data from settings');
                     showNotification("系统已完全重置", "success");
-                    if (isCloudEnabled && !cloudError) {
-                        await sendToSheet('clearAllData');
-                    }
+                    if (isCloudEnabled && !cloudError) await sendToSheet('clearAllData');
                 });
             }
         };
@@ -2162,10 +2147,12 @@
                                                 <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                                     <IconCalendar size={14} /> 日期 / Tarikh
                                                 </label>
+                                                {/* 🟢 UPGRADE: max={MAX_TODAY_STR} prevents future dates */}
                                                 <input 
                                                     type="date" 
                                                     name="entryDate"
                                                     value={formData.entryDate}
+                                                    max={MAX_TODAY_STR}
                                                     onChange={handleInputChange}
                                                     className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
                                                 />
@@ -2187,8 +2174,26 @@
                                             </div>
 
                                             <div className="space-y-1">
-                                                <label className="text-sm font-bold text-slate-700">班级 / Kelas <span className="text-red-500">*</span></label>
-                                                <select name="selectedClass" value={formData.selectedClass} onChange={handleInputChange} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-lg text-slate-700 outline-none" required>
+                                                <div className="flex items-center justify-between">
+                                                    <label className="text-sm font-bold text-slate-700">班级 / Kelas <span className="text-red-500">*</span></label>
+                                                    {studentFound && (
+                                                        <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded flex items-center gap-1 font-bold">
+                                                            <IconLock size={10}/> 系统锁定匹配班级
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <select 
+                                                    name="selectedClass" 
+                                                    value={formData.selectedClass} 
+                                                    onChange={handleInputChange} 
+                                                    disabled={studentFound}
+                                                    className={`w-full p-4 rounded-xl font-bold text-lg outline-none transition-colors ${
+                                                        studentFound 
+                                                        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700 cursor-not-allowed opacity-90' 
+                                                        : 'bg-slate-50 border border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500'
+                                                    }`} 
+                                                    required
+                                                >
                                                     <option value="">- 选择 / Pilih -</option>
                                                     {CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}
                                                 </select>
@@ -2198,13 +2203,22 @@
                                                 <div className="space-y-1">
                                                     <label className="text-xs font-bold text-slate-500 uppercase">学号 / ID <span className="text-slate-400 font-normal normal-case">(非必填 / BUKAN WAJIB)</span></label>
                                                     <div className="relative">
-                                                        <input ref={studentIdRef} type="text" name="studentID" value={formData.studentID} onChange={handleInputChange} placeholder="26001" className={`w-full p-3 pr-16 bg-slate-50 border rounded-xl outline-none ${studentFound ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50' : 'border-slate-200'}`} />
+                                                        <input 
+                                                            ref={studentIdRef} 
+                                                            type="text" 
+                                                            name="studentID" 
+                                                            value={formData.studentID} 
+                                                            onChange={handleInputChange} 
+                                                            disabled={studentFound}
+                                                            placeholder="26001" 
+                                                            className={`w-full p-3 pr-16 border rounded-xl outline-none transition-colors ${studentFound ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50 cursor-not-allowed opacity-90 text-emerald-700' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500'}`} 
+                                                        />
                                                         {formData.studentID && (
                                                             <button type="button" onClick={clearID} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600">
                                                                 <IconX size={16} />
                                                             </button>
                                                         )}
-                                                        {studentFound && <div className="absolute right-10 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none"><IconCheck size={16} /></div>}
+                                                        {studentFound && <div className="absolute right-10 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none"><IconLock size={14} /></div>}
                                                     </div>
                                                 </div>
                                                 <div className="space-y-1">
@@ -2216,15 +2230,17 @@
                                                             list="student-suggestions" 
                                                             value={formData.studentName} 
                                                             onChange={handleInputChange} 
+                                                            disabled={studentFound}
                                                             placeholder="阿里 ALI" 
                                                             autoComplete="off"
-                                                            className="w-full p-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl outline-none" 
+                                                            className={`w-full p-3 pr-10 border rounded-xl outline-none transition-colors ${studentFound ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50 cursor-not-allowed opacity-90 text-emerald-700' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500'}`} 
                                                         />
                                                         {formData.studentName && (
                                                             <button type="button" onClick={clearName} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600">
                                                                 <IconX size={16} />
                                                             </button>
                                                         )}
+                                                        {studentFound && <div className="absolute right-10 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none"><IconLock size={14} /></div>}
                                                         <datalist id="student-suggestions">
                                                             {students.filter(s => s.className === formData.selectedClass).map(s => (
                                                                 <option key={s.id} value={s.name}>{s.id}</option>
@@ -2308,9 +2324,11 @@
                                                         <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                                             <IconCalendar size={14} /> 日期 / Tarikh
                                                         </label>
+                                                        {/* 🟢 UPGRADE: Prevent future dates in batch too */}
                                                         <input 
                                                             type="date" 
                                                             name="entryDate"
+                                                            max={MAX_TODAY_STR}
                                                             value={formData.entryDate}
                                                             onChange={handleInputChange}
                                                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
@@ -2434,7 +2452,7 @@
                                             <div className={`px-6 pb-6 space-y-5 transition-all duration-500 ${!penaltyUnlocked ? 'opacity-40 pointer-events-none filter blur-[2px] select-none' : 'opacity-100'}`}>
                                                 <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 flex gap-2">
                                                     <IconAlertTriangle size={16} />
-                                                    <span>批量录入将自动生成多条记录。<br/>Pukal rekod akan dijana automatik.</span>
+                                                    <span>批量录入将自动生成多条记录。<br/>Rekod pukal akan dijana automatik.</span>
                                                 </div>
 
                                                 <div className="space-y-1">
@@ -2452,10 +2470,15 @@
 
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="space-y-1">
-                                                        <label className="text-sm font-bold text-slate-700">月份 / Bulan</label>
-                                                        <select value={penaltyMonth} onChange={(e) => setPenaltyMonth(parseInt(e.target.value))} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none">
-                                                            {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                                                        </select>
+                                                        {/* 🟢 UPGRADE: Use Date Picker for penalty to avoid Cross-Year bugs */}
+                                                        <label className="text-sm font-bold text-slate-700">发生日期 / Tarikh</label>
+                                                        <input 
+                                                            type="date"
+                                                            max={MAX_TODAY_STR}
+                                                            value={penaltyDate}
+                                                            onChange={(e) => setPenaltyDate(e.target.value)}
+                                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-red-500"
+                                                        />
                                                     </div>
                                                     <div className="space-y-1">
                                                         <label className="text-sm font-bold text-slate-700">班级 / Kelas</label>
@@ -2531,10 +2554,16 @@
                                                 <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
                                             </div>
                                         )}
-                                        {entries.map(entry => {
+                                        {normalizedEntries.map(entry => {
                                             const isPending = pendingDeletions.some(p => p.id === entry.id);
                                             const isDeleted = entry.status === 'deleted';
                                             
+                                            // Format tooltip for data correction notification
+                                            let tooltip = '';
+                                            if (entry.originalClassName && entry.originalName) tooltip = `系统已自动纠正。\n原错录: ${entry.originalClassName} - ${entry.originalName}`;
+                                            else if (entry.originalClassName) tooltip = `系统已自动纠正。\n原错录班级: ${entry.originalClassName}`;
+                                            else if (entry.originalName) tooltip = `系统已自动纠正。\n原错录姓名: ${entry.originalName}`;
+
                                             return (
                                                 <div key={entry.id} className={`flex items-center justify-between p-3 rounded-xl border transition-all 
                                                     ${isDeleted ? 'deleted-entry border-transparent' : 
@@ -2546,11 +2575,17 @@
                                                             {isPending && <span className="bg-orange-500 text-white px-1.5 py-0.5 rounded text-[10px]">AUDIT</span>}
                                                             <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px]">{entry.calendarYear || 'N/A'}</span>
                                                             <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px]">{entry.month ? entry.month.split('/')[1] : 'N/A'}</span>
-                                                            <span className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs">{entry.className}</span>
+                                                            
+                                                            <span className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs cursor-help" title={tooltip}>
+                                                                {entry.className}
+                                                                {(entry.originalClassName || entry.originalName) && <span className="text-red-500 ml-0.5">*</span>}
+                                                            </span>
                                                             
                                                             {entry.type === 'deduction' 
                                                                 ? <span className="text-red-600 truncate">{entry.reason}</span>
-                                                                : <span className="truncate max-w-[100px] sm:max-w-none">{(entry.name || entry.studentID) ? (entry.name || `ID: ${entry.studentID}`) : <span className="text-slate-400 italic font-normal">班级贡献</span>}</span>
+                                                                : <span className="truncate max-w-[100px] sm:max-w-none cursor-help" title={tooltip}>
+                                                                    {(entry.name || entry.studentID) ? (entry.name || `ID: ${entry.studentID}`) : <span className="text-slate-400 italic font-normal">班级贡献</span>}
+                                                                  </span>
                                                             }
                                                         </div>
                                                         <div className="text-[10px] text-slate-400 mt-1 flex gap-2 whitespace-nowrap">
@@ -2586,7 +2621,7 @@
                                                 </div>
                                             );
                                         })}
-                                        {entries.length === 0 && <div className="text-center text-slate-300 text-sm py-10">暂无数据</div>}
+                                        {normalizedEntries.length === 0 && <div className="text-center text-slate-300 text-sm py-10">暂无数据</div>}
                                     </div>
                                 </div>
                             </div>
@@ -2597,36 +2632,36 @@
                     {viewMode === 'management' && (
                          <div className="max-w-4xl mx-auto animate-pop">
                             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center flex-wrap gap-4">
                                     <h3 className="font-bold text-slate-800 flex items-center gap-2 text-lg">
                                         <IconSettings size={22} /> 系统管理 / Pengurusan Sistem
                                     </h3>
-                                    <div className="flex bg-slate-200 rounded-lg p-1">
+                                    <div className="flex bg-slate-200 rounded-lg p-1 w-full sm:w-auto">
                                         <button 
                                             disabled={loading}
                                             onClick={() => setManageTab('audit')}
-                                            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'audit' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`flex-1 sm:flex-none px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'audit' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
                                             审核 ({pendingDeletions.length})
                                         </button>
                                         <button 
                                             disabled={loading}
                                             onClick={() => setManageTab('students')}
-                                            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'students' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`flex-1 sm:flex-none px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'students' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
                                             学生
                                         </button>
                                         <button 
                                             disabled={loading}
                                             onClick={() => setManageTab('backup')}
-                                            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'backup' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`flex-1 sm:flex-none px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'backup' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
                                             备份
                                         </button>
                                          <button 
                                             disabled={loading}
                                             onClick={() => setManageTab('settings')}
-                                            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'settings' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`flex-1 sm:flex-none px-4 py-2 text-sm font-bold rounded-md transition-all ${manageTab === 'settings' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
                                             设置
                                         </button>
@@ -2741,20 +2776,70 @@
 
                                         <hr className="border-slate-200" />
                                         
+                                        {/* 🟢 NEW: Add Single Student Section */}
+                                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                            <h4 className="font-bold text-slate-700 text-sm mb-3 flex items-center gap-2">
+                                                <IconUserPlus size={16}/> 手动添加单个学生 / Tambah Pelajar Baru
+                                            </h4>
+                                            <form onSubmit={handleAddSingleStudent} className="flex flex-wrap sm:flex-nowrap gap-2 items-end">
+                                                <div className="flex-1 min-w-[120px]">
+                                                    <label className="text-[10px] font-bold text-slate-500 mb-1 block">学号 / ID</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={singleStudent.id}
+                                                        onChange={(e) => setSingleStudent(prev => ({...prev, id: e.target.value}))}
+                                                        className="w-full p-2 text-sm border border-slate-300 rounded outline-none focus:border-blue-500"
+                                                        placeholder="Ex: 26001"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="flex-[2] min-w-[150px]">
+                                                    <label className="text-[10px] font-bold text-slate-500 mb-1 block">姓名 / Nama</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={singleStudent.name}
+                                                        onChange={(e) => setSingleStudent(prev => ({...prev, name: e.target.value}))}
+                                                        className="w-full p-2 text-sm border border-slate-300 rounded outline-none focus:border-blue-500"
+                                                        placeholder="阿里 ALI"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[100px]">
+                                                    <label className="text-[10px] font-bold text-slate-500 mb-1 block">班级 / Kelas</label>
+                                                    <select 
+                                                        value={singleStudent.className}
+                                                        onChange={(e) => setSingleStudent(prev => ({...prev, className: e.target.value}))}
+                                                        className="w-full p-2 text-sm border border-slate-300 rounded outline-none focus:border-blue-500 bg-white"
+                                                        required
+                                                    >
+                                                        <option value="">选择</option>
+                                                        {CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                                                    </select>
+                                                </div>
+                                                <button 
+                                                    type="submit"
+                                                    disabled={loading}
+                                                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-bold text-sm rounded shadow hover:bg-blue-700 transition-colors mt-2 sm:mt-0"
+                                                >
+                                                    添加 / Tambah
+                                                </button>
+                                            </form>
+                                        </div>
+
                                         {/* Search & List Section */}
                                         <div className="space-y-2">
-                                            <div className="relative">
+                                            <div className="relative mt-4">
                                                 <input 
                                                     type="text" 
-                                                    placeholder="🔍 搜索学生 / Cari Murid..." 
+                                                    placeholder="🔍 搜索现有学生 / Cari Murid..." 
                                                     value={searchTerm}
                                                     onChange={e => setSearchTerm(e.target.value)}
-                                                    className="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full p-3 pl-10 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
                                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IconSearch size={16}/></div>
                                             </div>
                                             
-                                            <div className="bg-slate-50 border border-slate-200 rounded-xl max-h-[500px] overflow-y-auto custom-scrollbar">
+                                            <div className="bg-slate-50 border border-slate-200 rounded-xl max-h-[400px] overflow-y-auto custom-scrollbar">
                                                 {filteredStudents.length === 0 ? (
                                                     <div className="p-4 text-center text-slate-400 text-sm">暂无学生 / Tiada Data</div>
                                                 ) : (
@@ -2818,11 +2903,11 @@
 
                                         <hr className="border-slate-200" />
 
-                                        {/* Import Section */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-4">
+                                        {/* Batch Text Import Section */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
                                                 <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700 h-full">
-                                                    <p className="font-bold mb-1">批量导入 / Import Pukal:</p>
+                                                    <p className="font-bold mb-1">文本粘贴导入 / Tampal Teks:</p>
                                                     <ol className="list-decimal ml-4 space-y-1">
                                                         <li>选择<b>班级</b> / Pilih Kelas</li>
                                                         <li>复制 Excel (学号, 姓名)</li>
@@ -2861,6 +2946,30 @@
                                     {/* FORM: BACKUP & RESTORE */}
                                     {manageTab === 'backup' && (
                                     <div className="px-6 py-6 space-y-6">
+                                        {/* 🟢 NEW: System Health & Storage Warning */}
+                                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                            <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                                                <IconActivity size={18}/> 存储健康度 / Kesihatan Sistem
+                                            </h3>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between text-xs font-bold text-slate-500">
+                                                    <span>本地缓存用量: {entries.length} / 5000 条</span>
+                                                    <span className={entries.length > 4000 ? "text-red-500" : entries.length > 2500 ? "text-orange-500" : "text-emerald-500"}>
+                                                        {entries.length > 4000 ? "危险 (Bahaya)" : entries.length > 2500 ? "警告 (Amaran)" : "良好 (Baik)"}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                    <div 
+                                                        className={`h-full transition-all duration-500 ${entries.length > 4000 ? "bg-red-500" : entries.length > 2500 ? "bg-orange-500" : "bg-emerald-500"}`}
+                                                        style={{ width: `${Math.min(100, (entries.length / 5000) * 100)}%` }}
+                                                    ></div>
+                                                </div>
+                                                <p className="text-[10px] text-slate-400">
+                                                    当记录超过 4000 条时，建议下载数据备份，并在下方「重置系统」以保持运行流畅。这不会影响云端 Google Sheet。
+                                                </p>
+                                            </div>
+                                        </div>
+
                                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
                                             <div>
                                                 <h3 className="font-bold text-slate-700 mb-1 flex items-center gap-2">
@@ -2884,17 +2993,17 @@
                                             <p className="text-xs text-slate-500 mb-4">
                                                 从备份文件恢复。危险：将覆盖现有数据！
                                             </p>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 flex-wrap sm:flex-nowrap">
                                                 <input 
                                                     type="file" 
                                                     accept=".json"
                                                     ref={fileInputRef}
-                                                    className="flex-1 text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200"
+                                                    className="w-full sm:w-auto flex-1 text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200"
                                                 />
                                                 <button 
                                                     disabled={loading}
                                                     onClick={() => requestSecureAction(() => fileInputRef.current && handleRestoreData({target: fileInputRef.current}))}
-                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md text-sm disabled:bg-slate-500"
+                                                    className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md text-sm disabled:bg-slate-500"
                                                 >
                                                     恢复 / Pulihkan
                                                 </button>
@@ -2917,7 +3026,7 @@
                                     {/* FORM: SETTINGS */}
                                     {manageTab === 'settings' && (
                                     <div className="px-6 py-6 space-y-6">
-                                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+                                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                             <div>
                                                 <h3 className="font-bold text-slate-700 mb-1 flex items-center gap-2">
                                                     <IconBarChart size={18}/> 公共仪表板 / Dashboard
@@ -2988,7 +3097,6 @@
                                                     <IconFileSpreadsheet size={16} /> 月度总结单
                                                 </button>
                                                 
-                                                {/* 🟢 NEW: Quarterly Report Button */}
                                                 <button 
                                                     onClick={() => {
                                                         const config = {
@@ -3011,7 +3119,7 @@
                                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">年份 / Tahun</label>
                                             <select 
                                                 value={filterYear} 
-                                                onChange={e => setFilterYear(e.target.value)} 
+                                                onChange={e => setFilterYear(parseInt(e.target.value))} 
                                                 className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
                                             >
                                                 {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
@@ -3020,14 +3128,24 @@
                                         <div className="flex-[2] min-w-[180px] flex gap-2 items-end">
                                             <div className="flex-1">
                                                 <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">从 / Dari</label>
-                                                <select disabled={loading} value={filterMonthStart} onChange={e => setFilterMonthStart(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                {/* 🟢 UPGRADE: Poka-yoke auto-adjusts End Month if Start Month > End Month */}
+                                                <select disabled={loading} value={filterMonthStart} onChange={e => {
+                                                    const val = parseInt(e.target.value);
+                                                    setFilterMonthStart(val);
+                                                    if (val > parseInt(filterMonthEnd)) setFilterMonthEnd(val);
+                                                }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
                                                     {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
                                                 </select>
                                             </div>
                                             <span className="pb-3 text-slate-300">→</span>
                                             <div className="flex-1">
                                                 <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">到 / Hingga</label>
-                                                <select disabled={loading} value={filterMonthEnd} onChange={e => setFilterMonthEnd(e.target.value)} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                {/* 🟢 UPGRADE: Poka-yoke auto-adjusts Start Month if End Month < Start Month */}
+                                                <select disabled={loading} value={filterMonthEnd} onChange={e => {
+                                                    const val = parseInt(e.target.value);
+                                                    setFilterMonthEnd(val);
+                                                    if (val < parseInt(filterMonthStart)) setFilterMonthStart(val);
+                                                }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
                                                     {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
                                                 </select>
                                             </div>
