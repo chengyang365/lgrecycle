@@ -63,7 +63,7 @@
 </script>
 
 <script type="text/babel" data-presets="react,env">
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwh71AlpwcKasPqceb7R41x-2BkrThaqzhNN05qcQ4ulO2eXSe6VEtchXAXoHN_isgt/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysmaPGB68EXT-9PSXtk-PuPVZjNWLJhpLb28uLpfKItzo4k453qtA4OFgwMMMnHEE-/exec"; 
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
 
     // 🟢 安全缓存引擎：防止手机隐私模式或 WebView 禁用 localStorage 导致的白屏崩溃
@@ -845,10 +845,14 @@
 
         const exportCSV = () => {
             if (normalizedEntries.length === 0) return showNotification("没有数据 / Tiada Data", "error");
-            let csvContent = "data:text/csv;charset=utf-8,ID,Type,Reason,Year,Month,Time,Teacher,Class,StudentID,Name,Weight(kg),Status\n";
+            // 🟢 匹配最新的云端表头顺序
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFFID,Type,Timestamp,Grade,Month,Class,Name,StudentID,Weight(kg),Teacher,DisplayTime,Reason,CalendarYear,Status\n";
             normalizedEntries.forEach(e => {
-                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle'; const reason = e.type === 'deduction' ? e.reason : '-'; const status = e.status === 'deleted' ? 'Deleted' : 'Active';
-                csvContent += `${e.id},${type},${reason},${e.calendarYear || ''},${e.month || ''},${e.displayTime},${e.teacherName || ''},${e.className},${e.studentID},${e.name},${e.weight},${status}\n`;
+                const type = e.type === 'deduction' ? 'Deduction' : 'Recycle'; 
+                const reason = e.type === 'deduction' ? e.reason : '-'; 
+                const status = e.status === 'deleted' ? 'Deleted' : 'Active';
+                // 🟢 按照新表头顺序排列数据
+                csvContent += `${e.id},${type},${e.createdAt || ''},${e.year || ''},${e.month || ''},${e.className},${e.name},${e.studentID},${e.weight},${e.teacherName || ''},${e.displayTime},${reason},${e.calendarYear || ''},${status}\n`;
             });
             const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
