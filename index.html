@@ -976,7 +976,7 @@
             });
             setEntries(prev => [...entriesToAdd, ...prev]); addLog('Add Penalty Batch', `Added ${entriesToAdd.length} penalties for ${penaltyClass}`);
             for (const entry of entriesToAdd) await safeSendToSheet('addEntry', { data: entry });
-            setLoading(false); setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' }); setPenaltyTeacher(''); showNotification("扣分记录已提交 / Penalti Berjaya", "success");
+            setLoading(false); setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' }); showNotification("扣分记录已提交 / Penalti Berjaya", "success");
         };
 
         const handleSubmit = async (e) => {
