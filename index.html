@@ -53,7 +53,7 @@
 
     const safeSetStorage = (key, value) => { try { localStorage.setItem(key, value); } catch (e) { console.warn("Local storage disabled"); } };
 
-    // 0. Service Worker: 无网秒开 (True Offline PWA Blob Trick)
+    // 0. Service Worker: 无网秒开
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             try {
@@ -153,13 +153,12 @@
     const IconUpload = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
     const IconDownload = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
     const IconRefresh = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
-    const IconSettings = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
+    const IconSettings = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
     const IconActivity = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>;
     const IconHome = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
     const IconCloud = ({connected}) => <div className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${connected ? 'bg-emerald-800 text-emerald-200' : 'bg-red-800 text-red-200'}`}><div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></div>{connected ? 'Online' : 'Offline'}</div>;
     const IconBarChart = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>;
     const IconPenTool = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>;
-    const IconSword = ({size=24, className}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>;
     const IconClock = ({size=16, className}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
     const IconFileUp = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>;
     const IconFileSpreadsheet = ({size=20, className}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg>;
@@ -190,8 +189,8 @@
     const getLocalDateString = () => { const d = new Date(new Date().getTime() + 8 * 3600 * 1000); return d.toISOString().split('T')[0]; };
     const MAX_TODAY_STR = getLocalDateString();
     
-    // CO2 排放避免因子: 2.5 kg CO2e per 1 kg Sisa Kering Bercampur
-    const CO2_FACTOR = 2.5; 
+    // CO2 排放避免因子: Pekali Standard LCCF Malaysia (Metodologi IMELC-UTM)
+    const CO2_FACTOR = 2.87; 
     
     const generateTimestampStr = (dateInput) => {
         const now = new Date(); let d = new Date();
@@ -200,12 +199,23 @@
         return `${pad(d.getMonth() + 1)}/${pad(d.getDate())}/${d.getFullYear()} ${now.getHours()}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     };
 
+    // 游戏化 1：全新高难度徽章体系 (50KG - 500KG+) - 个人
     const getGamificationBadge = (totalWeight) => {
-        if (totalWeight >= 150) return '🌍 环保王者';
-        if (totalWeight >= 100) return '🌳 地球卫士';
-        if (totalWeight >= 50) return '🌲 环保大使';
-        if (totalWeight >= 20) return '🌱 绿叶先锋';
+        if (totalWeight >= 500) return '🌟 荣耀王者';
+        if (totalWeight >= 300) return '🛡️ 环保英雄';
+        if (totalWeight >= 200) return '⚔️ 环保先锋';
+        if (totalWeight >= 100) return '🌿 环保能手';
+        if (totalWeight >= 50)  return '🌱 环保之星';
         return ''; 
+    };
+
+    // 游戏化 2：虚拟树进化体系 (0KG - 1200KG+) - 班级
+    const getTreeEvolution = (totalWeight) => {
+        if (totalWeight >= 1200) return { icon: '🍎', label: '丰收树 (Berbuah)' };
+        if (totalWeight >= 600)  return { icon: '🌳', label: '参天大树 (Besar)' };
+        if (totalWeight >= 300)  return { icon: '🌿', label: '茂盛小树 (Rimbun)' };
+        if (totalWeight >= 150)  return { icon: '🌱', label: '初苗 (Anak Pokok)' };
+        return { icon: '🌰', label: '新种子 (Benih)' };
     };
 
     const Medal = ({ rank }) => {
@@ -260,6 +270,9 @@
         const percentage = maxValue > 0 ? (item.totalWeight / maxValue) * 100 : 0; const isChampion = index === 0; const rewardValue = type === 'class' ? (item.totalReward || 0) : 0; const progress = ((item.totalWeight % 50) / 50) * 100;
         const co2Saved = (Number(item.totalWeight) * CO2_FACTOR).toFixed(1);
         
+        // 获取班级的虚拟树
+        const treeInfo = type === 'class' ? getTreeEvolution(item.totalWeight) : null;
+        
         return (
             <li className="relative mb-3 group">
                 <div className={`absolute left-0 top-0 bottom-0 rounded-lg opacity-10 transition-all duration-1000 ease-out ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-slate-500' : index === 2 ? 'bg-orange-500' : 'bg-emerald-500'}`} style={{ width: `${percentage}%` }}></div>
@@ -267,14 +280,31 @@
                     <div className="flex items-center gap-3 overflow-hidden flex-1">
                         <div className="w-8 flex justify-center relative flex-shrink-0"><Medal rank={index + 1} />{isChampion && <div className="absolute -top-3 -right-2 animate-bounce"><IconCrown size={14}/></div>}</div>
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                                 <span className={`font-bold text-lg leading-tight ${isChampion ? 'text-yellow-700' : 'text-slate-700'}`}>{type === 'class' ? item.className : renderName(item.name)}</span>
-                                {item.badge && <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-200">{item.badge}</span>}
+                                
+                                {/* 虚拟树徽章 (仅班级) */}
+                                {treeInfo && (
+                                    <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200 flex items-center gap-1 shrink-0" title={treeInfo.label}>
+                                        <span className="text-sm">{treeInfo.icon}</span> {treeInfo.label}
+                                    </span>
+                                )}
+                                
+                                {/* 王者徽章 (仅个人) */}
+                                {item.badge && <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 shrink-0">{item.badge}</span>}
+                                
+                                {/* 连击/活跃月数特效 (仅个人，>=2个月显示) */}
+                                {type.includes('individual') && item.activeMonths >= 2 && (
+                                    <span className="text-[10px] font-bold bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 flex items-center gap-0.5 shrink-0" title={`已参与 ${item.activeMonths} 个不同月份的环保回收`}>
+                                        🔥 x{item.activeMonths}
+                                    </span>
+                                )}
+
                                 {type === 'class' && rewardValue > 0 && ( <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex-shrink-0"><IconTicket size={12} /> RM{rewardValue}</div> )}
                                 {type === 'class' && item.totalDeduction > 0 && ( <div className="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 flex-shrink-0" title="已扣除的碳足迹"><IconFootprints size={12} /> -{item.totalDeduction.toFixed(2)}kg</div> )}
                             </div>
-                            {type === 'individual' && <div className="text-xs text-slate-500 font-medium">{item.className}</div>}
-                            {type === 'class' && ( <div className="mt-1 w-24 h-1 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-emerald-400" style={{ width: `${progress}%` }}></div></div> )}
+                            {type === 'individual' && <div className="text-xs text-slate-500 font-medium mt-0.5">{item.className}</div>}
+                            {type === 'class' && ( <div className="mt-1.5 w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200"><div className="h-full bg-emerald-400" style={{ width: `${progress}%` }}></div></div> )}
                         </div>
                     </div>
                     <div className="text-right flex-shrink-0 ml-2">
@@ -352,7 +382,7 @@
                             <tbody>{individuals.slice(0, 20).map((s, i) => ( 
                                 <tr key={i} className="border-b border-slate-100">
                                     <td className="p-2 text-center text-slate-500">{i + 1}</td>
-                                    <td className="p-2 font-medium flex items-center gap-2">{renderName(s.name)} {s.badge && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded">{s.badge}</span>}</td>
+                                    <td className="p-2 font-medium flex items-center gap-2">{renderName(s.name)} {s.badge && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200">{s.badge}</span>}</td>
                                     <td className="p-2 text-center">{s.className}</td>
                                     <td className="p-2 text-right font-mono">{s.totalWeight.toFixed(2)}</td>
                                     <td className="p-2 text-right font-mono font-bold text-blue-500">{(s.totalWeight * CO2_FACTOR).toFixed(2)}</td>
@@ -407,7 +437,7 @@
                                     return (
                                         <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
                                             <td className="p-2 text-center font-bold text-slate-500">{rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : rank + 1}</td>
-                                            <td className="p-2 font-medium">{renderName(s.name)}</td>
+                                            <td className="p-2 font-medium flex items-center gap-2">{renderName(s.name)} {s.badge && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200">{s.badge}</span>}</td>
                                             <td className="p-2 text-center"><span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">{s.className}</span></td>
                                             <td className="p-2 text-right font-mono font-bold text-emerald-600">{s.totalWeight.toFixed(2)}</td>
                                             <td className="p-2 text-right font-mono font-bold text-blue-500">{(s.totalWeight * CO2_FACTOR).toFixed(2)}</td>
@@ -455,7 +485,6 @@
 
         const [entries, setEntries] = useState(() => { try { const saved = localStorage.getItem('sjkc_entries'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
         const [students, setStudents] = useState(() => { try { const saved = localStorage.getItem('sjkc_students'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
-        const [auditLogs, setAuditLogs] = useState(() => { try { const saved = localStorage.getItem('sjkc_audit_logs'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
         const [pendingDeletions, setPendingDeletions] = useState(() => { try { const saved = localStorage.getItem('sjkc_pending_deletions'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
         const [unsyncedQueue, setUnsyncedQueue] = useState(() => { try { return JSON.parse(localStorage.getItem('sjkc_unsynced_queue')) || []; } catch(e) { return []; } });
         const [nextRecycleDate, setNextRecycleDate] = useState(() => localStorage.getItem('sjkc_next_recycle_date') || '');
@@ -469,6 +498,7 @@
         const fileInputRef = useRef(null);
         const smartImportRef = useRef(null);
         const posterRef = useRef(null);
+        const isSyncingRef = useRef(false);
         
         const [showReportModal, setShowReportModal] = useState(false);
         const [reportData, setReportData] = useState(null);
@@ -533,60 +563,46 @@
         const showNotification = (msg, type) => { setNotification({ msg, type }); setTimeout(() => setNotification(null), 2500); };
         const togglePublicDashboard = () => { const newState = !isPublicDashboardOpen; setIsPublicDashboardOpen(newState); safeSetStorage('sjkc_public_dashboard', newState); showNotification(newState ? "公共仪表板已开放" : "公共仪表板已关闭", "success"); };
 
-        const safeSendToSheet = async (action, data = null) => {
-            const uuid = crypto.randomUUID();
-            const checksum = await generateChecksum(data);
-            const task = { action, data, uuid, checksum, retryCount: 0 };
+        const executeSync = useCallback(async (isSilent = false) => {
+            if (isSyncingRef.current) return;
+            const queueToSync = JSON.parse(localStorage.getItem('sjkc_unsynced_queue') || '[]');
+            if (queueToSync.length === 0) return;
             
-            if (!isCloudEnabled) return { status: 'offline' };
-            if (cloudError) { 
-                setUnsyncedQueue(prev => {
-                    const newQ = [...prev, task];
-                    safeSetStorage('sjkc_unsynced_queue', JSON.stringify(newQ));
-                    return newQ;
-                }); 
-                return { status: 'queued' }; 
-            }
-            try {
-                // Perform fetch. Mode no-cors implies we don't read response to verify, relying on network level error for catch.
-                await fetch(GOOGLE_SCRIPT_URL, { 
-                    method: 'POST', mode: 'no-cors', 
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-                    body: JSON.stringify(task) 
-                });
-                return { status: 'success' };
-            } catch (e) {
-                setCloudError(true); 
-                setUnsyncedQueue(prev => {
-                    const newQ = [...prev, task];
-                    safeSetStorage('sjkc_unsynced_queue', JSON.stringify(newQ));
-                    return newQ;
-                }); 
-                showNotification("网络异常，已转入离线模式 (Mod Luar Talian)", "error"); 
-                return { status: 'error' };
-            }
-        };
-
-        const executeSync = async () => {
-            if (unsyncedQueue.length === 0) return;
-            setLoading(true); 
+            isSyncingRef.current = true;
+            if (!isSilent) setLoading(true); 
+            
             let successCount = 0; 
-            const remainingQueue = [...unsyncedQueue];
+            const remainingQueue = [...queueToSync];
             let hasError = false;
 
             for (let i = 0; i < remainingQueue.length; i++) {
                 const req = remainingQueue[i];
-                if ((req.retryCount || 0) >= 3) { hasError = true; continue; } // Max retries exceeded
+                if ((req.retryCount || 0) >= 3) { hasError = true; continue; } 
                 
                 try {
-                    await fetch(GOOGLE_SCRIPT_URL, { 
-                        method: 'POST', mode: 'no-cors', 
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 8000); 
+                    
+                    const res = await fetch(GOOGLE_SCRIPT_URL, { 
+                        method: 'POST', 
                         headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-                        body: JSON.stringify(req) 
+                        body: JSON.stringify(req),
+                        signal: controller.signal
                     });
-                    req.success = true;
-                    successCount++;
+                    clearTimeout(timeoutId);
+
+                    if (!res.ok) throw new Error("HTTP Status Error: " + res.status);
+                    const resData = await res.json();
+                    
+                    if (resData && (resData.status === 'success' || resData.status === true)) {
+                        req.success = true;
+                        successCount++;
+                    } else {
+                        throw new Error(resData.message || "Google Sheet Rejected Data");
+                    }
+
                 } catch(e) { 
+                    console.warn(`Sync Failed for UUID: ${req.uuid}`, e);
                     req.retryCount = (req.retryCount || 0) + 1;
                     hasError = true;
                 }
@@ -595,12 +611,47 @@
             const newQueue = remainingQueue.filter(req => !req.success);
             setUnsyncedQueue(newQueue); 
             safeSetStorage('sjkc_unsynced_queue', JSON.stringify(newQueue));
-            setLoading(false);
             
-            if (successCount > 0) { showNotification(`成功同步 ${successCount} 项操作`, "success"); }
-            if (hasError) { setCloudError(true); showNotification(`存在网络异常或失败项`, "error"); }
-            else { setCloudError(false); }
+            if (!isSilent) setLoading(false);
+            if (successCount > 0 && !isSilent) { showNotification(`成功同步 ${successCount} 项操作`, "success"); }
+            if (hasError) { 
+                setCloudError(true); 
+                if(!isSilent) showNotification(`部分数据写入失败或网络异常`, "error"); 
+            } else { 
+                setCloudError(false); 
+            }
+            
+            isSyncingRef.current = false;
+        }, []);
+
+        const safeSendToSheet = async (action, data = null) => {
+            const uuid = (data && data.id) ? data.id : crypto.randomUUID();
+            const checksum = await generateChecksum(data);
+            const task = { action, data, uuid, checksum, retryCount: 0 };
+            
+            setUnsyncedQueue(prev => {
+                const newQ = [...prev, task];
+                safeSetStorage('sjkc_unsynced_queue', JSON.stringify(newQ));
+                return newQ;
+            }); 
+            
+            if (navigator.onLine && isCloudEnabled) {
+                setTimeout(() => executeSync(true), 100); 
+            } else {
+                setCloudError(true);
+            }
+            return { status: 'queued' };
         };
+
+        // 自动心跳补传机制 (Heartbeat Auto-Sync)
+        useEffect(() => {
+            const intervalId = setInterval(() => {
+                if (navigator.onLine && unsyncedQueue.length > 0 && !loading) {
+                    executeSync(true); 
+                }
+            }, 10000); 
+            return () => clearInterval(intervalId);
+        }, [unsyncedQueue.length, loading, executeSync]);
 
         // Emergency CSV Export
         const handleEmergencyExport = () => {
@@ -615,11 +666,8 @@
              document.body.appendChild(link); link.click(); document.body.removeChild(link);
         };
 
-        const addLog = useCallback((action, details) => { const newLog = { id: Date.now() + Math.random(), timestamp: new Date().toLocaleString(), action, details }; setAuditLogs(prev => [newLog, ...prev].slice(0, 50)); }, []);
-
         useEffect(() => { safeSetStorage('sjkc_entries', JSON.stringify(entries)); }, [entries]);
         useEffect(() => { safeSetStorage('sjkc_students', JSON.stringify(students)); }, [students]);
-        useEffect(() => { safeSetStorage('sjkc_audit_logs', JSON.stringify(auditLogs)); }, [auditLogs]);
         useEffect(() => { safeSetStorage('sjkc_pending_deletions', JSON.stringify(pendingDeletions)); }, [pendingDeletions]);
         useEffect(() => { safeSetStorage('sjkc_batch_class_draft', batchClass); }, [batchClass]);
         useEffect(() => { safeSetStorage('sjkc_batch_draft', JSON.stringify(batchInputs)); }, [batchInputs]);
@@ -630,11 +678,10 @@
                 setEntries(prev => {
                     const sorted = [...prev].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
                     const pruned = sorted.slice(0, MAX_LOCAL_ENTRIES);
-                    addLog('System', `Auto-pruned local data to ${MAX_LOCAL_ENTRIES} rows.`);
                     return pruned;
                 });
             }
-        }, [entries.length, addLog]);
+        }, [entries.length]);
 
         useEffect(() => {
             const handleBeforeUnload = (e) => { 
@@ -654,13 +701,32 @@
         const fetchEntries = useCallback(async () => {
             if (!isCloudEnabled) return;
             try {
-                setLoading(true); const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getEntries'); if (!res.ok) throw new Error("Network response was not ok");
-                const json = await res.json(); if (!Array.isArray(json.data)) { setLoading(false); return; }
-                const uniqueEntries = Array.from(new Map(json.data.map(item => [item.id, item])).values()); 
+                if (entries.length === 0) setLoading(true); 
+                const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getEntries'); 
+                if (!res.ok) throw new Error("Network response was not ok");
+                const json = await res.json(); 
+                if (!Array.isArray(json.data)) return;
+                
+                // 将本地未同步数据与云端数据无缝合并，确保页面刷新数据不消失
+                const currentQueue = JSON.parse(localStorage.getItem('sjkc_unsynced_queue') || '[]');
+                const localUnsynced = currentQueue.flatMap(q => {
+                    if (q.action === 'addEntry') return [q.data];
+                    if (q.action === 'addEntriesBatch') return q.data;
+                    return [];
+                });
+                
+                const combined = [...localUnsynced, ...json.data];
+                const uniqueEntries = Array.from(new Map(combined.map(item => [item.id, item])).values()); 
                 uniqueEntries.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-                const prunedEntries = uniqueEntries.slice(0, MAX_LOCAL_ENTRIES); // 仅加载近期热数据
-                setEntries(prunedEntries.map(e => ({...e, weight: Number(e.weight) || 0}))); setCloudError(false);
-            } catch (err) { handleCloudError(); } finally { setLoading(false); }
+                
+                const prunedEntries = uniqueEntries.slice(0, MAX_LOCAL_ENTRIES); 
+                setEntries(prunedEntries.map(e => ({...e, weight: Number(e.weight) || 0}))); 
+                setCloudError(false);
+            } catch (err) { 
+                handleCloudError(); 
+            } finally { 
+                setLoading(false); 
+            }
         }, [isCloudEnabled, handleCloudError]);
 
         const fetchStudents = useCallback(async () => {
@@ -711,12 +777,6 @@
             });
         }, [normalizedEntries, filterYear, filterMonthStart, filterMonthEnd]);
 
-        const filteredStudents = useMemo(() => {
-            if (!students || !Array.isArray(students)) return [];
-            if (!searchTerm) return students; const lowerTerm = searchTerm.toLowerCase();
-            return students.filter(s => s.name.toLowerCase().includes(lowerTerm) || s.id.toLowerCase().includes(lowerTerm) || s.className.toLowerCase().includes(lowerTerm));
-        }, [students, searchTerm]);
-
         const stats = useMemo(() => {
             const classTotals = {}; const individualTotals = {}; let grandTotal = 0;
             filteredEntries.forEach(entry => {
@@ -729,31 +789,53 @@
                 const monthKey = entry.month || 'Unknown';
                 if (!classTotals[entry.className].monthlyWeights[monthKey]) classTotals[entry.className].monthlyWeights[monthKey] = 0;
                 classTotals[entry.className].monthlyWeights[monthKey] += w;
+                
+                // 个人聚合与全勤记录
                 if (entry.type === 'recycle' && (entry.name || entry.studentID)) {
                     let uniqueKey = entry.studentID ? `ID-${entry.studentID}` : `NAME-${entry.className}-${entry.name}`;
                     let displayName = entry.name || (entry.studentID ? `ID: ${entry.studentID}` : 'Unknown');
-                    if (!individualTotals[uniqueKey]) { individualTotals[uniqueKey] = { name: displayName, studentID: entry.studentID, className: entry.className, totalWeight: 0, grade: grade }; }
-                    else if (entry.name && individualTotals[uniqueKey].name.startsWith('ID:')) { individualTotals[uniqueKey].name = entry.name; }
+                    if (!individualTotals[uniqueKey]) { 
+                        individualTotals[uniqueKey] = { name: displayName, studentID: entry.studentID, className: entry.className, totalWeight: 0, grade: grade, activeMonthsSet: new Set() }; 
+                    } else if (entry.name && individualTotals[uniqueKey].name.startsWith('ID:')) { 
+                        individualTotals[uniqueKey].name = entry.name; 
+                    }
                     individualTotals[uniqueKey].totalWeight += w;
+                    // 记录学生参与的独立月份
+                    individualTotals[uniqueKey].activeMonthsSet.add(entry.calendarYear + '-' + monthKey); 
                     individualTotals[uniqueKey].badge = getGamificationBadge(individualTotals[uniqueKey].totalWeight);
                 }
             });
             Object.values(classTotals).forEach(c => { let reward = 0; Object.values(c.monthlyWeights).forEach(monthWeight => { if (monthWeight >= 50) reward += Math.floor(monthWeight / 50) * 10; }); c.totalReward = reward; });
-            const sortedClasses = Object.values(classTotals).sort((a, b) => b.totalWeight - a.totalWeight); const sortedIndividuals = Object.values(individualTotals).sort((a, b) => b.totalWeight - a.totalWeight);
+            const sortedClasses = Object.values(classTotals).sort((a, b) => b.totalWeight - a.totalWeight); 
+            const sortedIndividuals = Object.values(individualTotals).map(i => {
+                i.activeMonths = i.activeMonthsSet.size; // 提取总活跃月数
+                return i;
+            }).sort((a, b) => b.totalWeight - a.totalWeight);
+            
             return { grandTotal, classLower: sortedClasses.filter(c => c.grade >= 1 && c.grade <= 3), classUpper: sortedClasses.filter(c => c.grade >= 4 && c.grade <= 6), indivLower: sortedIndividuals.filter(i => i.grade >= 1 && i.grade <= 3), indivUpper: sortedIndividuals.filter(i => i.grade >= 4 && i.grade <= 6) };
         }, [filteredEntries]);
 
         const classStats = useMemo(() => {
             if (!selectedDashboardClass) return [];
             const classEntries = filteredEntries.filter(e => e.className === selectedDashboardClass && e.type === 'recycle'); const studentTotals = {};
-            classEntries.forEach(entry => { let uniqueKey = entry.studentID ? entry.studentID : entry.name; if (!uniqueKey) return; if (!studentTotals[uniqueKey]) studentTotals[uniqueKey] = { name: entry.name || 'Unknown', totalWeight: 0 }; studentTotals[uniqueKey].totalWeight += Number(entry.weight); });
-            return Object.values(studentTotals).sort((a, b) => b.totalWeight - a.totalWeight);
+            classEntries.forEach(entry => { 
+                let uniqueKey = entry.studentID ? entry.studentID : entry.name; 
+                if (!uniqueKey) return; 
+                if (!studentTotals[uniqueKey]) studentTotals[uniqueKey] = { name: entry.name || 'Unknown', totalWeight: 0, activeMonthsSet: new Set() }; 
+                studentTotals[uniqueKey].totalWeight += Number(entry.weight); 
+                studentTotals[uniqueKey].activeMonthsSet.add((entry.calendarYear||'') + '-' + (entry.month||''));
+            });
+            return Object.values(studentTotals).map(i => { i.activeMonths = i.activeMonthsSet.size; return i; }).sort((a, b) => b.totalWeight - a.totalWeight);
         }, [filteredEntries, selectedDashboardClass]);
 
         const currentDisplayTotal = useMemo(() => {
             if (selectedDashboardClass) return filteredEntries.filter(e => e.className === selectedDashboardClass && e.status !== 'deleted').reduce((acc, e) => acc + (Number(e.weight) || 0), 0);
             return stats.grandTotal;
         }, [selectedDashboardClass, filteredEntries, stats.grandTotal]);
+        
+        // 全校年度目标设定（动态步进：5000KG）
+        const schoolNextGoal = Math.max(5000, Math.ceil((stats.grandTotal + 0.1) / 5000) * 5000);
+        const schoolProgressPercent = Math.min(100, (stats.grandTotal / schoolNextGoal) * 100);
 
         const handleGenerateReport = (overrideConfig) => {
             const currentConfig = overrideConfig || reportConfig; const { monthIndex, year } = currentConfig;
@@ -769,7 +851,12 @@
                 if (!classTotals[e.className]) classTotals[e.className] = { className: e.className, totalWeight: 0, grade: grade, totalDeduction: 0, monthlyWeights: {} };
                 classTotals[e.className].totalWeight += w; if (e.type === 'deduction') classTotals[e.className].totalDeduction += Math.abs(w);
                 const monthKey = e.month || 'Unknown'; if (!classTotals[e.className].monthlyWeights[monthKey]) classTotals[e.className].monthlyWeights[monthKey] = 0; classTotals[e.className].monthlyWeights[monthKey] += w;
-                if (e.type === 'recycle' && (e.name || e.studentID)) { let uniqueKey = e.studentID ? e.studentID : e.name; if (!indivTotals[uniqueKey]) indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade }; indivTotals[uniqueKey].totalWeight += w; }
+                if (e.type === 'recycle' && (e.name || e.studentID)) { 
+                    let uniqueKey = e.studentID ? e.studentID : e.name; 
+                    if (!indivTotals[uniqueKey]) indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade }; 
+                    indivTotals[uniqueKey].totalWeight += w;
+                    indivTotals[uniqueKey].badge = getGamificationBadge(indivTotals[uniqueKey].totalWeight); 
+                }
             });
             Object.values(classTotals).forEach(c => { let reward = 0; Object.values(c.monthlyWeights).forEach(mw => { if (mw >= 50) reward += Math.floor(mw / 50) * 10; }); c.totalReward = reward; });
             const allClasses = Object.values(classTotals).sort((a,b) => b.totalWeight - a.totalWeight); const allIndivs = Object.values(indivTotals).sort((a,b) => b.totalWeight - a.totalWeight);
@@ -786,7 +873,12 @@
             const indivTotals = {};
             qEntries.forEach(e => {
                 const w = Number(e.weight) || 0; let grade = parseInt(e.year); if (isNaN(grade) || grade === 0) grade = e.className ? parseInt(e.className.charAt(0)) : 0; if (isNaN(grade)) grade = 0;
-                if (e.name || e.studentID) { let uniqueKey = e.studentID ? e.studentID : e.name; if (!indivTotals[uniqueKey]) indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade }; indivTotals[uniqueKey].totalWeight += w; }
+                if (e.name || e.studentID) { 
+                    let uniqueKey = e.studentID ? e.studentID : e.name; 
+                    if (!indivTotals[uniqueKey]) indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade }; 
+                    indivTotals[uniqueKey].totalWeight += w;
+                    indivTotals[uniqueKey].badge = getGamificationBadge(indivTotals[uniqueKey].totalWeight); 
+                }
             });
             const allIndivs = Object.values(indivTotals).sort((a,b) => b.totalWeight - a.totalWeight); setQuarterlyData({ lower: allIndivs.filter(i => i.grade >= 1 && i.grade <= 3), upper: allIndivs.filter(i => i.grade >= 4 && i.grade <= 6) }); setShowQuarterlyModal(true);
         };
@@ -842,7 +934,7 @@
             } catch(err) { showNotification("验证失败，请检查网络", "error"); } finally { setLoading(false); }
         };
         
-        const handleGoToDashboard = () => { requestSecureAction(() => { setViewMode('dashboard'); playSound('success'); }); };
+        const handleGoToDashboard = () => { setViewMode('dashboard'); setIsMobileMenuOpen(false); playSound('success'); };
         const handleLogout = () => { setIsAdmin(false); setIsSystemUnlocked(false); setViewMode('landing'); showNotification("已退出", "success"); };
 
         const handleInputChange = (e) => {
@@ -883,13 +975,17 @@
                 const weightVal = parseFloat(batchInputs[studentId]);
                 if (weightVal > 0) {
                     const student = students.find(s => s.id === studentId);
-                    // Use standard random ID for React UI internal logic
                     entriesToAdd.push({ id: crypto.randomUUID(), type: 'recycle', teacherName: formData.teacherName.trim() || 'Batch', name: student ? student.name : 'Unknown', studentID: studentId, className: batchClass, weight: weightVal, month: currentMonthStr, calendarYear: currentYearInt, year: studentGrade, createdAt: createdAtStr, displayTime: displayTime });
                 }
             });
             if (entriesToAdd.length === 0) return showNotification("请输入至少一个重量", "error");
-            setLoading(true); setEntries(prev => [...entriesToAdd, ...prev]); addLog('Batch Add', `Added ${entriesToAdd.length} for ${batchClass}`);
-            await safeSendToSheet('addEntriesBatch', entriesToAdd); setBatchInputs({}); setLoading(false); showNotification(`成功批量添加 ${entriesToAdd.length} 条记录`, "success");
+            setEntries(prev => [...entriesToAdd, ...prev]); 
+            setBatchInputs({}); 
+            showNotification(`成功添加 ${entriesToAdd.length} 条记录 (已进队列)`, "success");
+            
+            for (const entry of entriesToAdd) {
+                await safeSendToSheet('addEntry', entry);
+            }
         };
 
         const handlePenaltyInputChange = (reason, value) => { setPenaltyInputs(prev => ({ ...prev, [reason]: value.replace(/[^0-9]/g, '') })); };
@@ -898,25 +994,32 @@
             if (!penaltyTeacher.trim()) { playSound('error'); return showNotification("请填写老师姓名", "error"); }
             if (!penaltyClass) return showNotification("请选择班级", "error");
             const hasData = Object.values(penaltyInputs).some(val => parseFloat(val) > 0); if (!hasData) return showNotification("请输入至少一项数值", "error");
-            setLoading(true); const studentGrade = parseInt(penaltyClass.charAt(0)) || 0; const currentMonthStr = MONTH_OPTIONS[penaltyMonthIndex]; const currentYearInt = penaltyYear; const timestamp = Date.now(); const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'}); const createdAtStr = generateTimestampStr();
+            const studentGrade = parseInt(penaltyClass.charAt(0)) || 0; const currentMonthStr = MONTH_OPTIONS[penaltyMonthIndex]; const currentYearInt = penaltyYear; const timestamp = Date.now(); const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'}); const createdAtStr = generateTimestampStr();
             const entriesToAdd = [];
             Object.entries(penaltyInputs).forEach(([reason, value]) => {
                 const val = parseInt(value, 10);
                 if (val > 0) entriesToAdd.push({ id: crypto.randomUUID(), type: 'deduction', teacherName: penaltyTeacher.trim(), name: '', studentID: '', className: penaltyClass, reason: reason, weight: -Math.abs(val), month: currentMonthStr, calendarYear: currentYearInt, year: studentGrade, createdAt: createdAtStr, displayTime: displayTime });
             });
-            setEntries(prev => [...entriesToAdd, ...prev]); addLog('Add Penalty Batch', `Added ${entriesToAdd.length} penalties for ${penaltyClass}`);
-            for (const entry of entriesToAdd) await safeSendToSheet('addEntry', entry);
-            setLoading(false); setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' }); showNotification("扣分记录已提交", "success");
+            setEntries(prev => [...entriesToAdd, ...prev]); 
+            setPenaltyInputs({ 'Food Waste': '', 'Electricity': '', 'Others': '' }); 
+            showNotification("扣分记录已提交", "success");
+            
+            for (const entry of entriesToAdd) {
+                await safeSendToSheet('addEntry', entry);
+            }
         };
 
         const handleSubmit = async (e) => {
             e.preventDefault(); if (!formData.teacherName) { playSound('error'); return showNotification("请填写老师姓名", "error"); }
             const calculatedTotal = calculateTotalWeight(); if (!formData.selectedClass || calculatedTotal <= 0) { playSound('error'); return showNotification("请填写完整信息", "error"); }
-            setLoading(true); let finalClass = formData.selectedClass; if (formData.studentID) { const matchedStudent = students.find(s => s.id === formData.studentID); if (matchedStudent && matchedStudent.className) finalClass = matchedStudent.className; }
+            let finalClass = formData.selectedClass; if (formData.studentID) { const matchedStudent = students.find(s => s.id === formData.studentID); if (matchedStudent && matchedStudent.className) finalClass = matchedStudent.className; }
             const entryDateObj = new Date(formData.entryDate); const studentGrade = finalClass ? (parseInt(finalClass.charAt(0)) || 0) : 0; const timestamp = Date.now(); const displayTime = new Date().toLocaleTimeString('zh-MY', {hour: '2-digit', minute:'2-digit'}); const createdAtStr = generateTimestampStr(formData.entryDate);
             const newEntry = { id: crypto.randomUUID(), type: 'recycle', teacherName: formData.teacherName.trim(), name: formData.studentName.trim(), studentID: formData.studentID.trim(), className: finalClass, weight: parseFloat(calculatedTotal.toFixed(2)), month: MONTH_OPTIONS[entryDateObj.getMonth()], calendarYear: entryDateObj.getFullYear(), year: studentGrade, createdAt: createdAtStr, displayTime: displayTime };
-            setEntries(prev => [newEntry, ...prev]); addLog('Add Entry', `${newEntry.className}: ${newEntry.weight}kg`);
-            await safeSendToSheet('addEntry', newEntry); setLoading(false); setWeightRows(['']); if(studentIdRef.current) studentIdRef.current.focus(); showNotification("记录添加成功", "success");
+            setEntries(prev => [newEntry, ...prev]); 
+            setWeightRows(['']); if(studentIdRef.current) studentIdRef.current.focus(); 
+            showNotification("记录添加成功", "success");
+            
+            await safeSendToSheet('addEntry', newEntry); 
         };
 
         const handleRequestDelete = (id) => setDeleteRequestModal({ show: true, id: id, reason: '' });
@@ -931,7 +1034,7 @@
         const handleApproveDelete = (id) => {
             requestSecureAction(async () => {
                 setEntries(prev => prev.map(e => e.id === id ? {...e, status: 'deleted'} : e)); setPendingDeletions(prev => prev.filter(e => e.id !== id));
-                addLog('Delete Entry', `Deleted ID: ${id}`); await safeSendToSheet('deleteEntry', { id }); showNotification("记录已删除", "success");
+                await safeSendToSheet('deleteEntry', { id }); showNotification("记录已删除", "success");
             });
         };
 
@@ -939,22 +1042,23 @@
 
         const handleDeleteAllEntries = () => {
             setConfirmModal({ show: true, title: "⚠️ 清空所有记录", msg: "确定要删除所有回收和扣分数据吗？", isDestructive: true, onConfirm: () => {
-                setConfirmModal(prev => ({ ...prev, show: false })); setSecurityCheck({ show: true, error: '', callback: async () => { setEntries([]); setPendingDeletions([]); addLog('Reset', 'Cleared entries'); showNotification("记录已清空", "success"); setLoading(true); await safeSendToSheet('clearAllEntries'); setLoading(false); } }); setSecurityInput('');
+                setConfirmModal(prev => ({ ...prev, show: false })); setSecurityCheck({ show: true, error: '', callback: async () => { setEntries([]); setPendingDeletions([]); showNotification("记录已清空", "success"); await safeSendToSheet('clearAllEntries'); } }); setSecurityInput('');
             }});
         };
 
         const handleBatchDelete = () => {
             if (selectedStudentIds.size === 0) return;
             setConfirmModal({ show: true, title: "批量删除", msg: `确定删除 ${selectedStudentIds.size} 名学生？`, isDestructive: true, onConfirm: () => {
-                setConfirmModal(prev => ({ ...prev, show: false })); setStudents(prev => prev.filter(s => !selectedStudentIds.has(s.id))); addLog('Batch Delete', `Deleted ${selectedStudentIds.size} students`); setSelectedStudentIds(new Set()); showNotification("已批量删除", "success");
-                setLoading(true); Promise.all(Array.from(selectedStudentIds).map(id => safeSendToSheet('deleteStudent', { id }))).then(() => setLoading(false));
+                setConfirmModal(prev => ({ ...prev, show: false })); setStudents(prev => prev.filter(s => !selectedStudentIds.has(s.id))); setSelectedStudentIds(new Set()); showNotification("已批量删除", "success");
+                Promise.all(Array.from(selectedStudentIds).map(id => safeSendToSheet('deleteStudent', { id })));
             }});
         };
 
         const handleAddSingleStudent = async (e) => {
             e.preventDefault(); if (!singleStudent.id.trim() || !singleStudent.name.trim() || !singleStudent.className) return showNotification("请填写完整信息", "error"); if (students.some(s => s.id === singleStudent.id.trim())) return showNotification("该学号已存在", "error");
-            const newObj = { id: singleStudent.id.trim(), name: singleStudent.name.trim(), className: singleStudent.className, createdAt: Date.now() }; setLoading(true); setStudents(prev => [newObj, ...prev]); addLog('Add Student', `${newObj.name}`);
-            await safeSendToSheet('addStudentsBatch', [newObj]); setSingleStudent({ id: '', name: '', className: '' }); setLoading(false); showNotification(`已添加学生: ${newObj.name}`, "success");
+            const newObj = { id: singleStudent.id.trim(), name: singleStudent.name.trim(), className: singleStudent.className, createdAt: Date.now() }; setStudents(prev => [newObj, ...prev]); 
+            setSingleStudent({ id: '', name: '', className: '' }); showNotification(`已添加学生: ${newObj.name}`, "success");
+            await safeSendToSheet('addStudentsBatch', [newObj]); 
         };
 
         const requestSecureAction = (cb) => { setSecurityCheck({ show: true, callback: cb, error: '', verifying: false }); setSecurityInput(''); };
@@ -971,8 +1075,9 @@
             if (!importClass) return showNotification("请选择班级", "error"); if (!importText.trim()) return showNotification("请输入学生数据", "error");
             const lines = importText.split('\n'); const newStudents = []; const timestamp = Date.now();
             lines.forEach((line, index) => { if (!line.trim()) return; const parts = line.split(','); if (parts.length >= 2) newStudents.push({ id: parts[0].trim(), name: parts[1].trim(), className: importClass, createdAt: timestamp + index }); });
-            if (newStudents.length === 0) return showNotification("格式错误", "error"); setLoading(true); setStudents(prev => [...newStudents, ...prev]); addLog('Import', `Imported ${newStudents.length} to ${importClass}`);
-            await safeSendToSheet('addStudentsBatch', newStudents); setImportText(''); setLoading(false); showNotification(`成功导入 ${newStudents.length} 名学生`, "success");
+            if (newStudents.length === 0) return showNotification("格式错误", "error"); setStudents(prev => [...newStudents, ...prev]); 
+            setImportText(''); showNotification(`成功导入 ${newStudents.length} 名学生`, "success");
+            await safeSendToSheet('addStudentsBatch', newStudents); 
         };
 
         const handleSmartImport = (e) => {
@@ -980,19 +1085,19 @@
             reader.onload = async (event) => {
                 const lines = event.target.result.split('\n'); const newStudents = []; const timestamp = Date.now();
                 lines.forEach((line, index) => { if (index === 0 || !line.trim()) return; const parts = line.split(',').map(p => p.trim()); if (parts.length >= 3) newStudents.push({ className: parts[0], id: parts[1], name: parts[2], createdAt: timestamp + index }); });
-                if (newStudents.length > 0) { setLoading(true); setStudents(prev => [...newStudents, ...prev]); addLog('Smart Import', `Imported ${newStudents.length} from CSV`); await safeSendToSheet('addStudentsBatch', newStudents); setLoading(false); showNotification(`CSV 导入 ${newStudents.length} 名学生`, "success"); } else { showNotification("CSV 解析失败", "error"); }
+                if (newStudents.length > 0) { setStudents(prev => [...newStudents, ...prev]); showNotification(`CSV 导入 ${newStudents.length} 名学生`, "success"); await safeSendToSheet('addStudentsBatch', newStudents); } else { showNotification("CSV 解析失败", "error"); }
                 if(smartImportRef.current) smartImportRef.current.value = '';
             }; reader.readAsText(file);
         };
 
-        const handleUpdateStudent = async (e) => { e.preventDefault(); setStudents(prev => prev.map(s => s.id === editingStudent.id ? editingStudent : s)); addLog('Edit', `ID: ${editingStudent.id}`); await safeSendToSheet('updateStudent', editingStudent); setEditingStudent(null); showNotification("已更新", "success"); };
-        const handleDeleteSingleStudent = (id) => { if (confirm("确定要删除吗？")) { setStudents(prev => prev.filter(s => s.id !== id)); addLog('Delete', `ID: ${id}`); safeSendToSheet('deleteStudent', { id }); showNotification("已删除", "success"); } };
-        const handleBackupData = () => { const bData = { entries, students, auditLogs, timestamp: new Date().toISOString() }; const blob = new Blob([JSON.stringify(bData, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`; l.href = URL.createObjectURL(blob); l.click(); showNotification("备份已下载", "success"); };
-        const handleRestoreData = (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); if (data.entries && data.students) { setEntries(data.entries); setStudents(data.students); if (data.auditLogs) setAuditLogs(data.auditLogs); addLog('Restore', 'From backup'); showNotification("恢复成功，建议刷新页面", "success"); } else { showNotification("无效文件", "error"); } } catch (err) { showNotification("解析失败", "error"); } if (fileInputRef.current) fileInputRef.current.value = ''; }; reader.readAsText(file); };
-        const handleClearAll = () => { if (confirm("警告：清空所有数据？")) { requestSecureAction(async () => { setEntries([]); setStudents([]); setAuditLogs([]); setPendingDeletions([]); localStorage.clear(); addLog('Reset', 'Cleared settings'); showNotification("已重置", "success"); await safeSendToSheet('clearAllData'); }); } };
+        const handleUpdateStudent = async (e) => { e.preventDefault(); setStudents(prev => prev.map(s => s.id === editingStudent.id ? editingStudent : s)); setEditingStudent(null); showNotification("已更新", "success"); await safeSendToSheet('updateStudent', editingStudent); };
+        const handleDeleteSingleStudent = (id) => { if (confirm("确定要删除吗？")) { setStudents(prev => prev.filter(s => s.id !== id)); showNotification("已删除", "success"); safeSendToSheet('deleteStudent', { id }); } };
+        const handleBackupData = () => { const bData = { entries, students, timestamp: new Date().toISOString() }; const blob = new Blob([JSON.stringify(bData, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`; l.href = URL.createObjectURL(blob); l.click(); showNotification("备份已下载", "success"); };
+        const handleRestoreData = (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); if (data.entries && data.students) { setEntries(data.entries); setStudents(data.students); showNotification("恢复成功，建议刷新页面", "success"); } else { showNotification("无效文件", "error"); } } catch (err) { showNotification("解析失败", "error"); } if (fileInputRef.current) fileInputRef.current.value = ''; }; reader.readAsText(file); };
+        const handleClearAll = () => { if (confirm("警告：清空所有数据？")) { requestSecureAction(async () => { setEntries([]); setStudents([]); setPendingDeletions([]); localStorage.clear(); showNotification("已重置", "success"); await safeSendToSheet('clearAllData'); }); } };
 
         return (
-            <div className={`min-h-screen pb-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] ${loading ? 'disabled-area' : ''}`}>
+            <div className={`min-h-screen bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] ${loading ? 'disabled-area' : ''}`}>
                 <ErrorBoundary>
                     {/* Header */}
                     {viewMode !== 'landing' && (
@@ -1005,7 +1110,7 @@
                                 <div className="flex items-center gap-4">
                                     {unsyncedQueue.length > 0 && ( 
                                         <div className="flex items-center gap-2">
-                                            <button onClick={executeSync} disabled={loading} className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold animate-pulse flex items-center gap-1 shadow-md disabled:opacity-50" title="点击重试同步"><IconRefresh size={12} /> 未同步 ({unsyncedQueue.length})</button> 
+                                            <button onClick={() => executeSync()} disabled={loading} className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold animate-pulse flex items-center gap-1 shadow-md disabled:opacity-50" title="点击重试同步"><IconRefresh size={12} /> 未同步 ({unsyncedQueue.length})</button> 
                                             {unsyncedQueue.some(q => (q.retryCount||0) >= 3) && <button onClick={handleEmergencyExport} className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-md animate-bounce border border-red-400">🚨 应急导出</button>}
                                         </div>
                                     )}
@@ -1014,12 +1119,12 @@
                                     {isAdmin && (
                                         <React.Fragment>
                                             <div className="hidden md:flex items-center gap-2">
-                                                <button disabled={loading} onClick={() => setViewMode('admin')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'admin' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconPenTool size={16}/> <span className="hidden md:inline">录入 (Entry)</span></div></button>
-                                                <button disabled={loading} onClick={handleGoToDashboard} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'dashboard' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconBarChart size={16}/> <span className="hidden md:inline">仪表板 (Dashboard)</span></div></button>
-                                                <button disabled={loading} onClick={() => setViewMode('management')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconSettings size={16}/> <span className="hidden md:inline">管理 (Admin)</span></div></button>
-                                                <button disabled={loading} onClick={handleLogout} className="bg-red-500/80 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-all ml-2" title="退出 / Log Keluar"><IconUnlock size={16}/></button>
+                                                <button onClick={() => setViewMode('admin')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'admin' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconPenTool size={16}/> <span className="hidden md:inline">录入 (Entry)</span></div></button>
+                                                <button onClick={handleGoToDashboard} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'dashboard' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconBarChart size={16}/> <span className="hidden md:inline">仪表板 (Dashboard)</span></div></button>
+                                                <button onClick={() => setViewMode('management')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconSettings size={16}/> <span className="hidden md:inline">管理 (Admin)</span></div></button>
+                                                <button onClick={handleLogout} className="bg-red-500/80 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-all ml-2" title="退出 / Log Keluar"><IconUnlock size={16}/></button>
                                             </div>
-                                            <div className="md:hidden"><button disabled={loading} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition-colors">{isMobileMenuOpen ? <IconX size={24} /> : <IconMenu size={24} />}</button></div>
+                                            <div className="md:hidden"><button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition-colors">{isMobileMenuOpen ? <IconX size={24} /> : <IconMenu size={24} />}</button></div>
                                         </React.Fragment>
                                     )}
                                 </div>
@@ -1027,11 +1132,11 @@
                             {isAdmin && isMobileMenuOpen && (
                                 <div className="md:hidden absolute top-full left-0 w-full bg-emerald-700 text-white shadow-xl z-40 border-t border-emerald-600 animate-pop">
                                     <div className="flex flex-col p-4 gap-2">
-                                        <button disabled={loading} onClick={() => { setViewMode('admin'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'admin' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconPenTool size={20}/> 录入数据 / Entry</button>
-                                        <button disabled={loading} onClick={() => { handleGoToDashboard(); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'dashboard' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconBarChart size={20}/> 仪表板 / Dashboard</button>
-                                        <button disabled={loading} onClick={() => { setViewMode('management'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconSettings size={20}/> 系统管理 / Admin</button>
+                                        <button onClick={() => { setViewMode('admin'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'admin' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconPenTool size={20}/> 录入数据 / Entry</button>
+                                        <button onClick={() => { handleGoToDashboard(); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'dashboard' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconBarChart size={20}/> 仪表板 / Dashboard</button>
+                                        <button onClick={() => { setViewMode('management'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconSettings size={20}/> 系统管理 / Admin</button>
                                         <div className="h-px bg-emerald-600 my-1"></div>
-                                        <button disabled={loading} onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="p-3 rounded-xl font-bold flex items-center gap-3 text-red-200 hover:bg-red-900/30"><IconUnlock size={20}/> 退出 / Log Keluar</button>
+                                        <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="p-3 rounded-xl font-bold flex items-center gap-3 text-red-200 hover:bg-red-900/30"><IconUnlock size={20}/> 退出 / Log Keluar</button>
                                     </div>
                                 </div>
                             )}
@@ -1225,7 +1330,16 @@
                                         <div className="w-full overflow-x-hidden space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-2 relative">
                                             {loading && ( <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10 backdrop-blur-sm"><div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div></div> )}
                                             {normalizedEntries.map(entry => {
-                                                const isPending = pendingDeletions.some(p => p.id === entry.id); const isDeleted = entry.status === 'deleted'; const isUnsynced = unsyncedQueue.some(q => q.uuid === entry.id);
+                                                const isPending = pendingDeletions.some(p => p.id === entry.id); 
+                                                const isDeleted = entry.status === 'deleted'; 
+                                                const isUnsynced = unsyncedQueue.some(q => {
+                                                    if (q.uuid === entry.id) return true;
+                                                    if (q.action === 'addEntriesBatch' && Array.isArray(q.data)) {
+                                                        return q.data.some(item => item.id === entry.id);
+                                                    }
+                                                    return false;
+                                                });
+                                                
                                                 let tooltip = '';
                                                 if (entry.originalClassName && entry.originalName) tooltip = `系统已自动纠正。\n原错录: ${entry.originalClassName} - ${entry.originalName}`;
                                                 else if (entry.originalClassName) tooltip = `系统已自动纠正。\n原错录班级: ${entry.originalClassName}`;
@@ -1236,7 +1350,12 @@
                                                             <div className="font-bold text-slate-700 text-sm flex items-center gap-2 flex-wrap">
                                                                 {entry.type === 'deduction' && <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px]">PENALTI</span>}
                                                                 {isPending && <span className="bg-orange-500 text-white px-1.5 py-0.5 rounded text-[10px]">AUDIT</span>}
-                                                                {isUnsynced && <span className="bg-orange-100 text-orange-700 border border-orange-300 px-1.5 py-0.5 rounded text-[10px] animate-pulse">未同步</span>}
+                                                                
+                                                                {isUnsynced ? 
+                                                                    <span className="bg-orange-100 text-orange-700 border border-orange-300 px-1.5 py-0.5 rounded text-[10px] animate-pulse">未同步 (Pending)</span> : 
+                                                                    <span className="bg-emerald-100 text-emerald-700 border border-emerald-300 px-1.5 py-0.5 rounded text-[10px]">已同步 (Synced)</span>
+                                                                }
+
                                                                 <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px]">{entry.calendarYear || 'N/A'}</span>
                                                                 <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px]">{typeof entry.month === 'string' && entry.month.includes('/') ? entry.month.split('/')[1].trim() : (entry.month || 'N/A')}</span>
                                                                 <span className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs cursor-help" title={tooltip}>{entry.className}{(entry.originalClassName || entry.originalName) && <span className="text-red-500 ml-0.5">*</span>}</span>
@@ -1446,6 +1565,34 @@
                         {viewMode === 'dashboard' && (
                             <div className="space-y-6 animate-pop" ref={dashboardRef}>
                                 <RecycleReminder dateStr={nextRecycleDate} />
+
+                                {dashboardViewMode === 'overall' && (
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 mb-2 relative overflow-hidden">
+                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-2 relative z-10">
+                                            <div>
+                                                <h3 className="font-black text-slate-800 text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> 全校年度合作目标 / Misi Sekolah</h3>
+                                                <p className="text-xs text-slate-500 mt-1">共同拯救地球，解锁全校隐藏奖励！(Bekerjasama untuk capai sasaran)</p>
+                                            </div>
+                                            <div className="text-left md:text-right">
+                                                <span className="text-3xl font-black text-emerald-600">{stats.grandTotal.toFixed(0)}</span>
+                                                <span className="text-sm font-bold text-slate-400"> / {schoolNextGoal} KG</span>
+                                            </div>
+                                        </div>
+                                        <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden relative border border-slate-200 shadow-inner z-10">
+                                            <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-1000 ease-out relative" style={{ width: `${schoolProgressPercent}%` }}>
+                                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+                                            </div>
+                                            <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white mix-blend-difference drop-shadow-md">
+                                                {schoolProgressPercent.toFixed(1)}%
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 flex justify-between text-[10px] sm:text-xs font-bold relative z-10">
+                                            <span className="text-blue-500 flex items-center gap-1"><IconActivity size={14}/> 已减碳 {(stats.grandTotal * CO2_FACTOR).toFixed(0)} CO₂e</span>
+                                            <span className="text-orange-500 flex items-center gap-1">🚀 下个里程碑: {schoolNextGoal} KG</span>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                     <div className="md:col-span-3 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-5 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
                                         <div className="absolute top-0 right-0 p-4 opacity-10"><IconLeaf /></div>
@@ -1553,33 +1700,12 @@
                                 )}
                             </div>
                         )}
-                        
-                        {/* 预留底部空间给黑匣子 */}
-                        <div className="h-16"></div>
                     </main>
 
-                    <footer className="text-center py-8 pb-16 text-slate-400 text-sm no-print">
+                    <footer className="text-center py-8 pb-16 text-slate-400 text-sm no-print mt-10 border-t border-emerald-100">
                         <p className="font-bold text-slate-500">© {new Date().getFullYear()} 新廊华小生态永续教育小组</p>
                         <p className="text-xs opacity-80 mt-1 italic">Jawatankuasa Pendidikan Kelestarian SJK (C) Ladang Grisek</p>
                     </footer>
-
-                    {/* 全局防丢黑匣子 (Audit Log Console) */}
-                    <div className="fixed bottom-0 left-0 w-full bg-slate-900 text-emerald-400 font-mono text-[10px] sm:text-xs p-1.5 px-4 z-[100] flex items-center justify-between shadow-[0_-5px_15px_rgba(0,0,0,0.2)] no-print">
-                        <div className="flex-1 truncate flex items-center gap-2 pr-4">
-                            <span className="text-slate-400">root@sjkc:~#</span>
-                            <span className="truncate">
-                                {auditLogs.length > 0 
-                                    ? `[${auditLogs[0].timestamp}] ${auditLogs[0].action} => ${auditLogs[0].details}` 
-                                    : 'System initialized. Idle.'}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-4 shrink-0 font-bold border-l border-slate-700 pl-4">
-                            <span className="hidden sm:inline">Local_DB: {entries.length} rows</span>
-                            <span className={unsyncedQueue.length > 0 ? 'text-orange-400 animate-pulse' : 'text-emerald-400'}>
-                                Sync_Queue: [{unsyncedQueue.length}] {unsyncedQueue.length > 0 ? 'PENDING' : 'SYNCED'}
-                            </span>
-                        </div>
-                    </div>
                     
                     {/* Modals and Overlays */}
                     {notification && (
