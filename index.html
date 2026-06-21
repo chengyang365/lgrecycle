@@ -15,7 +15,7 @@
     <!-- React & Babel -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -47,7 +47,7 @@
 <body>
 <div id="root"></div>
 
-<script type="text/babel" data-presets="react,env">
+<script type="text/babel" data-type="module" data-presets="react">
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLpcRedKXZj2tlevGZPdiRziUG_IB0pytG95ofzAebRop8K5gCVe060MR3PHMtPtSc/exec"; 
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
 
@@ -64,7 +64,7 @@
                             window.location.href,
                             'https://unpkg.com/react@18/umd/react.development.js',
                             'https://unpkg.com/react-dom@18/umd/react-dom.development.js',
-                            'https://unpkg.com/@babel/standalone/babel.min.js',
+                            'https://unpkg.com/@babel/standalone@7.24.7/babel.min.js',
                             'https://cdn.tailwindcss.com',
                             'https://html2canvas.hertzen.com/dist/html2canvas.min.js',
                             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
@@ -225,32 +225,28 @@
         return <span className="w-6 h-6 flex items-center justify-center bg-slate-100 text-slate-500 rounded-full text-xs font-bold">{rank}</span>;
     };
 
-    const renderName = (name, badge, className) => {
+    const renderName = (name, classNameStr) => {
         if (!name) return '';
-        const ClassBadge = className ? <span className="text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded shrink-0">{className}</span> : null;
-        
         const chineseMatches = name.match(/[\u4e00-\u9fa5]+/g);
         if (chineseMatches) {
             const cn = chineseMatches.join(' '); 
             const my = name.replace(/[\u4e00-\u9fa5]+/g, '').replace(/[()]/g, '').trim(); 
             return ( 
                 <span className="flex flex-col items-start text-left leading-tight min-w-0">
-                    <span className="flex items-center gap-1.5 max-w-full">
-                        <span className="text-sm md:text-base font-bold break-words">{cn}</span>
-                        {ClassBadge}
+                    <span className="flex items-center gap-2">
+                        <span className="text-sm md:text-base font-bold truncate">{cn}</span>
+                        {classNameStr && <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0">{classNameStr}</span>}
                     </span>
                     {my && <span className="text-[0.7em] opacity-70 font-normal mt-0.5 w-full break-words">{my}</span>}
-                    {badge && <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 mt-1 shrink-0">{badge}</span>}
                 </span> 
             );
         }
         return (
             <span className="flex flex-col items-start text-left leading-tight min-w-0">
-                <span className="flex items-center gap-1.5 max-w-full">
-                    <span className="text-sm md:text-base font-bold break-words">{name}</span>
-                    {ClassBadge}
+                <span className="flex items-center gap-2">
+                    <span className="w-full block break-words">{name}</span>
+                    {classNameStr && <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0">{classNameStr}</span>}
                 </span>
-                {badge && <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 mt-1 shrink-0">{badge}</span>}
             </span>
         );
     };
@@ -303,7 +299,7 @@
                         <div className="flex-1 min-w-0">
                             <div className="flex items-start gap-1.5 flex-wrap">
                                 <div className={`font-bold text-lg leading-tight ${isChampion ? 'text-yellow-700' : 'text-slate-700'}`}>
-                                    {type === 'class' ? item.className : renderName(item.name, item.badge, type === 'individual' ? item.className : null)}
+                                    {type === 'class' ? item.className : renderName(item.name, item.className)}
                                 </div>
                                 
                                 {/* 虚拟树徽章 (仅班级且仅管理员可见) */}
@@ -320,9 +316,16 @@
                         </div>
                     </div>
                     <div className="text-right flex-shrink-0 ml-2 flex flex-col items-end">
+                        {/* 王者徽章 放置于 KG 正上方 */}
+                        {item.badge && (
+                            <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 mb-1 shrink-0">
+                                {item.badge}
+                            </span>
+                        )}
+                        
                         <span className={`font-black text-lg block leading-none ${isChampion ? 'text-yellow-600' : 'text-emerald-700'}`}>{(Number(item.totalWeight) || 0).toFixed(2)}<span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold ml-1">kg</span></span>
                         
-                        {/* 连击/活跃月数特效 移至重量下方 */}
+                        {/* 连击/活跃月数特效 放置于重量下方 */}
                         {isIndividual && item.activeMonths >= 2 && (
                             <span className="text-[10px] font-bold bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 flex items-center gap-0.5 shrink-0 mt-1.5" title={`已参与 ${item.activeMonths} 个不同月份的环保回收`}>
                                 🔥 x{item.activeMonths}
@@ -405,7 +408,10 @@
                             <tbody>{individuals.slice(0, 20).map((s, i) => ( 
                                 <tr key={i} className="border-b border-slate-100">
                                     <td className="p-2 text-center text-slate-500">{i + 1}</td>
-                                    <td className="p-2 font-medium flex items-center gap-2">{renderName(s.name, s.badge)}</td>
+                                    <td className="p-2 font-medium flex flex-col gap-1 items-start">
+                                        {renderName(s.name, '')}
+                                        {s.badge && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200">{s.badge}</span>}
+                                    </td>
                                     <td className="p-2 text-center">{s.className}</td>
                                     <td className="p-2 text-right font-mono">{s.totalWeight.toFixed(2)}</td>
                                     <td className="p-2 text-right font-mono font-bold text-blue-500">{(s.totalWeight * CO2_FACTOR).toFixed(2)}</td>
@@ -460,7 +466,10 @@
                                     return (
                                         <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
                                             <td className="p-2 text-center font-bold text-slate-500">{rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : rank + 1}</td>
-                                            <td className="p-2 font-medium flex items-center gap-2">{renderName(s.name, s.badge)}</td>
+                                            <td className="p-2 font-medium flex flex-col gap-1 items-start">
+                                                {renderName(s.name, '')}
+                                                {s.badge && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200">{s.badge}</span>}
+                                            </td>
                                             <td className="p-2 text-center"><span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">{s.className}</span></td>
                                             <td className="p-2 text-right font-mono font-bold text-emerald-600">{s.totalWeight.toFixed(2)}</td>
                                             <td className="p-2 text-right font-mono font-bold text-blue-500">{(s.totalWeight * CO2_FACTOR).toFixed(2)}</td>
@@ -865,6 +874,47 @@
         // 全校年度目标设定（动态步进：5000KG）
         const schoolNextGoal = Math.max(5000, Math.ceil((stats.grandTotal + 0.1) / 5000) * 5000);
         const schoolProgressPercent = Math.min(100, (stats.grandTotal / schoolNextGoal) * 100);
+
+        // 季度 MVP 计算逻辑 (上一季度的冠王)
+        const prevQuarterMVP = useMemo(() => {
+            const d = new Date();
+            const currentYear = d.getFullYear();
+            const currentMonth = d.getMonth(); // 0-11
+            let prevQ = ''; let prevY = currentYear;
+
+            // 根据当前月份，倒推上一季度
+            if (currentMonth <= 2) { prevQ = 'Q4'; prevY = currentYear - 1; } // 1-3月的前一季是去年的Q4
+            else if (currentMonth <= 5) { prevQ = 'Q1'; prevY = currentYear; } // 4-6月的前一季是Q1
+            else if (currentMonth <= 8) { prevQ = 'Q2'; prevY = currentYear; } // 7-9月的前一季是Q2
+            else { prevQ = 'Q3'; prevY = currentYear; } // 10-12月的前一季是Q3
+
+            const targetMonths = QUARTERS[prevQ].months;
+
+            const qEntries = normalizedEntries.filter(e => {
+                const entryYear = e.calendarYear || new Date(e.createdAt).getFullYear();
+                const entryMonth = typeof e.month === 'string' ? MONTH_OPTIONS.findIndex(m => m.includes(e.month.split('/')[1]?.trim() || e.month)) : new Date(e.createdAt).getMonth();
+                return entryYear === prevY && targetMonths.includes(entryMonth) && e.status !== 'deleted' && e.type === 'recycle';
+            });
+
+            const indivTotals = {};
+            qEntries.forEach(e => {
+                const w = Number(e.weight) || 0;
+                let grade = parseInt(e.year);
+                if (isNaN(grade) || grade === 0) grade = e.className ? parseInt(e.className.charAt(0)) : 0;
+                if (isNaN(grade)) grade = 0;
+                if (e.name || e.studentID) {
+                    let uniqueKey = e.studentID ? e.studentID : e.name;
+                    if (!indivTotals[uniqueKey]) indivTotals[uniqueKey] = { name: e.name, className: e.className, totalWeight: 0, grade: grade };
+                    indivTotals[uniqueKey].totalWeight += w;
+                    indivTotals[uniqueKey].badge = getGamificationBadge(indivTotals[uniqueKey].totalWeight);
+                }
+            });
+
+            const lower = Object.values(indivTotals).filter(i => i.grade >= 1 && i.grade <= 3).sort((a,b) => b.totalWeight - a.totalWeight);
+            const upper = Object.values(indivTotals).filter(i => i.grade >= 4 && i.grade <= 6).sort((a,b) => b.totalWeight - a.totalWeight);
+
+            return { quarterLabel: `${prevY}年 ${QUARTERS[prevQ].label}`, lowerMVP: lower.length > 0 ? lower[0] : null, upperMVP: upper.length > 0 ? upper[0] : null };
+        }, [normalizedEntries]);
 
         const handleGenerateReport = (overrideConfig) => {
             const currentConfig = overrideConfig || reportConfig; const { monthIndex, year } = currentConfig;
@@ -1599,30 +1649,75 @@
                                 ) : (
                                     <React.Fragment>
                                         {dashboardViewMode === 'overall' && (
-                                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 mb-2 relative overflow-hidden">
-                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-2 relative z-10">
-                                                    <div>
-                                                        <h3 className="font-black text-slate-800 text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> 全校年度合作目标 / Misi Sekolah</h3>
-                                                        <p className="text-xs text-slate-500 mt-1">共同拯救地球，解锁全校隐藏奖励！(Bekerjasama untuk capai sasaran)</p>
+                                            <React.Fragment>
+                                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 mb-4 relative overflow-hidden">
+                                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-2 relative z-10">
+                                                        <div>
+                                                            <h3 className="font-black text-slate-800 text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> 全校年度合作目标 / Misi Sekolah</h3>
+                                                            <p className="text-xs text-slate-500 mt-1">共同拯救地球，解锁全校隐藏奖励！(Bekerjasama untuk capai sasaran)</p>
+                                                        </div>
+                                                        <div className="text-left md:text-right">
+                                                            <span className="text-3xl font-black text-emerald-600">{stats.grandTotal.toFixed(0)}</span>
+                                                            <span className="text-sm font-bold text-slate-400"> / {schoolNextGoal} KG</span>
+                                                        </div>
                                                     </div>
-                                                    <div className="text-left md:text-right">
-                                                        <span className="text-3xl font-black text-emerald-600">{stats.grandTotal.toFixed(0)}</span>
-                                                        <span className="text-sm font-bold text-slate-400"> / {schoolNextGoal} KG</span>
+                                                    <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden relative border border-slate-200 shadow-inner z-10">
+                                                        <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-1000 ease-out relative" style={{ width: `${schoolProgressPercent}%` }}>
+                                                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+                                                        </div>
+                                                        <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white mix-blend-difference drop-shadow-md">
+                                                            {schoolProgressPercent.toFixed(1)}%
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-3 flex justify-between text-[10px] sm:text-xs font-bold relative z-10">
+                                                        <span className="text-blue-500 flex items-center gap-1"><IconActivity size={14}/> 已减碳 {(stats.grandTotal * CO2_FACTOR).toFixed(0)} CO₂e</span>
+                                                        <span className="text-orange-500 flex items-center gap-1">🚀 下个里程碑: {schoolNextGoal} KG</span>
                                                     </div>
                                                 </div>
-                                                <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden relative border border-slate-200 shadow-inner z-10">
-                                                    <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-1000 ease-out relative" style={{ width: `${schoolProgressPercent}%` }}>
-                                                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+
+                                                {/* 季度 MVP 展位 */}
+                                                {(prevQuarterMVP.lowerMVP || prevQuarterMVP.upperMVP) && (
+                                                    <div className="bg-gradient-to-br from-yellow-50 to-amber-100 rounded-2xl p-5 md:p-6 mb-4 shadow border border-yellow-200/60 relative overflow-hidden">
+                                                        <div className="absolute -top-4 -right-4 p-4 opacity-10 text-yellow-500"><IconCrown size={120} /></div>
+                                                        <div className="relative z-10 mb-4">
+                                                            <h3 className="font-black text-amber-800 text-lg flex items-center gap-2"><IconCrown className="text-yellow-600" /> 卫冕王者殿堂 / Tokoh Suku Lepas</h3>
+                                                            <p className="text-xs text-amber-700/80 mt-0.5">{prevQuarterMVP.quarterLabel} 环保王者 MVP</p>
+                                                        </div>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                                                            <div className="bg-white/90 backdrop-blur rounded-xl p-4 border border-amber-200 shadow-sm flex items-center justify-between hover:bg-white transition-colors">
+                                                                <div>
+                                                                    <div className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1.5">低年级组 (Tahap 1)</div>
+                                                                    {prevQuarterMVP.lowerMVP ? (
+                                                                        <React.Fragment>
+                                                                            <div className="text-slate-800 mb-1">{renderName(prevQuarterMVP.lowerMVP.name, prevQuarterMVP.lowerMVP.className)}</div>
+                                                                            <div className="text-sm font-black text-emerald-600 mt-1 flex flex-col items-start">
+                                                                                {prevQuarterMVP.lowerMVP.badge && <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 mb-1 shrink-0">{prevQuarterMVP.lowerMVP.badge}</span>}
+                                                                                <span>{prevQuarterMVP.lowerMVP.totalWeight.toFixed(2)} <span className="text-[10px] text-emerald-600/70">KG</span></span>
+                                                                            </div>
+                                                                        </React.Fragment>
+                                                                    ) : <div className="text-sm text-slate-400">暂无卫冕记录</div>}
+                                                                </div>
+                                                                <div className="w-12 h-12 bg-gradient-to-br from-yellow-300 to-amber-500 rounded-full flex items-center justify-center text-white shadow-inner text-xl ring-4 ring-yellow-100 flex-shrink-0 ml-2">🥇</div>
+                                                            </div>
+                                                            <div className="bg-white/90 backdrop-blur rounded-xl p-4 border border-amber-200 shadow-sm flex items-center justify-between hover:bg-white transition-colors">
+                                                                <div>
+                                                                    <div className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1.5">高年级组 (Tahap 2)</div>
+                                                                    {prevQuarterMVP.upperMVP ? (
+                                                                        <React.Fragment>
+                                                                            <div className="text-slate-800 mb-1">{renderName(prevQuarterMVP.upperMVP.name, prevQuarterMVP.upperMVP.className)}</div>
+                                                                            <div className="text-sm font-black text-emerald-600 mt-1 flex flex-col items-start">
+                                                                                {prevQuarterMVP.upperMVP.badge && <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 mb-1 shrink-0">{prevQuarterMVP.upperMVP.badge}</span>}
+                                                                                <span>{prevQuarterMVP.upperMVP.totalWeight.toFixed(2)} <span className="text-[10px] text-emerald-600/70">KG</span></span>
+                                                                            </div>
+                                                                        </React.Fragment>
+                                                                    ) : <div className="text-sm text-slate-400">暂无卫冕记录</div>}
+                                                                </div>
+                                                                <div className="w-12 h-12 bg-gradient-to-br from-yellow-300 to-amber-500 rounded-full flex items-center justify-center text-white shadow-inner text-xl ring-4 ring-yellow-100 flex-shrink-0 ml-2">🏆</div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white mix-blend-difference drop-shadow-md">
-                                                        {schoolProgressPercent.toFixed(1)}%
-                                                    </div>
-                                                </div>
-                                                <div className="mt-3 flex justify-between text-[10px] sm:text-xs font-bold relative z-10">
-                                                    <span className="text-blue-500 flex items-center gap-1"><IconActivity size={14}/> 已减碳 {(stats.grandTotal * CO2_FACTOR).toFixed(0)} CO₂e</span>
-                                                    <span className="text-orange-500 flex items-center gap-1">🚀 下个里程碑: {schoolNextGoal} KG</span>
-                                                </div>
-                                            </div>
+                                                )}
+                                            </React.Fragment>
                                         )}
 
                                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
