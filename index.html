@@ -15,7 +15,8 @@
     <!-- React & Babel -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+    <!-- 明确使用稳定版 Babel 7 -->
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -47,7 +48,11 @@
 <body>
 <div id="root"></div>
 
-<script type="text/babel" data-type="module" data-presets="react">
+<!-- 移除了引发冲突的 data-type="module" -->
+<script type="text/babel" data-presets="react">
+    /** @jsx React.createElement */
+    /** @jsxFrag React.Fragment */
+
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLpcRedKXZj2tlevGZPdiRziUG_IB0pytG95ofzAebRop8K5gCVe060MR3PHMtPtSc/exec"; 
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
 
@@ -64,7 +69,7 @@
                             window.location.href,
                             'https://unpkg.com/react@18/umd/react.development.js',
                             'https://unpkg.com/react-dom@18/umd/react-dom.development.js',
-                            'https://unpkg.com/@babel/standalone@7.24.7/babel.min.js',
+                            'https://unpkg.com/@babel/standalone@7/babel.min.js',
                             'https://cdn.tailwindcss.com',
                             'https://html2canvas.hertzen.com/dist/html2canvas.min.js',
                             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
