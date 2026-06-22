@@ -8,15 +8,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="https://em-content.zobj.net/source/apple/419/recycling-symbol_267b-fe0f.png">
     <link rel="apple-touch-icon" href="https://em-content.zobj.net/source/apple/419/recycling-symbol_267b-fe0f.png">
     
-    <!-- 修复了 PWA Manifest 的语法错误 -->
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22SJK%20(C)%20Ladang%20Grisek%20Recycling%22%2C%22short_name%22%3A%22SJKC%20Recycling%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f0fdf4%22%2C%22theme_color%22%3A%22%23059669%22%7D">
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"SJK (C) Ladang Grisek Recycling","short_name":"SJKC Recycling","start_url":".","display":"standalone","background_color":"#f0fdf4","theme_color":"#059669"}'>
     <meta name="theme-color" content="#059669">
     
     <!-- React & Babel -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <!-- 使用经典的旧版 Babel，彻底避免自动引入模块的特性 -->
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- 明确使用稳定版 Babel 7 -->
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -48,8 +48,11 @@
 <body>
 <div id="root"></div>
 
-<!-- 回到 Babel 6 避免环境冲突 -->
-<script type="text/babel">
+<!-- 移除了引发冲突的 data-type="module" -->
+<script type="text/babel" data-presets="react">
+    /** @jsx React.createElement */
+    /** @jsxFrag React.Fragment */
+
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLpcRedKXZj2tlevGZPdiRziUG_IB0pytG95ofzAebRop8K5gCVe060MR3PHMtPtSc/exec"; 
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
 
@@ -66,7 +69,7 @@
                             window.location.href,
                             'https://unpkg.com/react@18/umd/react.development.js',
                             'https://unpkg.com/react-dom@18/umd/react-dom.development.js',
-                            'https://unpkg.com/babel-standalone@6/babel.min.js',
+                            'https://unpkg.com/@babel/standalone@7/babel.min.js',
                             'https://cdn.tailwindcss.com',
                             'https://html2canvas.hertzen.com/dist/html2canvas.min.js',
                             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
