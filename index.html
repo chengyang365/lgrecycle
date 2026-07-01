@@ -202,14 +202,6 @@
         return ''; 
     };
 
-    const getTreeEvolution = (totalWeight) => {
-        if (totalWeight >= 1200) return { icon: '🍎', label: '丰收树 (Berbuah)' };
-        if (totalWeight >= 600)  return { icon: '🌳', label: '参天大树 (Besar)' };
-        if (totalWeight >= 300)  return { icon: '🌿', label: '茂盛小树 (Rimbun)' };
-        if (totalWeight >= 150)  return { icon: '🌱', label: '初苗 (Anak Pokok)' };
-        return { icon: '🌰', label: '新种子 (Benih)' };
-    };
-
     const Medal = ({ rank }) => {
         if (rank === 1) return <span className="text-2xl drop-shadow-md">🥇</span>;
         if (rank === 2) return <span className="text-2xl drop-shadow-md">🥈</span>;
@@ -277,8 +269,6 @@
     const RankItem = ({ item, index, maxValue, type, isAdmin }) => {
         const percentage = maxValue > 0 ? (item.totalWeight / maxValue) * 100 : 0; const isChampion = index === 0; const rewardValue = type === 'class' ? (item.totalReward || 0) : 0;
         const co2Saved = (Number(item.totalWeight) * CO2_FACTOR).toFixed(1);
-        
-        const treeInfo = type === 'class' ? getTreeEvolution(item.totalWeight) : null;
         const isIndividual = type !== 'class';
         
         return (
@@ -292,11 +282,6 @@
                                 <div className={`font-bold text-lg leading-tight ${isChampion ? 'text-yellow-700' : 'text-slate-700'}`}>
                                     {type === 'class' ? item.className : renderName(item.name, item.className)}
                                 </div>
-                                {isAdmin && treeInfo && (
-                                    <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200 flex items-center gap-1 shrink-0 mt-0.5" title={treeInfo.label}>
-                                        <span className="text-sm">{treeInfo.icon}</span> {treeInfo.label}
-                                    </span>
-                                )}
                                 {isAdmin && type === 'class' && rewardValue > 0 && ( <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex-shrink-0 mt-0.5"><IconTicket size={12} /> RM{rewardValue}</div> )}
                                 {isAdmin && type === 'class' && item.totalDeduction > 0 && ( <div className="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 flex-shrink-0 mt-0.5" title="已扣除的碳足迹"><IconFootprints size={12} /> -{item.totalDeduction.toFixed(2)}kg</div> )}
                             </div>
@@ -328,8 +313,11 @@
         );
     };
 
-    const MonthlyReportView = ({ data, config }) => {
-        const { monthIndex, year } = config; const monthName = MONTH_OPTIONS[monthIndex].split('/')[0].trim(); const monthNameMalay = MONTH_OPTIONS[monthIndex].split('/')[1].trim();
+    const MonthlyReportView = ({ data, config, onConfigChange }) => {
+        const { monthIndex, year } = config; 
+        const monthName = MONTH_OPTIONS[monthIndex].split('/')[0].trim(); 
+        const monthNameMalay = MONTH_OPTIONS[monthIndex].split('/')[1].trim();
+        
         const GroupSection = ({ title, subTitle, classes, individuals }) => (
             <div className="mb-8 break-inside-avoid">
                 <div className="bg-slate-800 text-white p-3 rounded-t-lg flex justify-between items-center"><div><h2 className="text-xl font-bold">{title}</h2><span className="text-sm opacity-80">{subTitle}</span></div></div>
@@ -352,7 +340,7 @@
                                     const isTop3 = i < 3 && c.totalWeight > 0;
                                     return (
                                         <tr key={i} className={`border-b border-slate-100 ${isTop3 ? 'bg-yellow-50/50' : ''}`}>
-                                            <td className="p-2 text-center font-bold">{isTop3 ? (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1) : i + 1}</td>
+                                            <td className="p-2 text-center font-bold">{isTop3 ? (i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉') : i + 1}</td>
                                             <td className="p-2 font-bold">{c.className}</td>
                                             <td className="p-2 text-right font-mono text-red-500">{c.totalDeduction > 0 ? `-${c.totalDeduction.toFixed(2)}` : '0.00'}</td>
                                             <td className="p-2 text-right font-mono font-bold text-emerald-600">{c.totalWeight.toFixed(2)}</td>
@@ -394,16 +382,29 @@
             </div>
         );
         return (
-            <div id="monthly-report-container" className="bg-white p-8 w-[1000px] min-h-[1414px] mx-auto text-slate-900 font-sans">
-                <div className="text-center mb-8 border-b-4 border-emerald-600 pb-4"><h1 className="text-3xl font-black text-slate-800 mb-2">新廊华小校园环保回收计划</h1><h2 className="text-xl font-bold text-emerald-700">月度总结成绩单 / Laporan Kitar Semula Bulanan</h2><p className="text-lg mt-2 font-medium text-slate-500">{monthName} {year} / {monthNameMalay} {year}</p></div>
-                <GroupSection title="低年级组 (一年级 - 三年级)" subTitle="Tahap 1 (Tahun 1 - 3)" classes={data.lower.classes} individuals={data.lower.individuals} />
-                <GroupSection title="高年级组 (四年级 - 六年级)" subTitle="Tahap 2 (Tahun 4 - 6)" classes={data.upper.classes} individuals={data.upper.individuals} />
-                <div className="text-center text-xs text-slate-400 mt-8">Generated by SJKC LG Recycling System • {new Date().toLocaleString()}</div>
+            <div className="flex flex-col relative w-[1000px] mx-auto bg-white rounded-lg overflow-hidden shadow-2xl">
+                <div data-html2canvas-ignore="true" className="bg-slate-100 p-4 border-b flex justify-between items-center no-print sticky top-0 z-10 shadow-sm">
+                    <div className="flex gap-2">
+                        <select value={year} onChange={(e) => onConfigChange({ ...config, year: parseInt(e.target.value) })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500">
+                            {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                        <select value={monthIndex} onChange={(e) => onConfigChange({ ...config, monthIndex: parseInt(e.target.value) })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500">
+                            {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                        </select>
+                    </div>
+                    <div className="text-xs text-slate-500">提示: 可直接在此处切换月份重新生成报表</div>
+                </div>
+                <div id="monthly-report-container" className="p-8 min-h-[1414px] text-slate-900 font-sans bg-white">
+                    <div className="text-center mb-8 border-b-4 border-emerald-600 pb-4"><h1 className="text-3xl font-black text-slate-800 mb-2">新廊华小校园环保回收计划</h1><h2 className="text-xl font-bold text-emerald-700">月度总结成绩单 / Laporan Kitar Semula Bulanan</h2><p className="text-lg mt-2 font-medium text-slate-500">{monthName} {year} / {monthNameMalay} {year}</p></div>
+                    <GroupSection title="低年级组 (一年级 - 三年级)" subTitle="Tahap 1 (Tahun 1 - 3)" classes={data.lower.classes} individuals={data.lower.individuals} />
+                    <GroupSection title="高年级组 (四年级 - 六年级)" subTitle="Tahap 2 (Tahun 4 - 6)" classes={data.upper.classes} individuals={data.upper.individuals} />
+                    <div className="text-center text-xs text-slate-400 mt-8">Generated by SJKC LG Recycling System • {new Date().toLocaleString()}</div>
+                </div>
             </div>
         );
     };
 
-    const QuarterlyReportView = ({ data, config }) => {
+    const QuarterlyReportView = ({ data, config, onConfigChange }) => {
         const quarterLabel = QUARTERS[config.quarter].label; const year = config.year;
         const GroupList = ({ title, individuals }) => {
             const [currentPage, setCurrentPage] = useState(1); const recordsPerPage = 10; const totalPages = Math.ceil(individuals.length / recordsPerPage) || 1;
@@ -455,27 +456,41 @@
             );
         };
         return (
-            <div id="quarterly-report-container" className="bg-white p-8 w-[1000px] min-h-[1414px] mx-auto text-slate-900 font-sans">
-                <div className="text-center mb-8 border-b-4 border-blue-600 pb-4 relative">
-                    <div className="absolute top-0 right-0 opacity-20"><IconTrophy size={60}/></div>
-                    <h1 className="text-3xl font-black text-slate-800 mb-2">新廊华小校园环保回收计划</h1>
-                    <h2 className="text-2xl font-black text-blue-700 tracking-widest">季度回收王者荣耀</h2>
-                    <p className="text-sm font-bold text-slate-500 tracking-widest mt-1 mb-2">THE KING OF RECYCLING</p>
-                    <div className="inline-block bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-bold text-sm border border-blue-200">{year}年 {quarterLabel}</div>
+            <div className="flex flex-col relative w-[1000px] mx-auto bg-white rounded-lg overflow-hidden shadow-2xl">
+                <div data-html2canvas-ignore="true" className="bg-slate-100 p-4 border-b flex justify-between items-center no-print sticky top-0 z-10 shadow-sm">
+                    <div className="flex gap-2">
+                        <select value={year} onChange={(e) => onConfigChange({ ...config, year: parseInt(e.target.value) })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                            {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                        <select value={config.quarter} onChange={(e) => onConfigChange({ ...config, quarter: e.target.value })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                            {Object.keys(QUARTERS).map(q => <option key={q} value={q}>{QUARTERS[q].label}</option>)}
+                        </select>
+                    </div>
+                    <div className="text-xs text-slate-500">提示: 可直接在此处切换季度重新生成榜单</div>
                 </div>
-                <GroupList title="低年级组 (Tahap 1) - 个人累积排行榜" individuals={data.lower} />
-                <GroupList title="高年级组 (Tahap 2) - 个人累积排行榜" individuals={data.upper} />
-                <div className="text-center text-xs text-slate-400 mt-8">Generated by SJKC LG Recycling System • {new Date().toLocaleString()}</div>
+                <div id="quarterly-report-container" className="p-8 min-h-[1414px] text-slate-900 font-sans bg-white">
+                    <div className="text-center mb-8 border-b-4 border-blue-600 pb-4 relative">
+                        <div className="absolute top-0 right-0 opacity-20"><IconTrophy size={60}/></div>
+                        <h1 className="text-3xl font-black text-slate-800 mb-2">新廊华小校园环保回收计划</h1>
+                        <h2 className="text-2xl font-black text-blue-700 tracking-widest">季度回收王者荣耀</h2>
+                        <p className="text-sm font-bold text-slate-500 tracking-widest mt-1 mb-2">THE KING OF RECYCLING</p>
+                        <div className="inline-block bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-bold text-sm border border-blue-200">{year}年 {quarterLabel}</div>
+                    </div>
+                    <GroupList title="低年级组 (Tahap 1) - 个人累积排行榜" individuals={data.lower} />
+                    <GroupList title="高年级组 (Tahap 2) - 个人累积排行榜" individuals={data.upper} />
+                    <div className="text-center text-xs text-slate-400 mt-8">Generated by SJKC LG Recycling System • {new Date().toLocaleString()}</div>
+                </div>
             </div>
         );
     };
 
-    const SecurePasswordInput = ({ value, onChange, placeholder, autoFocus, theme = "emerald" }) => {
+    const SecurePasswordInput = ({ value, onChange, placeholder, autoFocus, theme = "emerald", onEnter }) => {
         const borderClass = theme === "red" ? "focus-within:border-red-500 focus-within:ring-red-100" : "focus-within:border-emerald-500 focus-within:ring-emerald-100";
         const handleChange = (e) => { const val = e.target.value.replace(/[^0-9]/g, ''); onChange({ target: { value: val } }); };
+        const handleKeyDown = (e) => { if (e.key === 'Enter' && value.length > 0 && onEnter) { e.preventDefault(); onEnter(); } };
         return (
             <div className={`relative w-full h-14 bg-white border border-slate-200 rounded-xl transition-all ${borderClass} focus-within:ring-4 flex items-center justify-center overflow-hidden`}>
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={value} onChange={handleChange} className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-text" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" autoFocus={autoFocus} />
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={value} onChange={handleChange} onKeyDown={handleKeyDown} className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-text" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" autoFocus={autoFocus} />
                 <div className="flex gap-3 pointer-events-none z-10">
                     {value.length > 0 ? ( value.split('').map((_, i) => ( <div key={i} className={`w-3 h-3 rounded-full animate-pop flex-shrink-0 ${theme === 'red' ? 'bg-red-600' : 'bg-emerald-600'}`}></div> )) ) : ( <span className="text-slate-300 text-lg tracking-widest font-mono">{placeholder}</span> )}
                 </div>
@@ -515,9 +530,10 @@
 
         const [viewMode, setViewMode] = useState('dashboard'); 
         const [showLoginModal, setShowLoginModal] = useState(false);
+        const [loginTab, setLoginTab] = useState('general');
         const [entryTab, setEntryTab] = useState('recycle'); 
         const [manageTab, setManageTab] = useState('audit');
-        const [isAdmin, setIsAdmin] = useState(false);
+        const [authRole, setAuthRole] = useState('guest');
         const [passwordInput, setPasswordInput] = useState('');
         
         const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1030,16 +1046,19 @@
             html2canvas(dashboardRef.current, { scale: 2 }).then(c => { const l = document.createElement('a'); l.download = `SJKCLG_Recycling_${new Date().toISOString().slice(0,10)}.png`; l.href = c.toDataURL(); l.click(); hideIds.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'flex'; }); });
         };
 
-        const handleLogin = async (e) => {
-            e.preventDefault(); setLoading(true);
-            try {
-                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=verifyAdmin&password=${encodeURIComponent(passwordInput)}`); const data = await res.json(); 
-                if (data.status === 'success') { setIsAdmin(true); setShowLoginModal(false); setViewMode('dashboard'); setPasswordInput(''); playSound('success'); showNotification("登录成功", "success"); } else { playSound('error'); showNotification("密码错误", "error"); }
-            } catch(err) { showNotification("验证失败，请检查网络", "error"); } finally { setLoading(false); }
+        const handleLogin = (e) => {
+            if(e) e.preventDefault();
+            if (loginTab === 'general' && passwordInput === '991049') {
+                setAuthRole('general'); setShowLoginModal(false); setViewMode('dashboard'); setPasswordInput(''); playSound('success'); showNotification("登录成功", "success");
+            } else if (loginTab === 'admin' && passwordInput === '6767') {
+                setAuthRole('admin'); setShowLoginModal(false); setViewMode('admin'); setRecycleUnlocked(true); setPasswordInput(''); playSound('success'); showNotification("登录成功", "success");
+            } else {
+                playSound('error'); showNotification("密码错误", "error"); setPasswordInput('');
+            }
         };
         
         const handleGoToDashboard = () => { setViewMode('dashboard'); setIsMobileMenuOpen(false); playSound('success'); };
-        const handleLogout = () => { setIsAdmin(false); setIsSystemUnlocked(false); setViewMode('dashboard'); showNotification("已退出", "success"); };
+        const handleLogout = () => { setAuthRole('guest'); setIsSystemUnlocked(false); setRecycleUnlocked(false); setPenaltyUnlocked(false); setDashboardActionsUnlocked(false); setViewMode('dashboard'); showNotification("已退出", "success"); };
 
         const handleInputChange = (e) => {
             const { name, value } = e.target;
@@ -1160,6 +1179,39 @@
             await safeSendToSheet('addStudentsBatch', [newObj]); 
         };
 
+        const handleRecycleUnlock = () => {
+            if(recycleSecurityInput === '6767') { setRecycleUnlocked(true); playSound('success'); showNotification('解锁成功', 'success'); } 
+            else { playSound('error'); showNotification('密码错误', 'error'); setRecycleSecurityInput(''); }
+        };
+
+        const handleDashboardUnlock = () => {
+            if (dashboardSecurityInput === '88888888') {
+                setDashboardActionsUnlocked(true); setShowDashboardUnlockModal(false); setDashboardSecurityInput('');
+                if (pendingDashboardAction) pendingDashboardAction();
+                setPendingDashboardAction(null); playSound('success'); showNotification('解锁成功', 'success');
+            } else {
+                playSound('error'); showNotification('密码错误', 'error'); setDashboardSecurityInput('');
+            }
+        };
+
+        const requestSecureAction = (cb) => { setSecurityCheck({ show: true, callback: cb, error: '', verifying: false }); setSecurityInput(''); };
+        
+        const handleSecurityVerify = (e) => {
+            if (e && e.preventDefault) e.preventDefault();
+            
+            if (securityInput === '88888888') {
+                if (securityCheck.callback) {
+                    securityCheck.callback();
+                    setSecurityCheck({ show: false, callback: null, error: '', verifying: false });
+                }
+                if (viewMode === 'management') { setIsSystemUnlocked(true); }
+                if (entryTab === 'penalty') { setPenaltyUnlocked(true); }
+                playSound('success'); showNotification("解锁成功", "success"); setSecurityInput('');
+            } else {
+                playSound('error'); showNotification("安全密码错误", "error"); setSecurityInput('');
+            }
+        };
+
         const handleImportStudents = async () => {
             if (!importClass) return showNotification("请选择班级", "error"); if (!importText.trim()) return showNotification("请输入学生数据", "error");
             const lines = importText.split('\n'); const newStudents = []; const timestamp = Date.now();
@@ -1183,7 +1235,7 @@
         const handleDeleteSingleStudent = (id) => { if (confirm("确定要删除吗？")) { setStudents(prev => prev.filter(s => s.id !== id)); showNotification("已删除", "success"); safeSendToSheet('deleteStudent', { id }); } };
         const handleBackupData = () => { const bData = { entries, students, timestamp: new Date().toISOString() }; const blob = new Blob([JSON.stringify(bData, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.download = `SJKCLG_Backup_${new Date().toISOString().slice(0,10)}.json`; l.href = URL.createObjectURL(blob); l.click(); showNotification("备份已下载", "success"); };
         const handleRestoreData = (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); if (data.entries && data.students) { setEntries(data.entries); setStudents(data.students); showNotification("恢复成功，建议刷新页面", "success"); } else { showNotification("无效文件", "error"); } } catch (err) { showNotification("解析失败", "error"); } if (fileInputRef.current) fileInputRef.current.value = ''; }; reader.readAsText(file); };
-        const handleClearAll = () => { if (confirm("警告：清空所有数据？")) { setEntries([]); setStudents([]); setPendingDeletions([]); localStorage.clear(); showNotification("已重置", "success"); safeSendToSheet('clearAllData'); } };
+        const handleClearAll = () => { requestSecureAction(() => { if (confirm("警告：清空所有数据？")) { setEntries([]); setStudents([]); setPendingDeletions([]); localStorage.clear(); showNotification("已重置", "success"); safeSendToSheet('clearAllData'); } }); };
 
         return (
             <div className={`min-h-screen bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] ${loading ? 'disabled-area' : ''}`}>
@@ -1203,13 +1255,13 @@
                                     </div>
                                 )}
                                 <IconCloud connected={isCloudEnabled && !cloudError && unsyncedQueue.length === 0} />
-                                {!isAdmin && ( <button onClick={() => setShowLoginModal(true)} className="bg-emerald-800/30 hover:bg-emerald-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 border border-emerald-500/30"><IconLock size={18} /><span className="hidden sm:inline">后台登入</span></button> )}
-                                {isAdmin && (
+                                {authRole === 'guest' && ( <button onClick={() => setShowLoginModal(true)} className="bg-emerald-800/30 hover:bg-emerald-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 border border-emerald-500/30"><IconLock size={18} /><span className="hidden sm:inline">后台登入</span></button> )}
+                                {authRole !== 'guest' && (
                                     <React.Fragment>
                                         <div className="hidden md:flex items-center gap-2">
                                             <button onClick={() => setViewMode('admin')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'admin' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconPenTool size={16}/> <span className="hidden md:inline">录入 (Entry)</span></div></button>
                                             <button onClick={handleGoToDashboard} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'dashboard' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconBarChart size={16}/> <span className="hidden md:inline">仪表板 (Dashboard)</span></div></button>
-                                            <button onClick={() => setViewMode('management')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconSettings size={16}/> <span className="hidden md:inline">管理 (Admin)</span></div></button>
+                                            {authRole === 'admin' && <button onClick={() => setViewMode('management')} className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'bg-emerald-800/50 text-emerald-100 hover:bg-emerald-800'}`}><div className="flex items-center gap-1"><IconSettings size={16}/> <span className="hidden md:inline">管理 (Admin)</span></div></button>}
                                             <button onClick={handleLogout} className="bg-red-500/80 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-all ml-2" title="退出 / Log Keluar"><IconUnlock size={16}/></button>
                                         </div>
                                         <div className="md:hidden"><button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition-colors">{isMobileMenuOpen ? <IconX size={24} /> : <IconMenu size={24} />}</button></div>
@@ -1217,12 +1269,12 @@
                                 )}
                             </div>
                         </div>
-                        {isAdmin && isMobileMenuOpen && (
+                        {authRole !== 'guest' && isMobileMenuOpen && (
                             <div className="md:hidden absolute top-full left-0 w-full bg-emerald-700 text-white shadow-xl z-40 border-t border-emerald-600 animate-pop">
                                 <div className="flex flex-col p-4 gap-2">
                                     <button onClick={() => { setViewMode('admin'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'admin' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconPenTool size={20}/> 录入数据 / Entry</button>
                                     <button onClick={() => { handleGoToDashboard(); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'dashboard' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconBarChart size={20}/> 仪表板 / Dashboard</button>
-                                    <button onClick={() => { setViewMode('management'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconSettings size={20}/> 系统管理 / Admin</button>
+                                    {authRole === 'admin' && <button onClick={() => { setViewMode('management'); setIsMobileMenuOpen(false); }} className={`p-3 rounded-xl font-bold flex items-center gap-3 ${viewMode === 'management' ? 'bg-white text-emerald-700' : 'hover:bg-emerald-600'}`}><IconSettings size={20}/> 系统管理 / Admin</button>}
                                     <div className="h-px bg-emerald-600 my-1"></div>
                                     <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="p-3 rounded-xl font-bold flex items-center gap-3 text-red-200 hover:bg-red-900/30"><IconUnlock size={20}/> 退出 / Log Keluar</button>
                                 </div>
@@ -1239,11 +1291,17 @@
                                     <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
                                     <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">♻️</div>
                                     <h2 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">后台管理登入</h2>
-                                    <p className="text-slate-400 mb-8 text-sm leading-relaxed">Log Masuk Pentadbir<br/><strong>SJK (C) Ladang Grisek</strong></p>
+                                    <p className="text-slate-400 mb-6 text-sm leading-relaxed">Log Masuk Sistem<br/><strong>SJK (C) Ladang Grisek</strong></p>
+                                    
+                                    <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
+                                        <button type="button" onClick={() => {setLoginTab('general'); setPasswordInput('');}} className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${loginTab === 'general' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>一般老师</button>
+                                        <button type="button" onClick={() => {setLoginTab('admin'); setPasswordInput('');}} className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${loginTab === 'admin' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>负责老师</button>
+                                    </div>
+
                                     <form onSubmit={handleLogin} className="space-y-4 text-left">
                                         <div>
                                             <label className="text-xs font-bold text-slate-500 uppercase ml-1 mb-1 block">输入密码 / Kata Laluan</label>
-                                            <SecurePasswordInput value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} placeholder="••••" autoFocus={true} theme="emerald" />
+                                            <SecurePasswordInput value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} onEnter={handleLogin} placeholder="••••" autoFocus={true} theme="emerald" />
                                         </div>
                                         <button type="submit" disabled={loading || passwordInput.length < 4} className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-bold shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed">
                                             {loading ? <Spinner /> : <React.Fragment>登入 / Masuk <IconArrowRight size={18} /></React.Fragment>}
@@ -1277,8 +1335,8 @@
                                                             <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-3 shadow-inner text-emerald-500"><IconLock size={32} /></div>
                                                             <h4 className="font-bold text-slate-800 text-lg mb-1">需要权限 / Perlu Kebenaran</h4>
                                                             <p className="text-xs text-slate-500 text-center mb-6 leading-relaxed">此模组涉及加分操作，需要输入密码。<br/><span className="opacity-70">Sila masukkan kata laluan untuk akses.</span></p>
-                                                            <SecurePasswordInput value={recycleSecurityInput} onChange={(e) => setRecycleSecurityInput(e.target.value)} placeholder="••••" autoFocus={false} theme="emerald" />
-                                                            <button disabled={recycleSecurityInput.length < 4} onClick={() => { if(recycleSecurityInput === '6767') { setRecycleUnlocked(true); playSound('success'); showNotification('解锁成功', 'success'); } else { playSound('error'); showNotification('密码错误', 'error'); setRecycleSecurityInput(''); } }} className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 w-full justify-center disabled:bg-slate-400">解锁 / Buka Kunci</button>
+                                                            <SecurePasswordInput value={recycleSecurityInput} onChange={(e) => setRecycleSecurityInput(e.target.value)} onEnter={handleRecycleUnlock} placeholder="••••" autoFocus={false} theme="emerald" />
+                                                            <button disabled={recycleSecurityInput.length < 4} onClick={handleRecycleUnlock} className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 w-full justify-center disabled:bg-slate-400">解锁 / Buka Kunci</button>
                                                         </div>
                                                     </div>
                                                 )}
@@ -1380,7 +1438,7 @@
                                                             <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-3 shadow-inner text-red-500"><IconLock size={32} /></div>
                                                             <h4 className="font-bold text-slate-800 text-lg mb-1">需要权限 / Perlu Kebenaran</h4>
                                                             <p className="text-xs text-slate-500 text-center mb-6 leading-relaxed">此模组涉及扣分操作，需要管理员权限验证。<br/><span className="opacity-70">Sila masukkan kata laluan untuk akses.</span></p>
-                                                            <SecurePasswordInput value={securityInput} onChange={(e) => setSecurityInput(e.target.value)} placeholder="••••••••" autoFocus={false} theme="red" />
+                                                            <SecurePasswordInput value={securityInput} onChange={(e) => setSecurityInput(e.target.value)} onEnter={handleSecurityVerify} placeholder="••••" autoFocus={false} theme="red" />
                                                             <button disabled={securityCheck.verifying || securityInput.length < 8} onClick={(e) => handleSecurityVerify(e)} className="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 w-full justify-center disabled:bg-slate-400">{securityCheck.verifying ? <Spinner /> : "解锁 / Buka Kunci"}</button>
                                                         </div>
                                                     </div>
@@ -1494,9 +1552,9 @@
                                         <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-2"><IconLock size={40} /></div>
                                         <h4 className="font-bold text-slate-700 text-xl">受保护区域 / Kawasan Terlindung</h4>
                                         <p className="text-sm text-slate-500 text-center max-w-sm mb-4">请输入安全密码以管理系统。</p>
-                                        <form onSubmit={handleSecurityVerify} className="flex flex-col gap-4 w-full max-w-sm">
-                                            <SecurePasswordInput value={securityInput} onChange={(e) => setSecurityInput(e.target.value)} placeholder="••••••••" autoFocus={true} theme="red" />
-                                            <button disabled={securityCheck.verifying || securityInput.length < 8} type="submit" className="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-900 transition-colors disabled:bg-slate-500 w-full flex justify-center items-center gap-2">{securityCheck.verifying ? <Spinner /> : "解锁 / Buka"}</button>
+                                        <form className="flex flex-col gap-4 w-full max-w-sm">
+                                            <SecurePasswordInput value={securityInput} onChange={(e) => setSecurityInput(e.target.value)} onEnter={handleSecurityVerify} placeholder="••••" autoFocus={true} theme="red" />
+                                            <button disabled={securityCheck.verifying || securityInput.length < 8} type="button" onClick={handleSecurityVerify} className="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-900 transition-colors disabled:bg-slate-500 w-full flex justify-center items-center gap-2">{securityCheck.verifying ? <Spinner /> : "解锁 / Buka"}</button>
                                         </form>
                                     </div>
                                     ) : (
@@ -1519,8 +1577,8 @@
                                                                     <div className="text-xs text-orange-600 mt-2 bg-orange-50 p-2 rounded-lg border border-orange-100"><strong>原因 / Sebab:</strong> {req.reason || '无理由'}</div>
                                                                 </div>
                                                                 <div className="flex gap-2 w-full md:w-auto">
-                                                                    <button onClick={() => handleRejectDelete(req.id)} className="flex-1 md:flex-none px-4 py-2 rounded-lg font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">拒绝 / Tolak</button>
-                                                                    <button onClick={() => handleApproveDelete(req.id)} className="flex-1 md:flex-none px-4 py-2 rounded-lg font-bold bg-red-600 text-white hover:bg-red-700 shadow-md transition-colors flex items-center justify-center gap-2"><IconTrash size={16}/> 批准删除 / Luluskan</button>
+                                                                    <button disabled={securityCheck.verifying} onClick={() => handleRejectDelete(req.id)} className="flex-1 md:flex-none px-4 py-2 rounded-lg font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50">拒绝 / Tolak</button>
+                                                                    <button disabled={securityCheck.verifying} onClick={() => handleApproveDelete(req.id)} className="flex-1 md:flex-none px-4 py-2 rounded-lg font-bold bg-red-600 text-white hover:bg-red-700 shadow-md transition-colors flex items-center justify-center gap-2 disabled:bg-red-400">{securityCheck.verifying ? <Spinner /> : <React.Fragment><IconTrash size={16}/> 批准删除 / Luluskan</React.Fragment>}</button>
                                                                 </div>
                                                             </div>
                                                         ))}
@@ -1609,11 +1667,7 @@
                                                 <p className="text-xs text-slate-500 mb-4">从备份文件恢复。危险：将覆盖现有数据！</p>
                                                 <div className="flex gap-2 flex-wrap sm:flex-nowrap">
                                                     <input type="file" accept=".json" ref={fileInputRef} className="w-full sm:w-auto flex-1 text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200" />
-                                                    <button disabled={loading} onClick={() => {
-                                                        if(confirm("确定要恢复数据吗？现有数据将被覆盖！")) {
-                                                            if(fileInputRef.current) handleRestoreData({target: fileInputRef.current});
-                                                        }
-                                                    }} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md text-sm disabled:bg-slate-500">恢复 / Pulihkan</button>
+                                                    <button disabled={loading} onClick={() => requestSecureAction(() => fileInputRef.current && handleRestoreData({target: fileInputRef.current}))} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md text-sm disabled:bg-slate-500">恢复 / Pulihkan</button>
                                                 </div>
                                             </div>
                                             
@@ -1660,12 +1714,12 @@
                         </div>
                         )}
 
-                        {/* VIEW: DASHBOARD (Public/Admin) */}
+                        {/* VIEW: DASHBOARD (Public & Logged In) */}
                         {viewMode === 'dashboard' && (
                             <div className="space-y-6 animate-pop" ref={dashboardRef}>
                                 <RecycleReminder dateStr={nextRecycleDate} />
 
-                                {!isAdmin && !isPublicDashboardOpen ? (
+                                {authRole === 'guest' && !isPublicDashboardOpen ? (
                                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 text-center flex flex-col items-center justify-center min-h-[400px]">
                                         <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4"><IconLock size={40} /></div>
                                         <h2 className="text-xl font-bold text-slate-700 mb-2">公共仪表板暂未开放</h2>
@@ -1673,7 +1727,8 @@
                                     </div>
                                 ) : (
                                     <React.Fragment>
-                                        {dashboardViewMode === 'overall' && (
+                                        {/* Guest-only Header Info */}
+                                        {dashboardViewMode === 'overall' && authRole === 'guest' && (
                                             <React.Fragment>
                                                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 mb-4 relative overflow-hidden">
                                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-2 relative z-10">
@@ -1774,7 +1829,7 @@
                                             <div className="md:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col justify-center">
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="flex items-center gap-2 text-slate-700"><IconFilter /><h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3></div>
-                                                    {isAdmin && (
+                                                    {authRole === 'admin' && (
                                                         <div className="flex flex-wrap gap-2 justify-end">
                                                             <button onClick={() => executeDashboardAction(() => { const config = { monthIndex: parseInt(filterMonthStart), year: filterYear }; setReportConfig(config); handleGenerateReport(config); })} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconFileSpreadsheet size={16} /> 月度总结单</button>
                                                             <button onClick={() => executeDashboardAction(() => { const config = { year: filterYear, quarter: 'Q1' }; setQuarterlyConfig(config); handleGenerateQuarterly(config); })} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconTrophy size={16} /> 季度王者榜</button>
@@ -1805,7 +1860,7 @@
                                                         </div>
                                                     </div>
                                                     
-                                                    {isAdmin && (
+                                                    {authRole !== 'guest' && (
                                                         <div className="flex-1 min-w-[150px]">
                                                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">选择班级 / Pilih Kelas</label>
                                                             <select value={selectedDashboardClass} onChange={e => { const val = e.target.value; setSelectedDashboardClass(val); setDashboardViewMode(val ? 'class' : 'overall'); }} className="w-full p-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg font-bold outline-none focus:ring-2 focus:ring-emerald-500">
@@ -1818,15 +1873,15 @@
                                         </div>
 
                                         {dashboardViewMode === 'overall' ? (
-                                            <div className={`grid grid-cols-1 md:grid-cols-2 ${isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-6 h-auto md:h-[600px] animate-pop`}>
-                                                <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" isAdmin={isAdmin} />
-                                                <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" isAdmin={isAdmin} />
-                                                {isAdmin && (
+                                            <div className={`grid grid-cols-1 md:grid-cols-2 ${authRole !== 'guest' ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-6 h-auto md:h-[600px] animate-pop`}>
+                                                {authRole !== 'guest' && (
                                                     <React.Fragment>
-                                                        <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" isAdmin={isAdmin} />
-                                                        <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" isAdmin={isAdmin} />
+                                                        <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" isAdmin={true} />
+                                                        <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" isAdmin={true} />
                                                     </React.Fragment>
                                                 )}
+                                                <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" isAdmin={authRole !== 'guest'} />
+                                                <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" isAdmin={authRole !== 'guest'} />
                                             </div>
                                         ) : (
                                             <div className="animate-pop">
@@ -1845,14 +1900,14 @@
                                                         ) : classStats.length === 0 ? (
                                                             <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2"><IconInbox size={32} /><span>该班级暂无回收记录</span></div>
                                                         ) : (
-                                                            <ul>{classStats.map((item, index) => ( <RankItem key={index} item={item} index={index} maxValue={classStats[0].totalWeight} type="student_no_class" isAdmin={isAdmin} /> ))}</ul>
+                                                            <ul>{classStats.map((item, index) => ( <RankItem key={index} item={item} index={index} maxValue={classStats[0].totalWeight} type="student_no_class" isAdmin={authRole !== 'guest'} /> ))}</ul>
                                                         )}
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
 
-                                        {isAdmin && (
+                                        {authRole === 'admin' && (
                                             <div className="flex justify-center flex-wrap gap-4 pt-8 pb-4">
                                                 <button disabled={loading} id="poster-btn" onClick={() => executeDashboardAction(handleGenerateClassPoster)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 disabled:bg-slate-400">
                                                     <IconImage size={18} /> 生成班级月报 / Laporan Kelas
@@ -1879,7 +1934,7 @@
                         <p className="text-xs opacity-80 mt-1 italic">Jawatankuasa Pendidikan Kelestarian SJK (C) Ladang Grisek</p>
                     </footer>
                     
-                    {}
+                    {/* Modals and Overlays */}
                     {notification && (
                         <div className={`fixed top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-bold z-[70] animate-pop ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
                             <span>{notification.type === 'success' ? '✓' : '!'}</span>{notification.msg}
@@ -1893,165 +1948,8 @@
                                 <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500 shadow-inner"><IconLock size={32} /></div>
                                 <h3 className="font-bold text-slate-800 text-lg mb-2">需要高级权限</h3>
                                 <p className="text-xs text-slate-500 text-center mb-6">生成数据报表与保存海报需要输入密码。</p>
-                                <SecurePasswordInput value={dashboardSecurityInput} onChange={e => setDashboardSecurityInput(e.target.value)} placeholder="••••••••" theme="red" autoFocus={true} />
-                                <button onClick={() => {
-                                    if (dashboardSecurityInput === '88888888') {
-                                        setDashboardActionsUnlocked(true);
-                                        setShowDashboardUnlockModal(false);
-                                        setDashboardSecurityInput('');
-                                        if (pendingDashboardAction) pendingDashboardAction();
-                                        setPendingDashboardAction(null);
-                                        playSound('success'); showNotification('解锁成功', 'success');
-                                    } else {
-                                        playSound('error'); showNotification('密码错误', 'error'); setDashboardSecurityInput('');
-                                    }
-                                }} className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold shadow-lg flex justify-center items-center gap-2 transition-transform active:scale-95" disabled={dashboardSecurityInput.length < 8}>解锁执行</button>
-                            </div>
-                        </div>
-                    )}
-
-                    {showReportModal && reportData && (
-                        <div className="fixed inset-0 z-[110] bg-slate-900/90 flex flex-col backdrop-blur-sm">
-                            <div className="flex justify-between items-center p-4 bg-white/10 backdrop-blur border-b border-white/10">
-                                <div className="flex items-center gap-4">
-                                    <h3 className="text-white font-bold flex items-center gap-2"><IconFileSpreadsheet size={20} /> 月度报表预览</h3>
-                                    <div className="flex gap-2">
-                                        <select value={reportConfig.year} onChange={(e) => { const newConfig = { ...reportConfig, year: parseInt(e.target.value) }; setReportConfig(newConfig); handleGenerateReport(newConfig); }} className="bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-1 text-sm font-bold outline-none">
-                                            {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
-                                        </select>
-                                        <select value={reportConfig.monthIndex} onChange={(e) => { const newConfig = { ...reportConfig, monthIndex: parseInt(e.target.value) }; setReportConfig(newConfig); handleGenerateReport(newConfig); }} className="bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-1 text-sm font-bold outline-none">
-                                            {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <button onClick={downloadReportCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-colors"><IconDownload size={16} /> 导出 CSV</button>
-                                    <button onClick={downloadReportImage} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-colors"><IconCamera size={16} /> 保存为图片</button>
-                                    <button onClick={downloadReportPDF} className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-colors"><IconFileUp size={16} /> 保存为 PDF</button>
-                                    <button onClick={() => setShowReportModal(false)} className="text-slate-300 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"><IconX size={24} /></button>
-                                </div>
-                            </div>
-                            <div className="flex-1 overflow-auto p-8 flex justify-center custom-scrollbar">
-                                <MonthlyReportView data={reportData} config={reportConfig} />
-                            </div>
-                        </div>
-                    )}
-
-                    {showQuarterlyModal && quarterlyData && (
-                        <div className="fixed inset-0 z-[110] bg-slate-900/90 flex flex-col backdrop-blur-sm">
-                            <div className="flex justify-between items-center p-4 bg-white/10 backdrop-blur border-b border-white/10">
-                                <div className="flex items-center gap-4">
-                                    <h3 className="text-white font-bold flex items-center gap-2"><IconTrophy size={20} /> 季度王者榜预览</h3>
-                                    <div className="flex gap-2">
-                                        <select value={quarterlyConfig.year} onChange={(e) => { const newConfig = { ...quarterlyConfig, year: parseInt(e.target.value) }; setQuarterlyConfig(newConfig); handleGenerateQuarterly(newConfig); }} className="bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-1 text-sm font-bold outline-none">
-                                            {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
-                                        </select>
-                                        <select value={quarterlyConfig.quarter} onChange={(e) => { const newConfig = { ...quarterlyConfig, quarter: e.target.value }; setQuarterlyConfig(newConfig); handleGenerateQuarterly(newConfig); }} className="bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-1 text-sm font-bold outline-none">
-                                            {Object.keys(QUARTERS).map(q => <option key={q} value={q}>{QUARTERS[q].label}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <button onClick={downloadQuarterlyCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-colors"><IconDownload size={16} /> 导出 CSV</button>
-                                    <button onClick={downloadQuarterlyImage} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-colors"><IconCamera size={16} /> 保存为图片</button>
-                                    <button onClick={downloadQuarterlyPDF} className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-colors"><IconFileUp size={16} /> 保存为 PDF</button>
-                                    <button onClick={() => setShowQuarterlyModal(false)} className="text-slate-300 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"><IconX size={24} /></button>
-                                </div>
-                            </div>
-                            <div className="flex-1 overflow-auto p-8 flex justify-center custom-scrollbar">
-                                <QuarterlyReportView data={quarterlyData} config={quarterlyConfig} />
-                            </div>
-                        </div>
-                    )}
-
-                    {showPosterModal && posterData && (
-                        <div className="fixed inset-0 z-[120] bg-slate-900/95 flex flex-col backdrop-blur-sm">
-                            <div className="flex justify-between items-center p-4">
-                                <h3 className="text-white font-bold">📸 预览生成海报</h3>
-                                <div className="flex items-center gap-4">
-                                    <button onClick={downloadPoster} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95"><IconDownload size={18}/> 下载图片 (Download)</button>
-                                    <button onClick={() => setShowPosterModal(false)} className="text-slate-400 hover:text-white transition-colors"><IconX size={28}/></button>
-                                </div>
-                            </div>
-                            <div className="flex-1 overflow-auto flex justify-center items-start p-4 custom-scrollbar">
-                                <div ref={posterRef} className="bg-white w-[1080px] h-[1080px] rounded-3xl shadow-2xl overflow-hidden relative font-sans shrink-0">
-                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-                                    <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-r from-emerald-600 to-emerald-800"></div>
-                                    <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                                    <div className="absolute top-10 left-10 right-10 flex justify-between items-center z-10 text-white">
-                                        <div className="flex items-center gap-4"><div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-4xl shadow-inner backdrop-blur-sm">♻️</div><div><h1 className="text-4xl font-black tracking-tight drop-shadow-md">新廊华小校园环保回收计划</h1><p className="text-xl font-medium text-emerald-100 mt-1">SJK(C) Ladang Grisek Recycling Program</p></div></div>
-                                        <div className="text-right bg-black/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20"><p className="text-sm font-bold text-emerald-100 uppercase tracking-widest mb-1">Total Collected</p><div className="text-4xl font-black text-yellow-400 drop-shadow">{posterData.total} <span className="text-xl text-white">KG</span></div></div>
-                                    </div>
-                                    
-                                    {posterType === 'class' ? (
-                                        <div className="absolute top-48 left-10 right-10 z-10">
-                                            <div className="text-center mb-8"><h2 className="inline-block text-3xl font-black text-slate-800 bg-white px-8 py-3 rounded-full shadow-lg border-2 border-emerald-100 relative">🏆 班级王者荣耀榜 🏆<div className="absolute -top-3 -right-3 text-2xl animate-bounce">✨</div></h2><p className="text-slate-500 font-bold tracking-widest mt-4 uppercase">{posterData.date} SUMMARY</p></div>
-                                            <div className="flex gap-8 justify-center h-[650px]">
-                                                <div className="w-[450px] bg-slate-50 rounded-3xl p-8 shadow-xl border-t-8 border-emerald-500 relative overflow-hidden flex flex-col">
-                                                    <div className="absolute top-0 right-0 p-4 opacity-5"><IconTrophy size={100}/></div>
-                                                    <h3 className="text-3xl font-black text-emerald-800 mb-2">低年级组</h3><p className="text-emerald-600/70 font-bold uppercase tracking-widest text-sm mb-8">Tahap 1 (Tahun 1 - 3)</p>
-                                                    <div className="space-y-6 flex-1 flex flex-col justify-center">
-                                                        {posterData.lower.map((c, i) => (
-                                                            <div key={i} className="bg-white rounded-2xl p-6 shadow border border-slate-100 flex items-center relative overflow-hidden">
-                                                                <div className={`absolute left-0 top-0 bottom-0 w-2 ${i===0?'bg-yellow-400':i===1?'bg-slate-400':'bg-orange-400'}`}></div>
-                                                                <div className="w-16 flex justify-center text-5xl drop-shadow">{i===0?'🥇':i===1?'🥈':'🥉'}</div>
-                                                                <div className="flex-1 ml-4"><div className="text-3xl font-black text-slate-800">{c.className}</div><div className="text-sm font-bold text-slate-400 mt-1">RM {c.totalReward||0} Reward</div></div>
-                                                                <div className="text-right"><div className="text-4xl font-black text-emerald-600">{c.totalWeight.toFixed(1)}</div><div className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">KG</div></div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="w-[450px] bg-slate-50 rounded-3xl p-8 shadow-xl border-t-8 border-blue-500 relative overflow-hidden flex flex-col">
-                                                    <div className="absolute top-0 right-0 p-4 opacity-5"><IconTrophy size={100}/></div>
-                                                    <h3 className="text-3xl font-black text-blue-800 mb-2">高年级组</h3><p className="text-blue-600/70 font-bold uppercase tracking-widest text-sm mb-8">Tahap 2 (Tahun 4 - 6)</p>
-                                                    <div className="space-y-6 flex-1 flex flex-col justify-center">
-                                                        {posterData.upper.map((c, i) => (
-                                                            <div key={i} className="bg-white rounded-2xl p-6 shadow border border-slate-100 flex items-center relative overflow-hidden">
-                                                                <div className={`absolute left-0 top-0 bottom-0 w-2 ${i===0?'bg-yellow-400':i===1?'bg-slate-400':'bg-orange-400'}`}></div>
-                                                                <div className="w-16 flex justify-center text-5xl drop-shadow">{i===0?'🥇':i===1?'🥈':'🥉'}</div>
-                                                                <div className="flex-1 ml-4"><div className="text-3xl font-black text-slate-800">{c.className}</div><div className="text-sm font-bold text-slate-400 mt-1">RM {c.totalReward||0} Reward</div></div>
-                                                                <div className="text-right"><div className="text-4xl font-black text-blue-600">{c.totalWeight.toFixed(1)}</div><div className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">KG</div></div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="absolute top-44 left-10 right-10 z-10">
-                                            <div className="text-center mb-6">
-                                                <h2 className={`inline-block text-3xl font-black text-white px-8 py-3 rounded-full shadow-lg border-2 border-white/20 relative ${posterType === 'individual_lower' ? 'bg-emerald-600' : 'bg-blue-600'}`}>
-                                                    🌟 个人环保先锋 (TOP 20) 🌟<div className="absolute -top-3 -right-3 text-2xl animate-bounce">✨</div>
-                                                </h2>
-                                                <p className="text-slate-500 font-bold tracking-widest mt-4 uppercase text-lg">{posterType === 'individual_lower' ? '低年级组 (Tahap 1)' : '高年级组 (Tahap 2)'} • {posterData.date}</p>
-                                            </div>
-                                            <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-8 h-[680px]">
-                                                <div className="grid grid-cols-2 gap-x-12 gap-y-4">
-                                                    {posterData.topList.map((s, i) => (
-                                                        <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-black text-slate-400 shadow-sm border border-slate-200 text-lg">
-                                                                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
-                                                                </div>
-                                                                <div>
-                                                                    <div className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                                                                        {s.name.replace(/[\u4e00-\u9fa5]+/g, match => match).split(' ')[0]} 
-                                                                        <span className="bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded-md font-bold">{s.className}</span>
-                                                                    </div>
-                                                                    {s.badge && <div className="text-xs text-amber-600 font-bold mt-0.5">{s.badge}</div>}
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                <div className={`font-black text-2xl ${posterType === 'individual_lower' ? 'text-emerald-600' : 'text-blue-600'}`}>{s.totalWeight.toFixed(1)} <span className="text-xs text-slate-400">KG</span></div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="absolute bottom-6 left-0 w-full text-center text-slate-400 font-bold tracking-widest text-sm uppercase">Generated by SJK(C) Ladang Grisek Recycling System</div>
-                                </div>
+                                <SecurePasswordInput value={dashboardSecurityInput} onChange={e => setDashboardSecurityInput(e.target.value)} onEnter={handleDashboardUnlock} placeholder="••••" theme="red" autoFocus={true} />
+                                <button onClick={handleDashboardUnlock} className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold shadow-lg flex justify-center items-center gap-2 transition-transform active:scale-95" disabled={dashboardSecurityInput.length < 8}>解锁执行</button>
                             </div>
                         </div>
                     )}
@@ -2065,6 +1963,19 @@
                                     <button onClick={() => setConfirmModal({ ...confirmModal, show: false })} className="px-4 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100">取消 / Batal</button>
                                     <button onClick={confirmModal.onConfirm} className={`px-4 py-2 rounded-lg font-bold text-white shadow-lg ${confirmModal.isDestructive ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'}`}>确定 / Ya</button>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {securityCheck.show && (
+                        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                            <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full animate-pop flex flex-col items-center relative">
+                                <button onClick={() => setSecurityCheck({ show: false, callback: null, error: '', verifying: false })} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors"><IconX size={20} /></button>
+                                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500 shadow-inner"><IconLock size={32} /></div>
+                                <h3 className="font-bold text-slate-800 text-lg mb-2">需要高级权限</h3>
+                                <p className="text-xs text-slate-500 text-center mb-6">执行此操作需要输入二级安全密码。</p>
+                                <SecurePasswordInput value={securityInput} onChange={(e) => setSecurityInput(e.target.value)} onEnter={handleSecurityVerify} placeholder="••••" autoFocus={true} theme="red" />
+                                <button disabled={securityInput.length < 8} onClick={handleSecurityVerify} className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold shadow-lg flex justify-center items-center gap-2 transition-transform active:scale-95">验证并执行</button>
                             </div>
                         </div>
                     )}
@@ -2093,6 +2004,131 @@
                                     <div><label className="text-xs font-bold text-slate-500">班级 / Kelas</label><select value={editingStudent.className} onChange={e => setEditingStudent({...editingStudent, className: e.target.value})} className="w-full p-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>{CLASS_OPTIONS.map(cls => <option key={cls} value={cls}>{cls}</option>)}</select></div>
                                     <div className="flex gap-2 pt-2"><button type="button" onClick={() => setEditingStudent(null)} className="flex-1 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100">取消 / Batal</button><button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold shadow-md">保存 / Simpan</button></div>
                                 </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {showReportModal && reportData && (
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
+                            <div className="bg-slate-100 w-full max-w-5xl h-full sm:h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
+                                <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
+                                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconFileSpreadsheet className="text-emerald-600"/> 月度总结报表生成器</h2>
+                                    <div className="flex gap-2">
+                                        <button onClick={downloadReportCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
+                                        <button onClick={downloadReportPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> PDF</button>
+                                        <button onClick={downloadReportImage} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconImage size={14}/> 存图</button>
+                                        <button onClick={() => setShowReportModal(false)} className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-red-200 ml-2"><IconX size={14}/> 关闭</button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 overflow-auto bg-slate-200 p-4 sm:p-8 flex justify-center custom-scrollbar">
+                                    <MonthlyReportView data={reportData} config={reportConfig} onConfigChange={(newConfig) => { setReportConfig(newConfig); handleGenerateReport(newConfig); }} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showQuarterlyModal && quarterlyData && (
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
+                            <div className="bg-slate-100 w-full max-w-5xl h-full sm:h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
+                                <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
+                                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconTrophy className="text-blue-600"/> 季度王者榜生成器</h2>
+                                    <div className="flex gap-2">
+                                        <button onClick={downloadQuarterlyCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
+                                        <button onClick={downloadQuarterlyPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> PDF</button>
+                                        <button onClick={downloadQuarterlyImage} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconImage size={14}/> 存图</button>
+                                        <button onClick={() => setShowQuarterlyModal(false)} className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-red-200 ml-2"><IconX size={14}/> 关闭</button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 overflow-auto bg-slate-200 p-4 sm:p-8 flex justify-center custom-scrollbar">
+                                    <QuarterlyReportView data={quarterlyData} config={quarterlyConfig} onConfigChange={(newConfig) => { setQuarterlyConfig(newConfig); handleGenerateQuarterly(newConfig); }} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showPosterModal && posterData && (
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 overflow-hidden">
+                            <div className="bg-slate-100 w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop max-h-[95vh]">
+                                <div className="bg-white p-3 flex justify-between items-center border-b border-slate-200 shadow-sm shrink-0">
+                                    <h2 className="font-bold text-slate-800 text-sm">海报预览</h2>
+                                    <div className="flex gap-2">
+                                        <button onClick={downloadPoster} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm">↓ 保存图片</button>
+                                        <button onClick={() => setShowPosterModal(false)} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded text-xs font-bold">关闭</button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 overflow-auto p-4 flex justify-center bg-slate-200 custom-scrollbar">
+                                    <div ref={posterRef} className="bg-white p-6 shadow-xl relative overflow-hidden" style={{ width: '400px', minHeight: '600px' }}>
+                                        {/* Poster Content */}
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 -mr-10 -mt-10"></div>
+                                        <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50 -ml-10 -mb-10"></div>
+                                        
+                                        <div className="relative z-10 text-center mb-6">
+                                            <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center text-3xl mx-auto mb-2 shadow-inner ring-4 ring-white">♻️</div>
+                                            <h1 className="text-xl font-black text-slate-800">SJK (C) Ladang Grisek</h1>
+                                            <h2 className="text-lg font-bold text-emerald-600 tracking-widest mt-1">环保回收荣誉榜</h2>
+                                            <p className="text-xs font-bold text-slate-400 mt-2 bg-slate-100 inline-block px-3 py-1 rounded-full">{posterData.date}</p>
+                                        </div>
+
+                                        <div className="relative z-10 bg-slate-900 text-white rounded-xl p-4 text-center mb-6 shadow-lg border border-slate-800">
+                                            <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">全校总回收量</p>
+                                            <div className="text-3xl font-black">{posterData.total} <span className="text-sm font-medium opacity-80">KG</span></div>
+                                            <div className="text-[10px] text-slate-400 mt-1">感谢每一位同学的付出！</div>
+                                        </div>
+
+                                        <div className="relative z-10 space-y-6">
+                                            {posterType === 'class' ? (
+                                                <React.Fragment>
+                                                    <div className="bg-emerald-50/50 rounded-xl p-4 border border-emerald-100">
+                                                        <h3 className="font-bold text-emerald-800 text-sm mb-3 flex items-center gap-2 border-b border-emerald-200 pb-2"><IconCrown size={16}/> 低年级组 TOP 3</h3>
+                                                        <div className="space-y-3">
+                                                            {posterData.lower.map((c, i) => (
+                                                                <div key={i} className="flex justify-between items-center">
+                                                                    <div className="flex items-center gap-2 font-bold text-slate-700 text-sm"><span className="text-lg">{i===0?'🥇':i===1?'🥈':'🥉'}</span> {c.className}</div>
+                                                                    <div className="font-mono font-bold text-emerald-600">{c.totalWeight.toFixed(2)}kg</div>
+                                                                </div>
+                                                            ))}
+                                                            {posterData.lower.length===0 && <div className="text-xs text-slate-400 text-center py-2">暂无数据</div>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100">
+                                                        <h3 className="font-bold text-blue-800 text-sm mb-3 flex items-center gap-2 border-b border-blue-200 pb-2"><IconCrown size={16}/> 高年级组 TOP 3</h3>
+                                                        <div className="space-y-3">
+                                                            {posterData.upper.map((c, i) => (
+                                                                <div key={i} className="flex justify-between items-center">
+                                                                    <div className="flex items-center gap-2 font-bold text-slate-700 text-sm"><span className="text-lg">{i===0?'🥇':i===1?'🥈':'🥉'}</span> {c.className}</div>
+                                                                    <div className="font-mono font-bold text-blue-600">{c.totalWeight.toFixed(2)}kg</div>
+                                                                </div>
+                                                            ))}
+                                                            {posterData.upper.length===0 && <div className="text-xs text-slate-400 text-center py-2">暂无数据</div>}
+                                                        </div>
+                                                    </div>
+                                                </React.Fragment>
+                                            ) : (
+                                                <div className="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
+                                                    <h3 className="font-bold text-amber-800 text-sm mb-3 flex items-center gap-2 border-b border-amber-200 pb-2"><IconTrophy size={16}/> {posterType === 'individual_lower' ? '低年级' : '高年级'} 个人王者榜</h3>
+                                                    <div className="space-y-2">
+                                                        {posterData.topList.slice(0, 10).map((s, i) => (
+                                                            <div key={i} className="flex justify-between items-center text-sm border-b border-amber-100/50 pb-1 last:border-0 last:pb-0">
+                                                                <div className="flex items-center gap-2 overflow-hidden">
+                                                                    <span className="font-bold text-amber-600 w-4">{i+1}.</span>
+                                                                    <span className="font-bold text-slate-700 truncate max-w-[120px]">{s.name.replace(/[\u4e00-\u9fa5]+/g, '').replace(/[()]/g, '').trim() || s.name}</span>
+                                                                    <span className="text-[10px] bg-white px-1.5 py-0.5 rounded text-slate-500 border border-slate-200">{s.className}</span>
+                                                                </div>
+                                                                <div className="font-mono font-bold text-amber-700 shrink-0">{s.totalWeight.toFixed(1)}kg</div>
+                                                            </div>
+                                                        ))}
+                                                        {posterData.topList.length===0 && <div className="text-xs text-slate-400 text-center py-2">暂无数据</div>}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="mt-8 text-center text-[10px] text-slate-400 border-t border-slate-100 pt-4">
+                                            Generasi Hijau, Tanggungjawab Bersama<br/>
+                                            <span className="font-mono mt-1 block">Powered by SJKC LG System</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
