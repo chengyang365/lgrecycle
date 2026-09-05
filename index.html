@@ -43,6 +43,9 @@
         .disabled-area { pointer-events: none; opacity: 0.7; filter: grayscale(0.5); }
         .toggle-checkbox:checked { right: 0; border-color: #10B981; }
         .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
+        .glass-panel { background: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.65); box-shadow: 0 12px 32px rgba(15,77,52,.10); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+        .bento-kpi { box-shadow: 0 14px 30px rgba(15,77,52,.16); }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
     </style>
 </head>
 <body>
@@ -306,13 +309,13 @@
     const RankingCard = ({ title, subTitle, data, type, isAdmin }) => {
         const [isExpanded, setIsExpanded] = useState(false); const maxValue = data.length > 0 ? (data[0].totalWeight || 1) : 1;
         return (
-            <div className={`bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden flex flex-col transition-all duration-300 ring-1 ring-slate-900/5 ${isExpanded ? 'h-[500px]' : 'h-auto'} md:h-full`}>
+            <div className={`bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden flex flex-col transition-all duration-300 ring-1 ring-slate-900/5 ${isExpanded ? 'h-[500px]' : 'h-auto'} md:h-full`}>
                 <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex justify-between items-center cursor-pointer md:cursor-default" onClick={() => setIsExpanded(!isExpanded)}>
-                    <div><h3 className="font-bold text-slate-800 flex items-center gap-2"><IconTrophy size={18} className="text-yellow-500" />{title}</h3><p className="text-xs font-medium text-slate-400 uppercase tracking-wide mt-1">{subTitle}</p></div>
+                    <div><h3 className="font-bold text-slate-800 flex items-center gap-2"><IconTrophy size={18} className="text-yellow-500" />{title}</h3><p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">{subTitle}</p></div>
                     <div className={`md:hidden text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}><IconChevronDown /></div>
                 </div>
                 <div className={`flex-1 overflow-y-auto p-4 custom-scrollbar ${isExpanded ? 'block' : 'hidden'} md:block`}>
-                     {data.length === 0 ? ( <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2"><div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center"><IconInbox size={24} /></div><span className="text-sm">暂无数据</span></div> ) : ( <ul>{data.map((item, index) => <RankItem key={index} item={item} index={index} maxValue={maxValue} type={type} isAdmin={isAdmin} />)}</ul> )}
+                     {data.length === 0 ? ( <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2"><div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center"><IconInbox size={24} /></div><span className="text-sm font-bold text-slate-500">暂无数据</span><span className="text-[11px] text-slate-500">尚未有符合筛选条件的记录 / Tiada rekod untuk penapis ini</span></div> ) : ( <ul>{data.map((item, index) => <RankItem key={index} item={item} index={index} maxValue={maxValue} type={type} isAdmin={isAdmin} />)}</ul> )}
                 </div>
             </div>
         );
@@ -1357,12 +1360,13 @@
                                         {unsyncedQueue.some(q => (q.retryCount||0) >= 3) && <button onClick={handleEmergencyExport} className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-md animate-bounce border border-red-400">🚨 应急导出</button>}
                                     </div>
                                 )}
-                                <div className="hidden md:flex flex-col items-end leading-tight text-[10px] text-emerald-100">
+                                <div className="hidden sm:flex flex-col items-end leading-tight text-[10px] text-emerald-100">
                                     <span>{cloudStatus.isRefreshing ? '正在更新云端数据…' : cloudError ? '云端同步需要注意' : '云端数据已更新'}</span>
                                     <span>{cloudStatus.lastSuccessAt ? `更新于 ${new Date(cloudStatus.lastSuccessAt).toLocaleString('zh-MY', { timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : '正在连接…'}</span>
                                 </div>
+                                <span className="sm:hidden rounded-full border border-emerald-400/30 bg-emerald-800/30 px-2 py-1 text-[9px] font-bold text-emerald-50" aria-label={cloudStatus.lastSuccessAt ? '云端数据已更新' : '正在连接云端'}>{cloudStatus.isRefreshing ? '更新中' : cloudError ? '需检查' : cloudStatus.lastSuccessAt ? '已更新' : '连接中'}</span>
                                 <IconCloud connected={isCloudEnabled && !cloudError && unsyncedQueue.length === 0} />
-                                {authRole === 'guest' && ( <button onClick={() => setShowLoginModal(true)} className="bg-emerald-800/30 hover:bg-emerald-800 text-white px-3 sm:px-4 py-1.5 rounded-lg transition-all flex items-center gap-2 border border-emerald-500/30"><IconLock size={18} /><div className="hidden sm:flex flex-col items-start leading-none"><span className="text-sm font-bold">教师通道</span><span className="text-[9px] font-normal text-emerald-200 mt-0.5 tracking-wide">Laluan Guru</span></div></button> )}
+                                {authRole === 'guest' && ( <button onClick={() => setShowLoginModal(true)} className="bg-emerald-800/30 hover:bg-emerald-800 text-white px-3 sm:px-4 py-1.5 rounded-lg transition-all flex items-center gap-2 border border-emerald-500/30"><IconLock size={18} /><span className="sm:hidden text-xs font-bold">登录</span><div className="hidden sm:flex flex-col items-start leading-none"><span className="text-sm font-bold">教师通道</span><span className="text-[9px] font-normal text-emerald-200 mt-0.5 tracking-wide">Laluan Guru</span></div></button> )}
                                 {authRole !== 'guest' && (
                                     <React.Fragment>
                                         <div className="hidden md:flex items-center gap-2">
@@ -1389,7 +1393,7 @@
                         )}
                     </header>
 
-                    <main className="max-w-7xl mx-auto p-4 mt-4">
+                    <main className="max-w-7xl mx-auto p-3 sm:p-4 mt-3 sm:mt-4">
                         {/* Login Modal */}
                         {showLoginModal && (
                             <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
@@ -1841,7 +1845,7 @@
                                         {/* Guest-only Header Info */}
                                         {dashboardViewMode === 'overall' && authRole === 'guest' && (
                                             <React.Fragment>
-                                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 mb-4 relative overflow-hidden">
+                                                <div className="glass-panel rounded-3xl p-5 md:p-6 mb-4 relative overflow-hidden">
                                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-2 relative z-10">
                                                         <div>
                                                             <h3 className="font-black text-slate-800 text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> 全校年度合作目标 / Misi Sekolah</h3>
@@ -1923,23 +1927,23 @@
                                         )}
 
                                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                            <div className="md:col-span-3 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-5 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
+                                            <div className="md:col-span-3 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-3xl p-5 text-white bento-kpi flex flex-col justify-center relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 p-4 opacity-10"><IconLeaf /></div>
                                                 <p className="text-emerald-100 text-[10px] font-bold uppercase tracking-widest mb-1">{selectedDashboardClass ? `${selectedDashboardClass} 回收量` : '总回收量 / Jumlah'}</p>
                                                 <div className="text-3xl md:text-4xl font-black leading-none flex items-baseline gap-2">{currentDisplayTotal.toFixed(2)} <span className="text-sm font-medium text-emerald-300">KG</span></div>
                                                 <p className="text-[9px] text-emerald-200/80 mt-2">{parseInt(filterMonthStart) === 0 && parseInt(filterMonthEnd) === 11 ? `${filterYear} 全年` : `${filterYear}年 ${MONTH_OPTIONS[filterMonthStart].split('/')[1]} - ${MONTH_OPTIONS[filterMonthEnd].split('/')[1]}`}</p>
                                             </div>
 
-                                            <div className="md:col-span-3 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl p-5 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
+                                            <div className="md:col-span-3 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-3xl p-5 text-white bento-kpi flex flex-col justify-center relative overflow-hidden">
                                                 <div className="absolute -bottom-4 -right-4 p-4 opacity-10 text-8xl">☁️</div>
                                                 <p className="text-blue-100 text-[10px] font-bold uppercase tracking-widest mb-1">{selectedDashboardClass ? `${selectedDashboardClass} 减碳量` : '总减碳量 / Karbon Dihindarkan'}</p>
                                                 <div className="text-3xl md:text-4xl font-black leading-none flex items-baseline gap-1">{(currentDisplayTotal * CO2_FACTOR).toFixed(1)} <span className="text-sm font-medium text-blue-300">kg CO₂e</span></div>
                                                 <p className="text-[10px] text-blue-200/80 mt-2">Sisa Kering Bercampur × {CO2_FACTOR}</p>
                                             </div>
 
-                                            <div className="md:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col justify-center">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="flex items-center gap-2 text-slate-700"><IconFilter /><h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3></div>
+                                            <div className="md:col-span-6 glass-panel rounded-3xl p-4 sm:p-5 flex flex-col justify-center">
+                                                <div className="flex justify-between items-start mb-3 gap-3">
+                                                    <div><div className="flex items-center gap-2 text-slate-700"><IconFilter /><h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3></div><p className="text-[11px] text-slate-500 mt-1">显示：{filterYear} 年 {MONTH_OPTIONS[filterMonthStart].split('/')[1]} 至 {MONTH_OPTIONS[filterMonthEnd].split('/')[1]}</p></div>
                                                     {authRole === 'admin' && (
                                                         <div className="flex flex-wrap gap-2 justify-end">
                                                             <button onClick={() => executeDashboardAction(() => { const config = { monthIndex: parseInt(filterMonthStart), year: filterYear }; setReportConfig(config); handleGenerateReport(config); })} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconFileSpreadsheet size={16} /> 月度总结单</button>
@@ -1950,21 +1954,21 @@
 
                                                 <div className="flex flex-wrap gap-4">
                                                     <div className="flex-none w-24">
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">年份 / Tahun</label>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">年份 / Tahun</label>
                                                         <select value={filterYear} onChange={e => setFilterYear(parseInt(e.target.value))} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
                                                             {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
                                                         </select>
                                                     </div>
                                                     <div className="flex-[2] min-w-[180px] flex gap-2 items-end">
                                                         <div className="flex-1">
-                                                            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">从 / Dari</label>
+                                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">从 / Dari</label>
                                                             <select disabled={loading} value={filterMonthStart} onChange={e => { const val = parseInt(e.target.value); setFilterMonthStart(val); if (val > parseInt(filterMonthEnd)) setFilterMonthEnd(val); }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
                                                                 {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
                                                             </select>
                                                         </div>
                                                         <span className="pb-3 text-slate-300">→</span>
                                                         <div className="flex-1">
-                                                            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">到 / Hingga</label>
+                                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">到 / Hingga</label>
                                                             <select disabled={loading} value={filterMonthEnd} onChange={e => { const val = parseInt(e.target.value); setFilterMonthEnd(val); if (val < parseInt(filterMonthStart)) setFilterMonthStart(val); }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
                                                                 {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
                                                             </select>
@@ -1973,13 +1977,14 @@
                                                     
                                                     {authRole !== 'guest' && (
                                                         <div className="flex-1 min-w-[150px]">
-                                                            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">选择班级 / Pilih Kelas</label>
+                                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">选择班级 / Pilih Kelas</label>
                                                             <select value={selectedDashboardClass} onChange={e => { const val = e.target.value; setSelectedDashboardClass(val); setDashboardViewMode(val ? 'class' : 'overall'); }} className="w-full p-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg font-bold outline-none focus:ring-2 focus:ring-emerald-500">
                                                                 <option value="">- 全校 / Semua -</option>{CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
                                                             </select>
                                                         </div>
                                                     )}
                                                 </div>
+                                                <button type="button" onClick={() => { setFilterYear(currentYear); setFilterMonthStart(0); setFilterMonthEnd(11); setSelectedDashboardClass(''); }} className="mt-3 self-start text-xs font-bold text-emerald-700 hover:text-emerald-900">重置筛选 / Tetapkan Semula</button>
                                             </div>
                                         </div>
 
@@ -2000,7 +2005,7 @@
                                                     <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white flex justify-between items-center">
                                                         <div>
                                                             <h3 className="font-bold text-slate-800 flex items-center gap-2"><IconUsers size={20} className="text-emerald-500" />{selectedDashboardClass ? `${selectedDashboardClass} 班级排行榜` : '请先选择班级'}</h3>
-                                                            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mt-1">Ranking Kelas {selectedDashboardClass}</p>
+                                                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Ranking Kelas {selectedDashboardClass}</p>
                                                         </div>
                                                         {selectedDashboardClass && ( <div className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">总人数: {classStats.length}</div> )}
                                                     </div>
@@ -2040,9 +2045,12 @@
                         )}
                     </main>
 
-                    <footer className="text-center py-8 pb-16 text-slate-400 text-sm no-print mt-10 border-t border-emerald-100">
-                        <p className="font-bold text-slate-500">© {new Date().getFullYear()} 新廊华小生态永续教育小组</p>
-                        <p className="text-xs opacity-80 mt-1 italic">Jawatankuasa Pendidikan Kelestarian SJK (C) Ladang Grisek</p>
+                    <footer className="no-print mt-10 border-t border-emerald-100 bg-white/70">
+                        <div className="max-w-7xl mx-auto px-4 py-7 pb-16 text-center">
+                            <p className="font-bold text-slate-600 text-sm">© {new Date().getFullYear()} 新廊华小生态永续教育小组</p>
+                            <p className="text-xs text-slate-500 mt-1">Jawatankuasa Pendidikan Kelestarian SJK (C) Ladang Grisek</p>
+                            <p className="mt-3 text-[11px] font-medium text-emerald-700">一起回收 · 一起守护地球 / Bersama mengitar semula untuk bumi</p>
+                        </div>
                     </footer>
                     
                     {/* Modals and Overlays */}
@@ -2123,12 +2131,12 @@
                         <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
                             {/* Keep a definite viewport-based height so the report area can scroll. */}
                             <div className="bg-slate-100 w-full max-w-5xl h-[calc(100dvh-1rem)] sm:h-[90dvh] min-h-0 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
-                                <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
+                                <div className="bg-white p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 shadow-sm z-10 shrink-0">
                                     <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconFileSpreadsheet className="text-emerald-600"/> 月度总结报表生成器</h2>
-                                    <div className="flex flex-wrap justify-end gap-2">
+                                    <div className="flex w-full sm:w-auto flex-wrap justify-start sm:justify-end gap-2">
+                                        <button onClick={downloadReportPDF} className="order-first bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> 导出 PDF</button>
                                         <button onClick={downloadReportCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
-                                        <button onClick={downloadReportPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> PDF</button>
-                                        <button onClick={downloadReportImage} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconImage size={14}/> 存图</button>
+                                        <button onClick={downloadReportImage} className="bg-white hover:bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-emerald-200"><IconImage size={14}/> 存图</button>
                                         <button onClick={() => setShowReportModal(false)} className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-red-200 ml-2"><IconX size={14}/> 关闭</button>
                                     </div>
                                 </div>
@@ -2145,12 +2153,12 @@
                         <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
                             {/* Keep a definite viewport-based height so the report area can scroll. */}
                             <div className="bg-slate-100 w-full max-w-5xl h-[calc(100dvh-1rem)] sm:h-[90dvh] min-h-0 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
-                                <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
+                                <div className="bg-white p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 shadow-sm z-10 shrink-0">
                                     <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconTrophy className="text-blue-600"/> 季度王者榜生成器</h2>
-                                    <div className="flex flex-wrap justify-end gap-2">
+                                    <div className="flex w-full sm:w-auto flex-wrap justify-start sm:justify-end gap-2">
+                                        <button onClick={downloadQuarterlyPDF} className="order-first bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> 导出 PDF</button>
                                         <button onClick={downloadQuarterlyCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
-                                        <button onClick={downloadQuarterlyPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> PDF</button>
-                                        <button onClick={downloadQuarterlyImage} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconImage size={14}/> 存图</button>
+                                        <button onClick={downloadQuarterlyImage} className="bg-white hover:bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-emerald-200"><IconImage size={14}/> 存图</button>
                                         <button onClick={() => setShowQuarterlyModal(false)} className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-red-200 ml-2"><IconX size={14}/> 关闭</button>
                                     </div>
                                 </div>
