@@ -524,8 +524,14 @@
         }, []);
         const currentYear = new Date().getFullYear();
 
-        const [entries, setEntries] = useState(() => { try { const saved = localStorage.getItem('sjkc_entries'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
-        const [students, setStudents] = useState(() => { try { const saved = localStorage.getItem('sjkc_students'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
+        const [entries, setEntries] = useState(() => {
+            if (!sessionStorage.getItem('sjkc_auth_token')) return [];
+            try { const saved = localStorage.getItem('sjkc_entries'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; }
+        });
+        const [students, setStudents] = useState(() => {
+            if (!sessionStorage.getItem('sjkc_auth_token')) return [];
+            try { const saved = localStorage.getItem('sjkc_students'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; }
+        });
         const [pendingDeletions, setPendingDeletions] = useState(() => { try { const saved = localStorage.getItem('sjkc_pending_deletions'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
         const [unsyncedQueue, setUnsyncedQueue] = useState(() => { try { return JSON.parse(localStorage.getItem('sjkc_unsynced_queue')) || []; } catch(e) { return []; } });
         const [nextRecycleDate, setNextRecycleDate] = useState(() => localStorage.getItem('sjkc_next_recycle_date') || '');
@@ -699,7 +705,7 @@
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action, ...data })
+                body: JSON.stringify({ action, token: authToken || undefined, ...data })
             });
             if (!response.ok) throw new Error('Authentication service is unavailable');
             return response.json();
@@ -778,14 +784,24 @@
         const fetchEntries = useCallback(async () => {
             if (!isCloudEnabled) return;
             try {
-                if (entries.length === 0) setLoading(true); 
-                const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getEntries'); 
-                if (!res.ok) throw new Error("Network response was not ok");
-                const json = await res.json(); 
-                if (!Array.isArray(json.data)) return;
-                
-                const cloudData = json.data;
+                if (entries.length === 0) setLoading(true);
+                if (!authToken) {
+                    const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getPublicDashboard');
+                    if (!res.ok) throw new Error("Network response was not ok");
+                    const json = await res.json();
+                    if (!json.data || !Array.isArray(json.data.entries)) throw new Error("Invalid public dashboard data");
+                    setEntries(json.data.entries.map(e => ({ ...e, weight: Number(e.weight) || 0 })));
+                    setStudents([]);
+                    setCloudError(false);
+                    return;
+                }
+
+                const json = await requestServerAuth('getPrivateData', {});
+                if (json.status !== 'success' || !json.data || !Array.isArray(json.data.entries)) throw new Error("Private data request failed");
+                const cloudData = json.data.entries;
                 const cloudIds = new Set(cloudData.map(e => e.id));
+                const cloudStudents = Array.isArray(json.data.students) ? json.data.students : [];
+                setStudents(Array.from(new Map(cloudStudents.map(item => [item.id, item])).values()));
 
                 let currentQueue = JSON.parse(localStorage.getItem('sjkc_unsynced_queue') || '[]');
                 const reconciledQueue = currentQueue.filter(q => {
@@ -810,30 +826,25 @@
                         return latestReconciled;
                     });
                 }
-                
+
                 const pendingDeletes = reconciledQueue.filter(q => q.action === 'deleteEntry').map(q => q.data.id);
-                
                 const localUnsynced = reconciledQueue.flatMap(q => {
                     if (q.action === 'addEntry') return [q.data];
                     if (q.action === 'addEntriesBatch') return q.data;
                     return [];
                 });
-                
                 const combined = [...localUnsynced, ...cloudData];
-                const uniqueEntries = Array.from(new Map(combined.map(item => [item.id, item])).values()); 
-                
+                const uniqueEntries = Array.from(new Map(combined.map(item => [item.id, item])).values());
                 const finalEntries = uniqueEntries.filter(e => !pendingDeletes.includes(e.id));
                 finalEntries.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-                
-                const prunedEntries = finalEntries.slice(0, MAX_LOCAL_ENTRIES); 
-                setEntries(prunedEntries.map(e => ({...e, weight: Number(e.weight) || 0}))); 
+                setEntries(finalEntries.slice(0, MAX_LOCAL_ENTRIES).map(e => ({ ...e, weight: Number(e.weight) || 0 })));
                 setCloudError(false);
-            } catch (err) { 
-                handleCloudError(); 
-            } finally { 
-                setLoading(false); 
+            } catch (err) {
+                handleCloudError();
+            } finally {
+                setLoading(false);
             }
-        }, [isCloudEnabled, handleCloudError, entries.length]);
+        }, [isCloudEnabled, handleCloudError, entries.length, authToken]);
 
         useEffect(() => {
             if (needsReconciliation && !loading) {
@@ -843,13 +854,8 @@
         }, [needsReconciliation, loading, fetchEntries]);
 
         const fetchStudents = useCallback(async () => {
-            if (!isCloudEnabled) return;
-            try {
-                const res = await fetch(GOOGLE_SCRIPT_URL + '?action=getStudents'); if (!res.ok) throw new Error("Network response was not ok");
-                const json = await res.json(); if (!Array.isArray(json.data)) return;
-                const uniqueStudents = Array.from(new Map(json.data.map(item => [item.id, item])).values()); setStudents(uniqueStudents); setCloudError(false);
-            } catch (err) { if (entries.length === 0) handleCloudError(); }
-        }, [isCloudEnabled, entries.length, handleCloudError]);
+            if (!authToken) setStudents([]);
+        }, [authToken]);
 
         const fetchSettings = useCallback(async () => {
             if (!isCloudEnabled) return;
@@ -1101,7 +1107,7 @@
         };
         
         const handleGoToDashboard = () => { setViewMode('dashboard'); setIsMobileMenuOpen(false); playSound('success'); };
-        const handleLogout = () => { sessionStorage.removeItem('sjkc_auth_token'); setAuthToken(''); setAuthRole('guest'); setIsSystemUnlocked(false); setRecycleUnlocked(false); setPenaltyUnlocked(false); setDashboardActionsUnlocked(false); setViewMode('dashboard'); showNotification("已退出", "success"); };
+        const handleLogout = () => { sessionStorage.removeItem('sjkc_auth_token'); setAuthToken(''); setAuthRole('guest'); setEntries([]); setStudents([]); setPendingDeletions([]); setIsSystemUnlocked(false); setRecycleUnlocked(false); setPenaltyUnlocked(false); setDashboardActionsUnlocked(false); setViewMode('dashboard'); showNotification("已退出", "success"); };
 
         const handleInputChange = (e) => {
             const { name, value } = e.target;
