@@ -173,7 +173,7 @@
     const CLASS_OPTIONS = generateClassOptions();
     const MONTH_OPTIONS = [ "一月 / Jan", "二月 / Feb", "三月 / Mar", "四月 / Apr", "五月 / May", "六月 / Jun", "七月 / Jul", "八月 / Aug", "九月 / Sep", "十月 / Oct", "十一月 / Nov", "十二月 / Dec" ];
     const QUARTERS = { 'Q1': { label: '第一季度 (1-3月)', months: [0, 1, 2] }, 'Q2': { label: '第二季度 (4-6月)', months: [3, 4, 5] }, 'Q3': { label: '第三季度 (7-9月)', months: [6, 7, 8] }, 'Q4': { label: '第四季度 (10-11月)', months: [9, 10] } };
-    const YEAR_OPTIONS = [2026, 2027, 2028, 2029];
+    const YEAR_OPTIONS = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - 1 + index);
     const getLocalDateString = () => { const d = new Date(new Date().getTime() + 8 * 3600 * 1000); return d.toISOString().split('T')[0]; };
     const MAX_TODAY_STR = getLocalDateString();
 
@@ -397,8 +397,8 @@
         };
         return (
             <div className="flex flex-col relative w-[1000px] mx-auto bg-white rounded-lg overflow-hidden shadow-2xl">
-                <div data-html2canvas-ignore="true" className="bg-slate-100 p-4 border-b flex justify-between items-center no-print sticky top-0 z-10 shadow-sm">
-                    <div className="flex gap-2">
+                <div data-html2canvas-ignore="true" className="bg-slate-100 p-3 sm:p-4 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 no-print sticky top-0 z-10 shadow-sm">
+                    <div className="flex flex-wrap gap-2">
                         <select value={year} onChange={(e) => onConfigChange({ ...config, year: parseInt(e.target.value) })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500">
                             {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
@@ -480,8 +480,8 @@
         };
         return (
             <div className="flex flex-col relative w-[1000px] mx-auto bg-white rounded-lg overflow-hidden shadow-2xl">
-                <div data-html2canvas-ignore="true" className="bg-slate-100 p-4 border-b flex justify-between items-center no-print sticky top-0 z-10 shadow-sm">
-                    <div className="flex gap-2">
+                <div data-html2canvas-ignore="true" className="bg-slate-100 p-3 sm:p-4 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 no-print sticky top-0 z-10 shadow-sm">
+                    <div className="flex flex-wrap gap-2">
                         <select value={year} onChange={(e) => onConfigChange({ ...config, year: parseInt(e.target.value) })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500">
                             {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
@@ -2125,7 +2125,7 @@
                             <div className="bg-slate-100 w-full max-w-5xl h-[calc(100dvh-1rem)] sm:h-[90dvh] min-h-0 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
                                 <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
                                     <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconFileSpreadsheet className="text-emerald-600"/> 月度总结报表生成器</h2>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap justify-end gap-2">
                                         <button onClick={downloadReportCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
                                         <button onClick={downloadReportPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> PDF</button>
                                         <button onClick={downloadReportImage} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconImage size={14}/> 存图</button>
@@ -2133,7 +2133,8 @@
                                     </div>
                                 </div>
                                 {/* 修改点2：加上 min-h-0 和 overflow-y-auto，确保 Flex 容器正确滚动 */}
-                                <div className="flex-1 min-h-0 overflow-auto bg-slate-200 p-4 sm:p-8 flex justify-center items-start custom-scrollbar">
+                                <div className="relative flex-1 min-h-0 overflow-auto bg-slate-200 p-3 sm:p-8 flex justify-center items-start custom-scrollbar">
+                                    <div className="sm:hidden absolute top-2 left-3 z-20 rounded bg-slate-800/80 px-2 py-1 text-[10px] text-white pointer-events-none">可左右滑动查看完整报表</div>
                                     <MonthlyReportView data={reportData} config={reportConfig} onConfigChange={(newConfig) => { setReportConfig(newConfig); handleGenerateReport(newConfig); }} />
                                 </div>
                             </div>
@@ -2146,7 +2147,7 @@
                             <div className="bg-slate-100 w-full max-w-5xl h-[calc(100dvh-1rem)] sm:h-[90dvh] min-h-0 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
                                 <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
                                     <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconTrophy className="text-blue-600"/> 季度王者榜生成器</h2>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap justify-end gap-2">
                                         <button onClick={downloadQuarterlyCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
                                         <button onClick={downloadQuarterlyPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> PDF</button>
                                         <button onClick={downloadQuarterlyImage} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconImage size={14}/> 存图</button>
@@ -2154,7 +2155,8 @@
                                     </div>
                                 </div>
                                 {/* 修改点4：加上 min-h-0 和 overflow-y-auto */}
-                                <div className="flex-1 min-h-0 overflow-auto bg-slate-200 p-4 sm:p-8 flex justify-center items-start custom-scrollbar">
+                                <div className="relative flex-1 min-h-0 overflow-auto bg-slate-200 p-3 sm:p-8 flex justify-center items-start custom-scrollbar">
+                                    <div className="sm:hidden absolute top-2 left-3 z-20 rounded bg-slate-800/80 px-2 py-1 text-[10px] text-white pointer-events-none">可左右滑动查看完整报表</div>
                                     <QuarterlyReportView data={quarterlyData} config={quarterlyConfig} onConfigChange={(newConfig) => { setQuarterlyConfig(newConfig); handleGenerateQuarterly(newConfig); }} />
                                 </div>
                             </div>
