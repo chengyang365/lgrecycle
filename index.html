@@ -2083,7 +2083,7 @@
                                     </div>
                                 </div>
                                 {/* 修改点2：加上 min-h-0 和 overflow-y-auto，确保 Flex 容器正确滚动 */}
-                                <div className="flex-1 min-h-0 overflow-y-auto bg-slate-200 p-4 sm:p-8 flex justify-center custom-scrollbar">
+                                <div className="flex-1 min-h-0 overflow-auto bg-slate-200 p-4 sm:p-8 flex justify-center items-start custom-scrollbar">
                                     <MonthlyReportView data={reportData} config={reportConfig} onConfigChange={(newConfig) => { setReportConfig(newConfig); handleGenerateReport(newConfig); }} />
                                 </div>
                             </div>
@@ -2104,7 +2104,7 @@
                                     </div>
                                 </div>
                                 {/* 修改点4：加上 min-h-0 和 overflow-y-auto */}
-                                <div className="flex-1 min-h-0 overflow-y-auto bg-slate-200 p-4 sm:p-8 flex justify-center custom-scrollbar">
+                                <div className="flex-1 min-h-0 overflow-auto bg-slate-200 p-4 sm:p-8 flex justify-center items-start custom-scrollbar">
                                     <QuarterlyReportView data={quarterlyData} config={quarterlyConfig} onConfigChange={(newConfig) => { setQuarterlyConfig(newConfig); handleGenerateQuarterly(newConfig); }} />
                                 </div>
                             </div>
