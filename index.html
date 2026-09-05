@@ -557,6 +557,7 @@
         const [entryTab, setEntryTab] = useState('recycle'); 
         const [manageTab, setManageTab] = useState('audit');
         const [authRole, setAuthRole] = useState('guest');
+        const [authToken, setAuthToken] = useState(() => sessionStorage.getItem('sjkc_auth_token') || '');
         const [passwordInput, setPasswordInput] = useState('');
         
         const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -694,10 +695,20 @@
             isSyncingRef.current = false;
         }, []);
 
+        const requestServerAuth = async (action, data) => {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action, ...data })
+            });
+            if (!response.ok) throw new Error('Authentication service is unavailable');
+            return response.json();
+        };
+
         const safeSendToSheet = async (action, data = null) => {
             const uuid = crypto.randomUUID(); // identifies this write attempt, not the affected record
             const checksum = await generateChecksum(data);
-            const task = { action, data, uuid, checksum, retryCount: 0 };
+            const task = { action, data, uuid, checksum, token: authToken, retryCount: 0 };
             
             setUnsyncedQueue(prev => {
                 const newQ = [...prev, task];
@@ -1073,19 +1084,24 @@
             html2canvas(dashboardRef.current, { scale: 2 }).then(c => { const l = document.createElement('a'); l.download = `SJKCLG_Recycling_${new Date().toISOString().slice(0,10)}.png`; l.href = c.toDataURL(); l.click(); hideIds.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'flex'; }); });
         };
 
-        const handleLogin = (e) => {
-            if(e) e.preventDefault();
-            if (loginTab === 'general' && passwordInput === '991049') {
-                setAuthRole('general'); setShowLoginModal(false); setViewMode('dashboard'); setPasswordInput(''); playSound('success'); showNotification("登录成功", "success");
-            } else if (loginTab === 'admin' && passwordInput === '6767') {
-                setAuthRole('admin'); setShowLoginModal(false); setViewMode('admin'); setRecycleUnlocked(true); setPasswordInput(''); playSound('success'); showNotification("登录成功", "success");
-            } else {
-                playSound('error'); showNotification("密码错误", "error"); setPasswordInput('');
+        const handleLogin = async (e) => {
+            if (e) e.preventDefault();
+            try {
+                const role = loginTab === 'general' ? 'teacher' : 'admin';
+                const result = await requestServerAuth('login', { role, password: passwordInput });
+                if (result.status !== 'success' || !result.token) throw new Error('Invalid password');
+                sessionStorage.setItem('sjkc_auth_token', result.token);
+                setAuthToken(result.token); setAuthRole(role === 'teacher' ? 'general' : 'admin');
+                setShowLoginModal(false); setViewMode(role === 'teacher' ? 'dashboard' : 'admin');
+                if (role === 'admin') setRecycleUnlocked(true);
+                setPasswordInput(''); playSound('success'); showNotification("登录成功", "success");
+            } catch (error) {
+                playSound('error'); showNotification("密码错误或认证服务不可用", "error"); setPasswordInput('');
             }
         };
         
         const handleGoToDashboard = () => { setViewMode('dashboard'); setIsMobileMenuOpen(false); playSound('success'); };
-        const handleLogout = () => { setAuthRole('guest'); setIsSystemUnlocked(false); setRecycleUnlocked(false); setPenaltyUnlocked(false); setDashboardActionsUnlocked(false); setViewMode('dashboard'); showNotification("已退出", "success"); };
+        const handleLogout = () => { sessionStorage.removeItem('sjkc_auth_token'); setAuthToken(''); setAuthRole('guest'); setIsSystemUnlocked(false); setRecycleUnlocked(false); setPenaltyUnlocked(false); setDashboardActionsUnlocked(false); setViewMode('dashboard'); showNotification("已退出", "success"); };
 
         const handleInputChange = (e) => {
             const { name, value } = e.target;
@@ -1206,37 +1222,45 @@
             await safeSendToSheet('addStudentsBatch', [newObj]); 
         };
 
-        const handleRecycleUnlock = () => {
-            if(recycleSecurityInput === '6767') { setRecycleUnlocked(true); playSound('success'); showNotification('解锁成功', 'success'); } 
-            else { playSound('error'); showNotification('密码错误', 'error'); setRecycleSecurityInput(''); }
+        const handleRecycleUnlock = async () => {
+            try {
+                const result = await requestServerAuth('login', { role: 'admin', password: recycleSecurityInput });
+                if (result.status !== 'success' || !result.token) throw new Error('Invalid password');
+                sessionStorage.setItem('sjkc_auth_token', result.token); setAuthToken(result.token); setAuthRole('admin');
+                setRecycleUnlocked(true); playSound('success'); showNotification('解锁成功', 'success');
+            } catch (error) { playSound('error'); showNotification('密码错误或认证服务不可用', 'error'); }
+            setRecycleSecurityInput('');
         };
 
-        const handleDashboardUnlock = () => {
-            if (dashboardSecurityInput === '88888888') {
-                setDashboardActionsUnlocked(true); setShowDashboardUnlockModal(false); setDashboardSecurityInput('');
+        const handleDashboardUnlock = async () => {
+            try {
+                const result = await requestServerAuth('verifySecurity', { password: dashboardSecurityInput });
+                if (result.status !== 'success') throw new Error('Invalid password');
+                setDashboardActionsUnlocked(true); setShowDashboardUnlockModal(false);
                 if (pendingDashboardAction) pendingDashboardAction();
                 setPendingDashboardAction(null); playSound('success'); showNotification('解锁成功', 'success');
-            } else {
-                playSound('error'); showNotification('密码错误', 'error'); setDashboardSecurityInput('');
-            }
+            } catch (error) { playSound('error'); showNotification('密码错误或认证服务不可用', 'error'); }
+            setDashboardSecurityInput('');
         };
 
         const requestSecureAction = (cb) => { setSecurityCheck({ show: true, callback: cb, error: '', verifying: false }); setSecurityInput(''); };
         
-        const handleSecurityVerify = (e) => {
+        const handleSecurityVerify = async (e) => {
             if (e && e.preventDefault) e.preventDefault();
-            
-            if (securityInput === '88888888') {
+            try {
+                const result = await requestServerAuth('verifySecurity', { password: securityInput });
+                if (result.status !== 'success') throw new Error('Invalid password');
                 if (securityCheck.callback) {
                     securityCheck.callback();
                     setSecurityCheck({ show: false, callback: null, error: '', verifying: false });
                 }
-                if (viewMode === 'management') { setIsSystemUnlocked(true); }
-                if (entryTab === 'penalty') { setPenaltyUnlocked(true); }
-                playSound('success'); showNotification("解锁成功", "success"); setSecurityInput('');
-            } else {
-                playSound('error'); showNotification("安全密码错误", "error"); setSecurityInput('');
+                if (viewMode === 'management') setIsSystemUnlocked(true);
+                if (entryTab === 'penalty') setPenaltyUnlocked(true);
+                playSound('success'); showNotification("解锁成功", "success");
+            } catch (error) {
+                playSound('error'); showNotification("安全密码错误或认证服务不可用", "error");
             }
+            setSecurityInput('');
         };
 
         const handleImportStudents = async () => {
