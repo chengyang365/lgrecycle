@@ -45,6 +45,11 @@
         .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
         .glass-panel { background: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.65); box-shadow: 0 12px 32px rgba(15,77,52,.10); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
         .bento-kpi { box-shadow: 0 14px 30px rgba(15,77,52,.16); }
+        /* Semantic states keep success, information, warning, and danger consistent. */
+        .semantic-success { background: #047857; color: #ffffff; } .semantic-info { background: #075985; color: #ffffff; }
+        .semantic-warning { background: #b45309; color: #ffffff; } .semantic-danger { background: #b91c1c; color: #ffffff; }
+        .status-note { color: #475569; } .bilingual-label { display: inline-flex; flex-direction: column; line-height: 1.15; }
+        .bilingual-label__secondary { margin-top: .2rem; color: #475569; font-size: .72em; font-weight: 600; letter-spacing: .01em; }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
     </style>
 </head>
@@ -113,6 +118,10 @@
             return this.props.children;
         }
     }
+
+    const BilingualLabel = ({ primary, secondary, className = '', secondaryClassName = '' }) => (
+        <span className={`bilingual-label ${className}`}><span lang="zh-Hans">{primary}</span><span lang="ms" className={`bilingual-label__secondary ${secondaryClassName}`}>{secondary}</span></span>
+    );
 
     const playSound = (type) => {
         try {
@@ -306,7 +315,7 @@
         );
     };
 
-    const RankingCard = ({ title, subTitle, data, type, isAdmin }) => {
+    const RankingCard = ({ title, subTitle, data, type, isAdmin, onResetFilters }) => {
         const [isExpanded, setIsExpanded] = useState(false); const maxValue = data.length > 0 ? (data[0].totalWeight || 1) : 1;
         return (
             <div className={`bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden flex flex-col transition-all duration-300 ring-1 ring-slate-900/5 ${isExpanded ? 'h-[500px]' : 'h-auto'} md:h-full`}>
@@ -315,7 +324,7 @@
                     <div className={`md:hidden text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}><IconChevronDown /></div>
                 </div>
                 <div className={`flex-1 overflow-y-auto p-4 custom-scrollbar ${isExpanded ? 'block' : 'hidden'} md:block`}>
-                     {data.length === 0 ? ( <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2"><div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center"><IconInbox size={24} /></div><span className="text-sm font-bold text-slate-500">暂无数据</span><span className="text-[11px] text-slate-500">尚未有符合筛选条件的记录 / Tiada rekod untuk penapis ini</span></div> ) : ( <ul>{data.map((item, index) => <RankItem key={index} item={item} index={index} maxValue={maxValue} type={type} isAdmin={isAdmin} />)}</ul> )}
+                     {data.length === 0 ? ( <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2 text-center px-4"><div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center"><IconInbox size={24} /></div><BilingualLabel primary="暂无数据" secondary="Tiada data untuk penapis ini" className="text-sm font-bold text-slate-600" /><span className="text-[11px] status-note">尝试清除月份或班级筛选后再查看。</span>{onResetFilters && <button type="button" onClick={onResetFilters} className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100">重置筛选 / Tetapkan Semula</button>}</div> ) : ( <ul>{data.map((item, index) => <RankItem key={index} item={item} index={index} maxValue={maxValue} type={type} isAdmin={isAdmin} />)}</ul> )}
                 </div>
             </div>
         );
@@ -986,6 +995,8 @@
             });
             return Object.values(studentTotals).map(i => { i.activeMonths = i.activeMonthsSet.size; return i; }).sort((a, b) => b.totalWeight - a.totalWeight);
         }, [filteredEntries, selectedDashboardClass]);
+
+        const resetDashboardFilters = () => { setFilterYear(currentYear); setFilterMonthStart(0); setFilterMonthEnd(11); setSelectedDashboardClass(''); setDashboardViewMode('overall'); };
 
         const currentDisplayTotal = useMemo(() => {
             if (selectedDashboardClass) return filteredEntries.filter(e => e.className === selectedDashboardClass && e.status !== 'deleted').reduce((acc, e) => acc + (Number(e.weight) || 0), 0);
@@ -1853,8 +1864,8 @@
                                                 <div className="glass-panel rounded-3xl p-5 md:p-6 mb-4 relative overflow-hidden">
                                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-2 relative z-10">
                                                         <div>
-                                                            <h3 className="font-black text-slate-800 text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> 全校年度合作目标 / Misi Sekolah</h3>
-                                                            <p className="text-xs text-slate-500 mt-1">年度累计不受月份或班级筛选影响 · Jumlah tahunan tidak terjejas oleh penapis bulan atau kelas</p>
+                                                            <h3 className="font-black text-slate-800 text-lg flex items-start gap-2"><span className="text-2xl">🎯</span><BilingualLabel primary="全校年度合作目标" secondary="Misi Sekolah" /></h3>
+                                                            <p className="text-xs status-note mt-2">年度累计不受月份或班级筛选影响 · Jumlah tahunan tidak terjejas oleh penapis bulan atau kelas</p>
                                                         </div>
                                                         <div className="text-left md:text-right">
                                                             <span className="text-3xl font-black text-emerald-600">{annualGoalTotal.toFixed(0)}</span>
@@ -1948,7 +1959,7 @@
 
                                             <div className="md:col-span-6 glass-panel rounded-3xl p-4 sm:p-5 flex flex-col justify-center">
                                                 <div className="flex justify-between items-start mb-3 gap-3">
-                                                    <div><div className="flex items-center gap-2 text-slate-700"><IconFilter /><h3 className="font-bold text-sm">筛选数据 / Penapis Data</h3></div><p className="text-[11px] text-slate-500 mt-1">显示：{filterYear} 年 {MONTH_OPTIONS[filterMonthStart].split('/')[1]} 至 {MONTH_OPTIONS[filterMonthEnd].split('/')[1]}</p></div>
+                                                    <div><div className="flex items-start gap-2 text-slate-700"><IconFilter /><h3 className="font-bold text-sm"><BilingualLabel primary="筛选数据" secondary="Penapis Data" secondaryClassName="text-slate-600" /></h3></div><p className="text-[11px] status-note mt-2">显示：{filterYear} 年 {MONTH_OPTIONS[filterMonthStart].split('/')[1]} 至 {MONTH_OPTIONS[filterMonthEnd].split('/')[1]}</p></div>
                                                     {authRole === 'admin' && (
                                                         <div className="flex flex-wrap gap-2 justify-end">
                                                             <button onClick={() => executeDashboardAction(() => { const config = { monthIndex: parseInt(filterMonthStart), year: filterYear }; setReportConfig(config); handleGenerateReport(config); })} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconFileSpreadsheet size={16} /> 月度总结单</button>
@@ -1989,7 +2000,7 @@
                                                         </div>
                                                     )}
                                                 </div>
-                                                <button type="button" onClick={() => { setFilterYear(currentYear); setFilterMonthStart(0); setFilterMonthEnd(11); setSelectedDashboardClass(''); }} className="mt-3 self-start text-xs font-bold text-emerald-700 hover:text-emerald-900">重置筛选 / Tetapkan Semula</button>
+                                                <button type="button" onClick={resetDashboardFilters} className="mt-3 self-start text-xs font-bold text-emerald-700 hover:text-emerald-900">重置筛选 / Tetapkan Semula</button>
                                             </div>
                                         </div>
 
@@ -1997,12 +2008,12 @@
                                             <div className={`grid grid-cols-1 md:grid-cols-2 ${authRole !== 'guest' ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-6 h-auto md:h-[600px] animate-pop`}>
                                                 {authRole !== 'guest' && (
                                                     <React.Fragment>
-                                                        <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" isAdmin={true} />
-                                                        <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" isAdmin={true} />
+                                                        <RankingCard title="个人荣誉榜 (低年级)" subTitle="Individu Tahap 1" data={stats.indivLower} type="individual" isAdmin={true} onResetFilters={resetDashboardFilters} />
+                                                        <RankingCard title="个人荣誉榜 (高年级)" subTitle="Individu Tahap 2" data={stats.indivUpper} type="individual" isAdmin={true} onResetFilters={resetDashboardFilters} />
                                                     </React.Fragment>
                                                 )}
-                                                <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" isAdmin={authRole !== 'guest'} />
-                                                <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" isAdmin={authRole !== 'guest'} />
+                                                <RankingCard title="班级荣誉榜 (低年级)" subTitle="Kelas Tahap 1" data={stats.classLower} type="class" isAdmin={authRole !== 'guest'} onResetFilters={resetDashboardFilters} />
+                                                <RankingCard title="班级荣誉榜 (高年级)" subTitle="Kelas Tahap 2" data={stats.classUpper} type="class" isAdmin={authRole !== 'guest'} onResetFilters={resetDashboardFilters} />
                                             </div>
                                         ) : (
                                             <div className="animate-pop">
@@ -2017,9 +2028,9 @@
                                                     
                                                     <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                                                         {!selectedDashboardClass ? (
-                                                            <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2"><IconFilter size={32} /><span>请在上方选择一个班级</span></div>
+                                                            <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2 text-center px-4"><IconFilter size={32} /><BilingualLabel primary="请选择一个班级" secondary="Pilih sebuah kelas di penapis di atas" className="text-sm font-bold text-slate-600" /><button type="button" onClick={resetDashboardFilters} className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100">重置筛选 / Tetapkan Semula</button></div>
                                                         ) : classStats.length === 0 ? (
-                                                            <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2"><IconInbox size={32} /><span>该班级暂无回收记录</span></div>
+                                                            <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2 text-center px-4"><IconInbox size={32} /><BilingualLabel primary="该班级暂无回收记录" secondary="Tiada rekod kitar semula untuk kelas ini" className="text-sm font-bold text-slate-600" /><button type="button" onClick={resetDashboardFilters} className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100">重置筛选 / Tetapkan Semula</button></div>
                                                         ) : (
                                                             <ul>{classStats.map((item, index) => ( <RankItem key={index} item={item} index={index} maxValue={classStats[0].totalWeight} type="student_no_class" isAdmin={authRole !== 'guest'} /> ))}</ul>
                                                         )}
@@ -2060,7 +2071,7 @@
                     
                     {/* Modals and Overlays */}
                     {notification && (
-                        <div className={`fixed top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-bold z-[70] animate-pop ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
+                        <div className={`fixed top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-bold z-[70] animate-pop ${notification.type === 'success' ? 'semantic-success' : 'semantic-danger'}`}>
                             <span>{notification.type === 'success' ? '✓' : '!'}</span>{notification.msg}
                         </div>
                     )}
@@ -2137,7 +2148,7 @@
                             {/* Keep a definite viewport-based height so the report area can scroll. */}
                             <div className="bg-slate-100 w-full max-w-5xl h-[calc(100dvh-1rem)] sm:h-[90dvh] min-h-0 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
                                 <div className="bg-white p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 shadow-sm z-10 shrink-0">
-                                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconFileSpreadsheet className="text-emerald-600"/> 月度总结报表生成器</h2>
+                                    <h2 className="text-lg font-bold text-slate-800 flex items-start gap-2"><IconFileSpreadsheet className="text-emerald-600"/><BilingualLabel primary="月度总结报表生成器" secondary="Penjana Laporan Bulanan" /></h2>
                                     <div className="flex w-full sm:w-auto flex-wrap justify-start sm:justify-end gap-2">
                                         <button onClick={downloadReportPDF} className="order-first bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> 导出 PDF</button>
                                         <button onClick={downloadReportCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
@@ -2159,7 +2170,7 @@
                             {/* Keep a definite viewport-based height so the report area can scroll. */}
                             <div className="bg-slate-100 w-full max-w-5xl h-[calc(100dvh-1rem)] sm:h-[90dvh] min-h-0 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
                                 <div className="bg-white p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 shadow-sm z-10 shrink-0">
-                                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><IconTrophy className="text-blue-600"/> 季度王者榜生成器</h2>
+                                    <h2 className="text-lg font-bold text-slate-800 flex items-start gap-2"><IconTrophy className="text-blue-600"/><BilingualLabel primary="季度王者榜生成器" secondary="Penjana Carta Juara Suku Tahun" /></h2>
                                     <div className="flex w-full sm:w-auto flex-wrap justify-start sm:justify-end gap-2">
                                         <button onClick={downloadQuarterlyPDF} className="order-first bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm"><IconDownload size={14}/> 导出 PDF</button>
                                         <button onClick={downloadQuarterlyCSV} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors border border-slate-300"><IconDownload size={14}/> CSV</button>
