@@ -20,4 +20,7 @@ const output = source
 
 await mkdir('dist', { recursive: true });
 await writeFile('dist/index.html', output);
-await copyFile('sw.js', 'dist/sw.js');
+await Promise.all([
+  copyFile('sw.js', 'dist/sw.js'),
+  copyFile('site.webmanifest', 'dist/site.webmanifest')
+]);
