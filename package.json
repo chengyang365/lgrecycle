@@ -1,0 +1,16 @@
+{
+  "name": "sjkc-lg-recycling",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "build": "tailwindcss -i build/tailwind.css -o dist/tailwind.css --minify && node build/build-html.mjs"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "tailwindcss": "^3.4.17"
+  }
+}

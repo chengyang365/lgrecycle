@@ -2,7 +2,7 @@
 <html lang="zh-MY">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新廊华小校园环保回收计划 | Projek Kitar Semula SJK (C) Ladang Grisek</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://em-content.zobj.net/source/apple/419/recycling-symbol_267b-fe0f.png">
@@ -13,16 +13,17 @@
     <meta name="theme-color" content="#059669">
     
     <!-- React & Babel -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
         body { font-family: 'Noto Sans SC', sans-serif; background-color: #f0fdf4; }
+        :focus-visible { outline: 3px solid #0ea5e9; outline-offset: 3px; }
         .dual-lang span { display: block; font-size: 0.8em; opacity: 0.7; font-weight: normal; margin-top: 2px; }
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-pop { animation: popIn 0.3s ease-out; }
@@ -55,36 +56,28 @@
     const { useState, useEffect, useMemo, useRef, useCallback, Component } = React;
 
     const safeSetStorage = (key, value) => { try { localStorage.setItem(key, value); } catch (e) { console.warn("Local storage disabled"); } };
+    const csvCell = (value) => {
+        let text = String(value ?? '');
+        if (/^[=+\-@]/.test(text)) text = `'${text}`;
+        return `"${text.replace(/"/g, '""')}"`;
+    };
+    const csvRow = (values) => values.map(csvCell).join(',') + '\n';
+    const parseCsv = (text) => {
+        const rows = []; let row = []; let field = ''; let quoted = false;
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i], next = text[i + 1];
+            if (ch === '"' && quoted && next === '"') { field += '"'; i++; }
+            else if (ch === '"') quoted = !quoted;
+            else if (ch === ',' && !quoted) { row.push(field.trim()); field = ''; }
+            else if ((ch === '\n' || ch === '\r') && !quoted) { if (ch === '\r' && next === '\n') i++; row.push(field.trim()); if (row.some(Boolean)) rows.push(row); row = []; field = ''; }
+            else field += ch;
+        }
+        row.push(field.trim()); if (row.some(Boolean)) rows.push(row);
+        return rows;
+    };
 
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            try {
-                const swCode = `
-                    const CACHE_NAME = 'sjkc-recycle-v2';
-                    self.addEventListener('install', e => { 
-                        e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll([
-                            window.location.href,
-                            'https://unpkg.com/react@18/umd/react.development.js',
-                            'https://unpkg.com/react-dom@18/umd/react-dom.development.js',
-                            'https://unpkg.com/@babel/standalone@7/babel.min.js',
-                            'https://cdn.tailwindcss.com'
-                        ]))); 
-                    });
-                    self.addEventListener('fetch', e => {
-                        if(e.request.url.includes('script.google.com')) return;
-                        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request).then(fRes => {
-                            if(fRes && fRes.status === 200 && fRes.type === 'basic') {
-                                const resClone = fRes.clone();
-                                caches.open(CACHE_NAME).then(c => c.put(e.request, resClone));
-                            }
-                            return fRes;
-                        })));
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW Blob restricted.', err));
-            } catch (e) {}
-        });
+        window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker registration failed', err)));
     }
 
     const generateChecksum = async (payloadObj) => {
@@ -499,6 +492,36 @@
     };
 
     const App = () => {
+        // Keep keyboard focus inside the active modal and restore it after dismissal.
+        const modalFocusRef = useRef(null);
+        useEffect(() => {
+            let dialogWasOpen = false;
+            const getDialog = () => Array.from(document.querySelectorAll('[role="dialog"]')).at(-1);
+            const focusable = dialog => Array.from(dialog.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'));
+            const updateFocus = () => {
+                const dialog = getDialog();
+                if (!dialog) {
+                    if (dialogWasOpen && modalFocusRef.current?.isConnected) modalFocusRef.current.focus();
+                    dialogWasOpen = false;
+                    return;
+                }
+                if (!dialogWasOpen) modalFocusRef.current = document.activeElement;
+                dialogWasOpen = true;
+                if (!dialog.contains(document.activeElement)) focusable(dialog)[0]?.focus();
+            };
+            const onKeyDown = event => {
+                if (event.key !== 'Tab') return;
+                const dialog = getDialog(); if (!dialog) return;
+                const items = focusable(dialog); if (!items.length) { event.preventDefault(); return; }
+                const first = items[0], last = items[items.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            };
+            const observer = new MutationObserver(updateFocus);
+            observer.observe(document.body, { childList: true, subtree: true });
+            document.addEventListener('keydown', onKeyDown); updateFocus();
+            return () => { observer.disconnect(); document.removeEventListener('keydown', onKeyDown); };
+        }, []);
         const currentYear = new Date().getFullYear();
 
         const [entries, setEntries] = useState(() => { try { const saved = localStorage.getItem('sjkc_entries'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
@@ -672,7 +695,7 @@
         }, []);
 
         const safeSendToSheet = async (action, data = null) => {
-            const uuid = (data && data.id) ? data.id : crypto.randomUUID();
+            const uuid = crypto.randomUUID(); // identifies this write attempt, not the affected record
             const checksum = await generateChecksum(data);
             const task = { action, data, uuid, checksum, retryCount: 0 };
             
@@ -703,7 +726,7 @@
              if(unsyncedQueue.length === 0) return;
              let csvContent = "data:text/csv;charset=utf-8,\uFEFFAction,UUID,Payload,Checksum,RetryCount\n";
              unsyncedQueue.forEach(q => {
-                 csvContent += `${q.action},${q.uuid},${JSON.stringify(q.data).replace(/,/g, ';')},${q.checksum},${q.retryCount}\n`;
+                 csvContent += csvRow([q.action, q.uuid, JSON.stringify(q.data), q.checksum, q.retryCount]);
              });
              const link = document.createElement("a");
              link.setAttribute("href", encodeURI(csvContent));
@@ -1035,7 +1058,7 @@
                 const reason = e.type === 'deduction' ? e.reason : '-'; 
                 const status = e.status === 'deleted' ? 'Deleted' : 'Active';
                 const co2 = type === 'Recycle' ? (e.weight * CO2_FACTOR).toFixed(2) : '-';
-                csvContent += `${e.id},${type},${e.createdAt || ''},${e.year || ''},${e.month || ''},${e.className},${e.name},${e.studentID},${e.weight},${co2},${e.teacherName || ''},${e.displayTime},${reason},${e.calendarYear || ''},${status}\n`;
+                csvContent += csvRow([e.id, type, e.createdAt || '', e.year || '', e.month || '', e.className, e.name, e.studentID, e.weight, co2, e.teacherName || '', e.displayTime, reason, e.calendarYear || '', status]);
             });
             const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `recycling_data_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
@@ -1289,7 +1312,7 @@
                     <main className="max-w-7xl mx-auto p-4 mt-4">
                         {/* Login Modal */}
                         {showLoginModal && (
-                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                            <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                                 <div className="bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-emerald-100 animate-pop text-center relative overflow-hidden max-w-md w-full">
                                     <button onClick={() => setShowLoginModal(false)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"><IconX size={24} /></button>
                                     <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
@@ -1950,7 +1973,7 @@
                     )}
 
                     {showDashboardUnlockModal && (
-                        <div className="fixed inset-0 z-[105] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[105] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                             <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full animate-pop flex flex-col items-center relative">
                                 <button onClick={() => {setShowDashboardUnlockModal(false); setDashboardSecurityInput('');}} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors"><IconX size={20} /></button>
                                 <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500 shadow-inner"><IconLock size={32} /></div>
@@ -1963,7 +1986,7 @@
                     )}
 
                     {confirmModal.show && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                             <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-pop">
                                 <h3 className={`text-xl font-bold mb-2 ${confirmModal.isDestructive ? 'text-red-600' : 'text-slate-800'}`}>{confirmModal.title}</h3>
                                 <p className="text-slate-600 mb-6">{confirmModal.msg}</p>
@@ -1976,7 +1999,7 @@
                     )}
 
                     {securityCheck.show && (
-                        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                             <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full animate-pop flex flex-col items-center relative">
                                 <button onClick={() => setSecurityCheck({ show: false, callback: null, error: '', verifying: false })} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors"><IconX size={20} /></button>
                                 <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500 shadow-inner"><IconLock size={32} /></div>
@@ -1989,7 +2012,7 @@
                     )}
 
                     {deleteRequestModal.show && (
-                        <div className="fixed inset-0 z-[65] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[65] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-pop">
                                 <h3 className="text-xl font-bold text-slate-800 mb-2">请求删除 / Mohon Padam</h3>
                                 <p className="text-sm text-slate-500 mb-4">请输入删除原因 / Masukkan sebab:</p>
@@ -2003,7 +2026,7 @@
                     )}
 
                     {editingStudent && (
-                        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-pop">
                                 <h3 className="text-xl font-bold mb-4 text-slate-800">编辑学生 / Kemaskini</h3>
                                 <form onSubmit={handleUpdateStudent} className="space-y-4">
@@ -2017,7 +2040,7 @@
                     )}
 
                     {showReportModal && reportData && (
-                        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
                             {/* 修改点1：h-full sm:h-[90vh] 改为 max-h-full sm:max-h-[90vh] */}
                             <div className="bg-slate-100 w-full max-w-5xl max-h-full sm:max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
                                 <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
@@ -2038,7 +2061,7 @@
                     )}
 
                     {showQuarterlyModal && quarterlyData && (
-                        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-6 overflow-hidden">
                             {/* 修改点3：同样加上 max-h-full sm:max-h-[90vh] */}
                             <div className="bg-slate-100 w-full max-w-5xl max-h-full sm:max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop relative">
                                 <div className="bg-white p-4 flex justify-between items-center border-b border-slate-200 shadow-sm z-10 shrink-0">
@@ -2059,7 +2082,7 @@
                     )}
 
                     {showPosterModal && posterData && (
-                        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 overflow-hidden">
+                        <div role="dialog" aria-modal="true" aria-label="Dialog" className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 overflow-hidden">
                             <div className="bg-slate-100 w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-pop max-h-[95vh]">
                                 <div className="bg-white p-3 flex justify-between items-center border-b border-slate-200 shadow-sm shrink-0">
                                     <h2 className="font-bold text-slate-800 text-sm">海报预览</h2>
