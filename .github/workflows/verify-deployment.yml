@@ -1,0 +1,42 @@
+name: Verify deployment
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-verify:
+    name: Build Vercel output
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build production files
+        run: npm run build
+
+      - name: Verify deployment assets
+        shell: bash
+        run: |
+          test -s dist/index.html
+          test -s dist/tailwind.css
+          test -s dist/sw.js
+          test -s dist/site.webmanifest
+          node -e "JSON.parse(require('fs').readFileSync('dist/site.webmanifest', 'utf8')); console.log('Manifest is valid JSON')"
+          ! grep -q 'data:application/manifest+json' dist/index.html
+          ! grep -q '@babel/standalone' dist/index.html
+          grep -q "response.clone" dist/sw.js
