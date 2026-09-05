@@ -571,6 +571,7 @@
         const [loading, setLoading] = useState(true);
         const [isCloudEnabled] = useState(!!GOOGLE_SCRIPT_URL);
         const [cloudError, setCloudError] = useState(false);
+        const [cloudStatus, setCloudStatus] = useState({ lastSuccessAt: '', isRefreshing: true });
         const [needsReconciliation, setNeedsReconciliation] = useState(false);
         
         const dashboardRef = useRef(null); 
@@ -663,73 +664,72 @@
             }
         };
 
-        const executeSync = useCallback(async (isSilent = false) => {
+        const executeSync = useCallback(async (isSilent = false, retryFailed = false) => {
             if (isSyncingRef.current) return;
             const queueToSync = JSON.parse(localStorage.getItem('sjkc_unsynced_queue') || '[]');
             if (queueToSync.length === 0) return;
-            
+
             isSyncingRef.current = true;
-            if (!isSilent) setLoading(true); 
-            
-            let successCount = 0; 
+            if (!isSilent) setLoading(true);
+
+            let successCount = 0;
             const remainingQueue = [...queueToSync];
             let hasError = false;
 
             for (let i = 0; i < remainingQueue.length; i++) {
                 const req = remainingQueue[i];
-                if ((req.retryCount || 0) >= 3) { hasError = true; continue; } 
-                
+                if ((req.retryCount || 0) >= 3 && !retryFailed) { hasError = true; continue; }
+
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 8000); 
-                    
-                    const res = await fetch(GOOGLE_SCRIPT_URL, { 
-                        method: 'POST', 
-                        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                    const timeoutId = setTimeout(() => controller.abort(), 8000);
+                    const res = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(req),
                         signal: controller.signal
                     });
                     clearTimeout(timeoutId);
-
                     if (!res.ok) throw new Error("HTTP Status Error: " + res.status);
                     const resData = await res.json();
-                    
+
                     if (resData && (resData.status === 'success' || resData.status === true)) {
                         req.success = true;
                         successCount++;
                     } else {
                         throw new Error(resData.message || "Google Sheet Rejected Data");
                     }
-
-                } catch(e) { 
+                } catch(e) {
                     console.warn(`Sync Failed for UUID: ${req.uuid}`, e);
                     req.retryCount = (req.retryCount || 0) + 1;
                     hasError = true;
-                    
-                    if (e.name === 'AbortError' || e.message.includes('Timeout')) {
-                        setNeedsReconciliation(true);
-                    }
+                    if (e.name === 'AbortError' || e.message.includes('Timeout')) setNeedsReconciliation(true);
                 }
             }
-            
+
             setUnsyncedQueue(prevQueue => {
                 const syncedUuids = remainingQueue.filter(r => r.success).map(r => r.uuid);
-                const newQ = prevQueue.filter(q => !syncedUuids.includes(q.uuid));
-                safeSetStorage('sjkc_unsynced_queue', JSON.stringify(newQ));
-                return newQ;
+                const newQueue = prevQueue.filter(q => !syncedUuids.includes(q.uuid));
+                safeSetStorage('sjkc_unsynced_queue', JSON.stringify(newQueue));
+                return newQueue;
             });
-            
-            if (!isSilent) setLoading(false);
-            if (successCount > 0 && !isSilent) { showNotification(`成功同步 ${successCount} 项操作`, "success"); }
-            if (hasError) { 
-                setCloudError(true); 
-                if(!isSilent) showNotification(`部分数据写入失败或网络异常`, "error"); 
-            } else { 
-                setCloudError(false); 
+
+            if (successCount > 0) {
+                setCloudStatus(prev => ({ ...prev, lastSuccessAt: new Date().toISOString() }));
+                setNeedsReconciliation(true);
             }
-            
+            if (!isSilent) setLoading(false);
+            if (successCount > 0 && !isSilent) showNotification(`成功同步 ${successCount} 项操作`, "success");
+            if (hasError) {
+                setCloudError(true);
+                if (!isSilent) showNotification(`部分数据未能同步；请登录后重试，或导出应急备份`, "error");
+            } else {
+                setCloudError(false);
+            }
+
             isSyncingRef.current = false;
         }, []);
+
 
         const requestServerAuth = async (action, data) => {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -813,6 +813,7 @@
 
         const fetchEntries = useCallback(async () => {
             if (!isCloudEnabled) return;
+            setCloudStatus(prev => ({ ...prev, isRefreshing: true }));
             try {
                 if (entries.length === 0) setLoading(true);
                 if (!authToken) {
@@ -823,6 +824,7 @@
                     setEntries(json.data.entries.map(e => ({ ...e, weight: Number(e.weight) || 0 })));
                     setStudents([]);
                     setCloudError(false);
+                    setCloudStatus({ lastSuccessAt: json.data.generatedAt || new Date().toISOString(), isRefreshing: false });
                     return;
                 }
 
@@ -869,9 +871,11 @@
                 finalEntries.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
                 setEntries(finalEntries.slice(0, MAX_LOCAL_ENTRIES).map(e => ({ ...e, weight: Number(e.weight) || 0 })));
                 setCloudError(false);
+                setCloudStatus({ lastSuccessAt: json.data.generatedAt || new Date().toISOString(), isRefreshing: false });
             } catch (err) {
                 handleCloudError();
             } finally {
+                setCloudStatus(prev => ({ ...prev, isRefreshing: false }));
                 setLoading(false);
             }
         }, [isCloudEnabled, handleCloudError, entries.length, authToken]);
@@ -1349,10 +1353,14 @@
                             <div className="flex items-center gap-4">
                                 {unsyncedQueue.length > 0 && ( 
                                     <div className="flex items-center gap-2">
-                                        <button onClick={() => executeSync()} disabled={loading} className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold animate-pulse flex items-center gap-1 shadow-md disabled:opacity-50" title="点击重试同步"><IconRefresh size={12} /> 未同步 ({unsyncedQueue.length})</button> 
+                                        <button onClick={() => executeSync(false, true)} disabled={loading} className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold animate-pulse flex items-center gap-1 shadow-md disabled:opacity-50" title="重新尝试所有待同步记录"><IconRefresh size={12} /> 重试同步 ({unsyncedQueue.length})</button> 
                                         {unsyncedQueue.some(q => (q.retryCount||0) >= 3) && <button onClick={handleEmergencyExport} className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-md animate-bounce border border-red-400">🚨 应急导出</button>}
                                     </div>
                                 )}
+                                <div className="hidden md:flex flex-col items-end leading-tight text-[10px] text-emerald-100">
+                                    <span>{cloudStatus.isRefreshing ? '正在更新云端数据…' : cloudError ? '云端同步需要注意' : '云端数据已更新'}</span>
+                                    <span>{cloudStatus.lastSuccessAt ? `更新于 ${new Date(cloudStatus.lastSuccessAt).toLocaleString('zh-MY', { timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : '正在连接…'}</span>
+                                </div>
                                 <IconCloud connected={isCloudEnabled && !cloudError && unsyncedQueue.length === 0} />
                                 {authRole === 'guest' && ( <button onClick={() => setShowLoginModal(true)} className="bg-emerald-800/30 hover:bg-emerald-800 text-white px-3 sm:px-4 py-1.5 rounded-lg transition-all flex items-center gap-2 border border-emerald-500/30"><IconLock size={18} /><div className="hidden sm:flex flex-col items-start leading-none"><span className="text-sm font-bold">教师通道</span><span className="text-[9px] font-normal text-emerald-200 mt-0.5 tracking-wide">Laluan Guru</span></div></button> )}
                                 {authRole !== 'guest' && (
