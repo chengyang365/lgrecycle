@@ -311,7 +311,15 @@
         const monthName = MONTH_OPTIONS[monthIndex].split('/')[0].trim(); 
         const monthNameMalay = MONTH_OPTIONS[monthIndex].split('/')[1].trim();
         
-        const GroupSection = ({ title, subTitle, classes, individuals }) => (
+        const GroupSection = ({ title, subTitle, classes, individuals }) => {
+            const threshold = Math.max(0, Number(config.individualThreshold) || 0);
+            const selectedIndividuals = config.individualMode === 'threshold'
+                ? individuals.filter(student => student.totalWeight >= threshold)
+                : individuals.slice(0, 20);
+            const individualHeading = config.individualMode === 'threshold'
+                ? `个人荣誉榜 / Tokoh Kitar Semula (≥ ${threshold} KG)`
+                : '个人荣誉榜 / Tokoh Kitar Semula (TOP 20)';
+            return (
             <div className="mb-8 break-inside-avoid">
                 <div className="bg-slate-800 text-white p-3 rounded-t-lg flex justify-between items-center"><div><h2 className="text-xl font-bold">{title}</h2><span className="text-sm opacity-80">{subTitle}</span></div></div>
                 <div className="border-x border-b border-slate-300 p-4 bg-white rounded-b-lg">
@@ -346,7 +354,7 @@
                         </table>
                     </div>
                     <div>
-                        <h3 className="font-bold text-slate-800 border-b-2 border-blue-500 inline-block mb-3">个人荣誉榜 / Tokoh Kitar Semula (TOP 20)</h3>
+                        <h3 className="font-bold text-slate-800 border-b-2 border-blue-500 inline-block mb-3">{individualHeading}</h3>
                          <table className="w-full text-sm border-collapse">
                             <thead>
                                 <tr className="bg-slate-100 text-slate-600">
@@ -357,7 +365,7 @@
                                     <th className="p-2 text-right text-blue-600">减碳(CO₂e)</th>
                                 </tr>
                             </thead>
-                            <tbody>{individuals.slice(0, 20).map((s, i) => ( 
+                            <tbody>{selectedIndividuals.map((s, i) => ( 
                                 <tr key={i} className="border-b border-slate-100">
                                     <td className="p-2 text-center text-slate-500">{i + 1}</td>
                                     <td className="p-2 font-medium flex flex-col gap-1 items-start">
@@ -373,7 +381,8 @@
                     </div>
                 </div>
             </div>
-        );
+            );
+        };
         return (
             <div className="flex flex-col relative w-[1000px] mx-auto bg-white rounded-lg overflow-hidden shadow-2xl">
                 <div data-html2canvas-ignore="true" className="bg-slate-100 p-4 border-b flex justify-between items-center no-print sticky top-0 z-10 shadow-sm">
@@ -384,6 +393,15 @@
                         <select value={monthIndex} onChange={(e) => onConfigChange({ ...config, monthIndex: parseInt(e.target.value) })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500">
                             {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
                         </select>
+                        <select value={config.individualMode || 'top20'} onChange={(e) => onConfigChange({ ...config, individualMode: e.target.value })} className="p-2 rounded border border-slate-300 font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="top20">个人：TOP 20</option>
+                            <option value="threshold">个人：达到 KG 门槛</option>
+                        </select>
+                        {config.individualMode === 'threshold' && (
+                            <label className="flex items-center gap-1 bg-white border border-slate-300 rounded px-2 font-bold text-sm">
+                                ≥ <input type="number" min="0" step="0.1" value={config.individualThreshold ?? 10} onChange={(e) => onConfigChange({ ...config, individualThreshold: e.target.value })} className="w-16 py-2 outline-none" /> KG
+                            </label>
+                        )}
                     </div>
                     <div className="text-xs text-slate-500">提示: 可直接在此处切换月份重新生成报表</div>
                 </div>
@@ -551,7 +569,7 @@
         
         const [showReportModal, setShowReportModal] = useState(false);
         const [reportData, setReportData] = useState(null);
-        const [reportConfig, setReportConfig] = useState({ monthIndex: new Date().getMonth(), year: currentYear });
+        const [reportConfig, setReportConfig] = useState({ monthIndex: new Date().getMonth(), year: currentYear, individualMode: 'top20', individualThreshold: 10 });
         
         const [showQuarterlyModal, setShowQuarterlyModal] = useState(false);
         const [quarterlyData, setQuarterlyData] = useState(null);
@@ -1046,16 +1064,28 @@
         const downloadReportImage = () => { const node = document.getElementById('monthly-report-container'); if(node) html2canvas(node, { scale: 2, useCORS: true }).then(c => { const l = document.createElement('a'); l.download = `SJKCLG_Monthly_${reportConfig.year}_${reportConfig.monthIndex+1}.png`; l.href = c.toDataURL('image/png'); l.click(); }); };
         const downloadReportPDF = () => { const node = document.getElementById('monthly-report-container'); if(node) html2canvas(node, { scale: 2, useCORS: true }).then(c => { const img = c.toDataURL('image/png'); const { jsPDF } = window.jspdf; const p = new jsPDF('p', 'mm', [210, (c.height*210)/c.width]); p.addImage(img, 'PNG', 0, 0, 210, (c.height*210)/c.width); p.save(`SJKCLG_Monthly_${reportConfig.year}_${reportConfig.monthIndex+1}.pdf`); }); };
         const downloadReportCSV = () => {
-            if (!reportData) return; let csv = "data:text/csv;charset=utf-8,\uFEFF"; csv += `新廊华小校园环保回收计划 - 月度总结成绩单,${reportConfig.year}年${reportConfig.monthIndex + 1}月\n\n`;
-            csv += "低年级组 - 班级\n排名,班级,扣除(KG),净重(KG),减碳(CO₂e),奖励金(RM)\n"; reportData.lower.classes.forEach((c, i) => csv += `${i + 1},${c.className},${c.totalDeduction.toFixed(2)},${c.totalWeight.toFixed(2)},${(c.totalWeight * CO2_FACTOR).toFixed(2)},${c.totalReward || 0}\n`);
-            csv += "\n高年级组 - 班级\n排名,班级,扣除(KG),净重(KG),减碳(CO₂e),奖励金(RM)\n"; reportData.upper.classes.forEach((c, i) => csv += `${i + 1},${c.className},${c.totalDeduction.toFixed(2)},${c.totalWeight.toFixed(2)},${(c.totalWeight * CO2_FACTOR).toFixed(2)},${c.totalReward || 0}\n`);
-            csv += "\n低年级组 - 个人 (TOP 20)\n排名,姓名,班级,回收量(KG),减碳(CO₂e)\n"; reportData.lower.individuals.slice(0, 20).forEach((s, i) => {
-            csv += `${i + 1},${s.name.replace(/,/g, '')},${s.className || '未分配'},${s.totalWeight.toFixed(2)},${(s.totalWeight * CO2_FACTOR).toFixed(2)}\n`;
-});
-            csv += "\n高年级组 - 个人 (TOP 20)\n排名,姓名,班级,回收量(KG),减碳(CO₂e)\n"; reportData.upper.individuals.slice(0, 20).forEach((s, i) => {
-            csv += `${i + 1},${s.name.replace(/,/g, '')},${s.className || '未分配'},${s.totalWeight.toFixed(2)},${(s.totalWeight * CO2_FACTOR).toFixed(2)}\n`;
-});
-            const l = document.createElement("a"); l.href = encodeURI(csv); l.download = `SJKCLG_Monthly_${reportConfig.year}_${reportConfig.monthIndex+1}.csv`; document.body.appendChild(l); l.click(); document.body.removeChild(l);
+            if (!reportData) return;
+            const threshold = Math.max(0, Number(reportConfig.individualThreshold) || 0);
+            const selectedIndividuals = (individuals) => reportConfig.individualMode === 'threshold'
+                ? individuals.filter(student => student.totalWeight >= threshold)
+                : individuals.slice(0, 20);
+            const individualLabel = reportConfig.individualMode === 'threshold' ? `达到 ${threshold} KG` : 'TOP 20';
+            let csv = "data:text/csv;charset=utf-8,﻿";
+            csv += `新廊华小校园环保回收计划 - 月度总结成绩单,${reportConfig.year}年${reportConfig.monthIndex + 1}月\n\n`;
+            csv += "低年级组 - 班级\n排名,班级,扣除(KG),净重(KG),减碳(CO₂e),奖励金(RM)\n";
+            reportData.lower.classes.forEach((c, i) => csv += `${i + 1},${c.className},${c.totalDeduction.toFixed(2)},${c.totalWeight.toFixed(2)},${(c.totalWeight * CO2_FACTOR).toFixed(2)},${c.totalReward || 0}\n`);
+            csv += "\n高年级组 - 班级\n排名,班级,扣除(KG),净重(KG),减碳(CO₂e),奖励金(RM)\n";
+            reportData.upper.classes.forEach((c, i) => csv += `${i + 1},${c.className},${c.totalDeduction.toFixed(2)},${c.totalWeight.toFixed(2)},${(c.totalWeight * CO2_FACTOR).toFixed(2)},${c.totalReward || 0}\n`);
+            [['低年级组', reportData.lower.individuals], ['高年级组', reportData.upper.individuals]].forEach(([label, individuals]) => {
+                csv += `\n${label} - 个人 (${individualLabel})\n排名,姓名,班级,回收量(KG),减碳(CO₂e)\n`;
+                selectedIndividuals(individuals).forEach((student, index) => {
+                    csv += `${index + 1},${String(student.name || '').replace(/,/g, '')},${student.className || '未分配'},${student.totalWeight.toFixed(2)},${(student.totalWeight * CO2_FACTOR).toFixed(2)}\n`;
+                });
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `SJKCLG_Monthly_${reportConfig.year}_${reportConfig.monthIndex + 1}.csv`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         };
 
         const downloadQuarterlyImage = () => { const node = document.getElementById('quarterly-report-container'); if(node) html2canvas(node, { scale: 2, useCORS: true }).then(c => { const l = document.createElement('a'); l.download = `SJKCLG_Quarterly_${quarterlyConfig.year}_${quarterlyConfig.quarter}.png`; l.href = c.toDataURL('image/png'); l.click(); }); };
