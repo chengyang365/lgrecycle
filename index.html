@@ -1972,56 +1972,48 @@
                                                 <p className="text-[10px] text-blue-200/80 mt-2">Sisa Kering Bercampur × {CO2_FACTOR}</p>
                                             </div>
 
-                                            <div className="md:col-span-6 glass-panel rounded-3xl p-4 sm:p-5 flex flex-col justify-center">
-                                                <div className="flex justify-between items-start mb-3 gap-3">
-                                                    <div><div className="flex items-start gap-2 text-slate-700"><IconFilter /><h3 className="font-bold text-sm"><BilingualLabel primary="筛选数据" secondary="Penapis Data" secondaryClassName="text-slate-600" /></h3></div><p className="text-[11px] status-note mt-2">显示：{filterYear} 年 {MONTH_OPTIONS[filterMonthStart].split('/')[1]} 至 {MONTH_OPTIONS[filterMonthEnd].split('/')[1]}</p></div>
-                                                    {authRole === 'admin' && (
-                                                        <div className="flex flex-wrap gap-2 justify-end">
-                                                            <button onClick={() => executeDashboardAction(() => { const config = { monthIndex: parseInt(filterMonthStart), year: filterYear }; setReportConfig(config); handleGenerateReport(config); })} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconFileSpreadsheet size={16} /> 月度总结单</button>
-                                                            <button onClick={() => executeDashboardAction(() => { const config = { year: filterYear, quarter: 'Q1' }; setQuarterlyConfig(config); handleGenerateQuarterly(config); })} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconTrophy size={16} /> 季度王者榜</button>
-                                                        </div>
-                                                    )}
+                                            <div className="md:col-span-6 glass-panel rounded-3xl p-4 sm:p-5">
+                                                <div className="flex items-start gap-2 text-slate-700">
+                                                    <IconFilter />
+                                                    <div><h3 className="font-bold text-sm"><BilingualLabel primary="筛选数据" secondary="Penapis Data" secondaryClassName="text-slate-600" /></h3><p className="text-[11px] status-note mt-2">当前显示：{filterYear} 年 {MONTH_OPTIONS[filterMonthStart].split('/')[1]} 至 {MONTH_OPTIONS[filterMonthEnd].split('/')[1]}</p></div>
                                                 </div>
 
-                                                <div className="mb-3 flex flex-wrap gap-2" aria-label="快速筛选">
-                                                    <button type="button" onClick={() => applyQuickFilter('thisMonth')} className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 hover:bg-emerald-100">本月 / Bulan Ini</button>
-                                                    <button type="button" onClick={() => applyQuickFilter('lastMonth')} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-50">上月 / Bulan Lepas</button>
-                                                    <button type="button" onClick={() => applyQuickFilter('thisQuarter')} className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800 hover:bg-blue-100">本季度 / Suku Tahun Semasa</button>
-                                                </div>
-                                                <div className="flex flex-wrap gap-4">
-                                                    <div className="flex-none w-24">
-                                                        <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">年份 / Tahun</label>
-                                                        <select value={filterYear} onChange={e => setFilterYear(parseInt(e.target.value))} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
-                                                            {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
-                                                        </select>
+                                                <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/70 p-2.5" aria-label="快速筛选">
+                                                    <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wide text-emerald-800">快速选择 / Pilihan pantas</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <button type="button" onClick={() => applyQuickFilter('thisMonth')} className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100">本月 / Bulan Ini</button>
+                                                        <button type="button" onClick={() => applyQuickFilter('lastMonth')} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50">上月 / Bulan Lepas</button>
+                                                        <button type="button" onClick={() => applyQuickFilter('thisQuarter')} className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-800 hover:bg-blue-50">本季度 / Suku Tahun Semasa</button>
                                                     </div>
-                                                    <div className="flex-[2] min-w-[180px] flex gap-2 items-end">
-                                                        <div className="flex-1">
-                                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">从 / Dari</label>
-                                                            <select disabled={loading} value={filterMonthStart} onChange={e => { const val = parseInt(e.target.value); setFilterMonthStart(val); if (val > parseInt(filterMonthEnd)) setFilterMonthEnd(val); }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
-                                                                {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                                                            </select>
-                                                        </div>
-                                                        <span className="pb-3 text-slate-300">→</span>
-                                                        <div className="flex-1">
-                                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">到 / Hingga</label>
-                                                            <select disabled={loading} value={filterMonthEnd} onChange={e => { const val = parseInt(e.target.value); setFilterMonthEnd(val); if (val < parseInt(filterMonthStart)) setFilterMonthStart(val); }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
-                                                                {MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {authRole !== 'guest' && (
-                                                        <div className="flex-1 min-w-[150px]">
-                                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">选择班级 / Pilih Kelas</label>
-                                                            <select value={selectedDashboardClass} onChange={e => { const val = e.target.value; setSelectedDashboardClass(val); setDashboardViewMode(val ? 'class' : 'overall'); }} className="w-full p-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg font-bold outline-none focus:ring-2 focus:ring-emerald-500">
-                                                                <option value="">- 全校 / Semua -</option>{CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                                                            </select>
-                                                        </div>
-                                                    )}
                                                 </div>
-                                                <button type="button" onClick={resetDashboardFilters} className="mt-3 self-start text-xs font-bold text-emerald-700 hover:text-emerald-900">重置筛选 / Tetapkan Semula</button>
-                                            </div>
+
+                                                <div className={`mt-4 grid gap-3 ${authRole !== 'guest' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'}`}>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-600 uppercase block mb-1">年份 / Tahun</label>
+                                                        <select value={filterYear} onChange={e => setFilterYear(parseInt(e.target.value))} className="w-full p-2 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">{YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}</select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-600 uppercase block mb-1">从 / Dari</label>
+                                                        <select disabled={loading} value={filterMonthStart} onChange={e => { const val = parseInt(e.target.value); setFilterMonthStart(val); if (val > parseInt(filterMonthEnd)) setFilterMonthEnd(val); }} className="w-full p-2 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">{MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}</select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-600 uppercase block mb-1">到 / Hingga</label>
+                                                        <select disabled={loading} value={filterMonthEnd} onChange={e => { const val = parseInt(e.target.value); setFilterMonthEnd(val); if (val < parseInt(filterMonthStart)) setFilterMonthStart(val); }} className="w-full p-2 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">{MONTH_OPTIONS.map((m, i) => <option key={i} value={i}>{m}</option>)}</select>
+                                                    </div>
+                                                    {authRole !== 'guest' && <div>
+                                                        <label className="text-[10px] font-bold text-slate-600 uppercase block mb-1">班级 / Kelas</label>
+                                                        <select value={selectedDashboardClass} onChange={e => { const val = e.target.value; setSelectedDashboardClass(val); setDashboardViewMode(val ? 'class' : 'overall'); }} className="w-full p-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg font-bold outline-none focus:ring-2 focus:ring-emerald-500"><option value="">- 全校 / Semua -</option>{CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                                                    </div>}
+                                                </div>
+
+                                                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-3">
+                                                    <button type="button" onClick={resetDashboardFilters} className="text-xs font-bold text-emerald-700 hover:text-emerald-900">重置筛选 / Tetapkan Semula</button>
+                                                    {authRole === 'admin' && <div className="flex flex-wrap gap-2">
+                                                        <button onClick={() => executeDashboardAction(() => { const config = { monthIndex: parseInt(filterMonthStart), year: filterYear }; setReportConfig(config); handleGenerateReport(config); })} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconFileSpreadsheet size={16} /> 月度总结单</button>
+                                                        <button onClick={() => executeDashboardAction(() => { const config = { year: filterYear, quarter: 'Q1' }; setQuarterlyConfig(config); handleGenerateQuarterly(config); })} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-2 transition-colors"><IconTrophy size={16} /> 季度王者榜</button>
+                                                    </div>}
+                                                </div>
+                                            </div>                                            </div>
                                         </div>
 
                                         <section className="grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl border border-emerald-100 bg-white p-3 sm:p-4 shadow-sm" aria-label="学校环保影响">
